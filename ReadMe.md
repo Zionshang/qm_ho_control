@@ -1,0 +1,1 @@
+Hierarchical optimization for quadrupedal manipulator

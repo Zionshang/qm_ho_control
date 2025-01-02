@@ -1,0 +1,24 @@
+# PD of Body
+kpPos: [200, 200, 200]     # PD parameter of body position 
+kdPos: [50, 70, 50]      
+kpAng: [150, 150, 150]     # PD parameter of body angular 
+kdAng: [50, 50, 50]      
+kpSw: [300, 300, 300]      # PD parameter of swing leg
+kdSw: [30, 30, 30]
+
+# PD of Arm
+kpEePos: [300, 300, 300]   # PD parameter of EE position
+kdEePos: [30, 30, 30]
+kpEeAng: [350, 350, 350]   # PD parameter of EE angular
+kdEeAng: [35, 35, 35]
+kpArmJ: [500, 500, 500, 500, 500, 500]   # PD parameter of arm joint
+kdArmJ: [50, 50, 50, 50, 50, 50]
+
+
+# weight of QP
+wBlinear: 1
+wBangle: 1
+wSw: 1
+wElinear: 1
+wEangle: 1
+wArmJ: 1
