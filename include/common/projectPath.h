@@ -35,5 +35,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Gets the path to the package source directory. */
 inline std::string getProjectPath()
 {
-    return "/home/zishang/HierarchicalOptimization";
+    return "/home/zishang/wetbos_controller/qm_ho_control";
 }

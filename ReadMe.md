@@ -55,6 +55,10 @@ sudo make install
 
 * yaml-cpp
 ```
-sudo apt update
-sudo apt install libyaml-cpp-dev 
+git clone https://github.com/jbeder/yaml-cpp.git
+cd yaml-cpp
+mkdir build && cd build
+cmake ..
+make
+sudo make install
 ```
