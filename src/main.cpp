@@ -28,9 +28,9 @@ int main(int argc, char const *argv[])
         est->setAllState();
         est->printState();
         // plan->setDesiredTraj();
-        // plan->showDemo();
+        plan->showDemo();
         // plan->showFrontMaxJointVelDemo();
-        plan->showPickingDemo();
+        // plan->showPickingDemo();
         // plan->showSideMaxJointVelDemo();
         // plan->printDesiredTraj();
         ctlr->run();

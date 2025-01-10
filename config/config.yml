@@ -1,7 +1,7 @@
 # PD of Body
-kpPos: [200, 200, 200]     # PD parameter of body position 
+kpPos: [200, 200, 500]     # PD parameter of body position 
 kdPos: [50, 70, 50]      
-kpAng: [150, 150, 150]     # PD parameter of body angular 
+kpAng: [500, 500, 150]     # PD parameter of body angular 
 kdAng: [50, 50, 50]      
 kpSw: [300, 300, 300]      # PD parameter of swing leg
 kdSw: [30, 30, 30]
