@@ -22,9 +22,7 @@ Hierarchical optimization control for quadrupedal manipulator
 
 ```
 sudo apt update
-sudo apt install libeigen3-dev 
-sudo ln -s /usr/local/include/eigen3 /usr/include/eigen3
-sudo ln -s /usr/local/include/eigen3/Eigen/ /usr/local/include/Eigen
+sudo apt install libeigen3-dev
 ```
 
 * pinocchio
