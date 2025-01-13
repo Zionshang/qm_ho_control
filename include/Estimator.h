@@ -1,14 +1,14 @@
 #pragma once
 #include "common/mathTypes.h"
 #include "common/LowState.h"
-#include "model/QuadrupedArmRobot.h"
 #include "model/WholeBodyDynamics.h"
 #include "GaitSchedule.h"
+#include "pinocchio_interface.hpp"
 
 class Estimator
 {
 public:
-    Estimator(GaitName gaitName, LowState *lowState, QuadrupedArmRobot *robModel, WholeBodyDynamics *wbDyn);
+    Estimator(GaitName gaitName, LowState *lowState, PinocchioInterface *pin_interface);
     ~Estimator();
     void setAllState();
 
@@ -52,10 +52,9 @@ public:
     void printState();
 
 private:
-    QuadrupedArmRobot *_robModel;
-    WholeBodyDynamics *_wbDyn;
     LowState *_lowState;
     GaitSchedule *_gaitSche;
+    PinocchioInterface *pin_interface_;
 
     // body
     Vec3 _posB, _velB; // position and velocity BODY, expressed in WORLD frame
@@ -78,8 +77,6 @@ private:
 
     // arm & gripper
     Vec6 _qArm, _dqArm;                      // joint position and velocity of arm
-    Vec3 _posG2B_B, _velG2B_B, _angVelG2B_B; // position, velocity and angular velocity of GRIPER, expressed in BODY frame
-    Quat _quatG2B;                           // quaternion of GRIPER reletive to BODY
     Quat _quatG;                             // quaternion of GRIPER reletive to GLOBAL
     Vec3 _posG, _velG, _angVelG;             // position, velocity and angular velocity of GRIPER, expressed in WORLD frame
     RotMat _rotG;                            // rotation matrix of GRIPER reletive to WORLD

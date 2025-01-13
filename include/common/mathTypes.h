@@ -6,6 +6,8 @@
 
 
 /************************ Vector ***************************/
+using Eigen::VectorXd;
+using Eigen::Vector3d;
 
 // 2x1 Vector
 using Vec2 = typename Eigen::Matrix<double, 2, 1>;

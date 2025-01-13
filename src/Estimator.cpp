@@ -1,8 +1,8 @@
 #include "Estimator.h"
 #include <iostream>
 
-Estimator::Estimator(GaitName gaitName, LowState *lowState, QuadrupedArmRobot *robModel, WholeBodyDynamics *wbDyn)
-    : _lowState(lowState), _robModel(robModel), _wbDyn(wbDyn)
+Estimator::Estimator(GaitName gaitName, LowState *lowState, PinocchioInterface *pin_interface)
+    : _lowState(lowState), pin_interface_(pin_interface)
 {
     _gaitSche = new GaitSchedule(gaitName);
 }
@@ -28,13 +28,15 @@ void Estimator::setAllState()
     // CoM
     _posGen << _posB, _quatB, vec34ToVec12(_qLeg), _qArm;
     _velGen << _rotB.transpose() * _velB, _rotB.transpose() * _angVelB, vec34ToVec12(_dqLeg), _dqArm;
-    _wbDyn->setCoMPosVel(_posGen, _velGen, _posCoM, _velCoM);
+    pin_interface_->calcComState(_posGen, _velGen, _posCoM, _velCoM);
 
     // foot
-    for (int i = 0; i < 4; i++)
+    pin_interface_->updateKinematics(_posGen, _velGen);
+    const auto &feet_id = pin_interface_->feet_id();
+    for (size_t i = 0; i < feet_id.size(); i++)
     {
-        _posF.col(i) = _posB + _rotB * _robModel->calFootPos(_qLeg.col(i), i);
-        _velF.col(i) = _velB + _rotB * (skew(_lowState->getGyro()) * _robModel->calFootPos(_qLeg.col(i), i) + _robModel->calFootVel(_qLeg.col(i), _dqLeg.col(i), i));
+        _posF.col(i) = pin_interface_->calcFootPosition(feet_id[i]);
+        _velF.col(i) = pin_interface_->calcFootVelocity(feet_id[i]);
     }
 
     // gait
@@ -45,13 +47,8 @@ void Estimator::setAllState()
     // arm
     _qArm = _lowState->getQArm();
     _dqArm = _lowState->getDqArm();
-    _robModel->setAllGriperState(_qArm, _posG2B_B, _quatG2B, _dqArm, _velG2B_B, _angVelG2B_B);
-    _posG = _posB + _rotB * _posG2B_B;
-    _quatG = quatTimes(_quatB, _quatG2B);
-    _rotG = quat2RotMat(_quatG);
-    _velG = _velB + _rotB * (skew(_lowState->getGyro()) * _posG2B_B + _velG2B_B);
-    _angVelG = _angVelB + _rotB * _angVelG2B_B;
-
+    pin_interface_->calcGripperState(_posG, _velG, _quatG, _angVelG);
+ 
     // control
     switch (_lowState->getUserCmd())
     {

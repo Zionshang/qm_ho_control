@@ -2,7 +2,6 @@
 
 #include "common/HighCmd.h"
 #include "common/LowState.h"
-#include "model/QuadrupedArmRobot.h"
 #include "GaitGenerator.h"
 
 class Planner
