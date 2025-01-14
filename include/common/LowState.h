@@ -35,6 +35,7 @@ struct IMU
 {
     float quaternion[4]; // x,y,z,w
     float gyro[3];
+    float accelerometer[3];
 
     IMU()
     {
@@ -42,6 +43,7 @@ struct IMU
         {
             quaternion[i] = 0;
             gyro[i] = 0;
+            accelerometer[i] = 0;
         }
         quaternion[3] = 1;
     }
@@ -53,6 +55,10 @@ struct IMU
     Vec3 getGyro()
     {
         return Vec3(gyro[0], gyro[1], gyro[2]);
+    }
+    Vec3 getAccelerometer()
+    {
+        return Vec3(accelerometer[0], accelerometer[1], accelerometer[2]);
     }
 };
 
@@ -134,6 +140,7 @@ struct LowState
 
     Quat getQuaternion() { return imu.getQuaternion(); }
     Vec3 getGyro() { return imu.getGyro(); }
+    Vec3 getAccelerometer() { return imu.getAccelerometer(); }
     double getCurrentTime() { return currentTime; }
     double getTimeStep() { return timeStep; }
     UserCommand getUserCmd() { return userCmd; }

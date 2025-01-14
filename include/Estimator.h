@@ -51,7 +51,28 @@ public:
     double getCurrentTime() const { return _lowState->getCurrentTime(); }
     void printState();
 
+    // 更新状态方程
+    void updateStateEquation(const Vector3d &acc);
+
+    // 更新测量方程
+    void updateMeasurementEquation(const Vector3d &measured_velocity);
+
 private:
+    static constexpr int kStateDim = 6; // [position, velocity]
+    static constexpr int kMeasDim = 3;  // [velocity]
+    const double dt = 0.001;            // timestep
+
+    Eigen::Matrix<double, kStateDim, 1> x_;         // 状态向量 [p, v]
+    Eigen::Matrix<double, kMeasDim, 1> z_;          // 观测向量 [velocity]
+    Eigen::Matrix<double, kStateDim, kStateDim> P_; // 状态协方差
+    Eigen::Matrix<double, kStateDim, kStateDim> A_; // 状态转移矩阵
+    Eigen::Matrix<double, kMeasDim, kStateDim> H_;  // 观测矩阵
+    Eigen::Matrix<double, kStateDim, kStateDim> Q_; // 过程噪声
+    Eigen::Matrix<double, kMeasDim, kMeasDim> R_;   // 测量噪声
+    Eigen::Matrix<double, kStateDim, kMeasDim> K_;  // 卡尔曼增益
+
+    const Vector3d gravity_{0, 0, -9.81};
+
     LowState *_lowState;
     GaitSchedule *_gaitSche;
     PinocchioInterface *pin_interface_;
@@ -70,16 +91,17 @@ private:
     // leg & foot
     Vec34 _qLeg, _dqLeg; // joint position and velocity of leg
     Vec34 _posF, _velF;  // position and velocity of FOOT, expressed in WORLD frame
+    Vec34 _posF2B, _velF2B;  // position and velocity of FOOT, expressed in WORLD frame
 
     // gait
     Vec4 _phase;      // progress of swing/stance as a proportion of swing/stace cycle [0,1]
     VecInt4 _contact; // 1:contact  0:swting
 
     // arm & gripper
-    Vec6 _qArm, _dqArm;                      // joint position and velocity of arm
-    Quat _quatG;                             // quaternion of GRIPER reletive to GLOBAL
-    Vec3 _posG, _velG, _angVelG;             // position, velocity and angular velocity of GRIPER, expressed in WORLD frame
-    RotMat _rotG;                            // rotation matrix of GRIPER reletive to WORLD
+    Vec6 _qArm, _dqArm;          // joint position and velocity of arm
+    Quat _quatG;                 // quaternion of GRIPER reletive to GLOBAL
+    Vec3 _posG, _velG, _angVelG; // position, velocity and angular velocity of GRIPER, expressed in WORLD frame
+    RotMat _rotG;                // rotation matrix of GRIPER reletive to WORLD
 
     // control
     WorkMode _workMode;

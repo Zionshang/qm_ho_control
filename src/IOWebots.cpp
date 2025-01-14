@@ -27,7 +27,6 @@ IOWebots::IOWebots(LowState *lowState, LowCmd *lowCmd)
 
     _bodyTransField = _bodyNode->getField("translation");
 #endif
-
 }
 
 IOWebots::~IOWebots()
@@ -43,6 +42,7 @@ void IOWebots::recvState()
     // sensor
     const double *imuData = _imu->getQuaternion(); // x,y,z,w
     const double *gyroData = _gyro->getValues();
+    const double *accelerometerData = _accelerometer->getValues();
     const double *robotPosData = _robotNode->getPosition();
     const double *robotVelData = _robotNode->getVelocity();
 
@@ -50,6 +50,7 @@ void IOWebots::recvState()
     {
         _lowState->imu.quaternion[i] = static_cast<float>(imuData[i]);
         _lowState->imu.gyro[i] = static_cast<float>(gyroData[i]);
+        _lowState->imu.accelerometer[i] = static_cast<float>(accelerometerData[i]);
         _lowState->supervisor.robotPos[i] = static_cast<float>(robotPosData[i]);
         _lowState->supervisor.robotVel[i] = static_cast<float>(robotVelData[i]);
     }
@@ -154,6 +155,9 @@ void IOWebots::initRecv()
     _imu->enable(_timeStep);
     _gyro = _supervisor->getGyro(_gyroName);
     _gyro->enable(_timeStep);
+    _accelerometer = _supervisor->getAccelerometer(_accelerometerName);
+    _accelerometer->enable(_timeStep);
+
     for (int i = 0; i < 12; i++)
     {
         _jointSensorLeg[i] = _supervisor->getPositionSensor(_jointSensorLegName[i]);

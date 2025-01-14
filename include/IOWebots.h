@@ -1,15 +1,17 @@
 #pragma once
 
-
 #include "common/LowCmd.h"
 #include "common/LowState.h"
 #include "common/HighCmd.h"
+#include <iostream>
+#include <string>
 #include <webots/Motor.hpp>
 #include <webots/PositionSensor.hpp>
 #include <webots/InertialUnit.hpp>
 #include <webots/Gyro.hpp>
 #include <webots/Joystick.hpp>
 #include <webots/Supervisor.hpp>
+#include <webots/Accelerometer.hpp>
 
 class IOWebots
 {
@@ -42,10 +44,12 @@ private:
     webots::InertialUnit *_imu;
     webots::Gyro *_gyro;
     webots::Joystick *_joystick;
+    webots::Accelerometer *_accelerometer;
 
     std::string _supervisorName = "AliengoZ1";
     std::string _imuName = "trunk_imu inertial";
     std::string _gyroName = "trunk_imu gyro";
+    std::string _accelerometerName = "trunk_imu accelerometer";
     std::string _jointSensorLegName[12] = {"leg1_hip_joint_sensor", "leg1_thigh_joint_sensor", "leg1_calf_joint_sensor",
                                            "leg2_hip_joint_sensor", "leg2_thigh_joint_sensor", "leg2_calf_joint_sensor",
                                            "leg3_hip_joint_sensor", "leg3_thigh_joint_sensor", "leg3_calf_joint_sensor",
