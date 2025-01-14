@@ -10,6 +10,10 @@ using Eigen::Vector3d;
 using Eigen::VectorXd;
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;
+using Eigen::Vector4i;
+using Eigen::Vector4d;
+using Vector12d = typename Eigen::Matrix<double, 12, 1>;
+using Vector6d = typename Eigen::Matrix<double, 6, 1>;
 
 // 2x1 Vector
 using Vec2 = typename Eigen::Matrix<double, 2, 1>;

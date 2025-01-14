@@ -34,8 +34,8 @@ public:
     void calcGripperState(Vector3d &pos_gripper, Vector3d &vel_gripper,
                           Quat &quat_gripper, Vector3d &angvel_gripper);
 
-    int getNq() { return nq_; }
-    int getNv() { return nv_; }
+    int nq() { return nq_; }
+    int nv() { return nv_; }
     int body_id() const { return body_id_; }
     int gripper_id() const { return gripper_id_; }
     const std::vector<int> &feet_id() const { return feet_id_; }
