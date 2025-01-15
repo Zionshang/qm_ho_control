@@ -144,7 +144,7 @@ inline Quat rpy2Quat(const Vec3 &RPY)
 }
 /**
  * @brief: get the quaternion obtained by rotation about the X-axis
- * @param {float} theta: rotation angle
+ * @param {double} theta: rotation angle
  * @return {Quat} quaternion
  */
 inline Quat quatX(double theta)
@@ -154,7 +154,7 @@ inline Quat quatX(double theta)
 
 /**
  * @brief: get the quaternion obtained by rotation about the Y-axis
- * @param {float} theta: rotation angle
+ * @param {double} theta: rotation angle
  * @return {Quat} quaternion
  */
 inline Quat quatY(double theta)
@@ -164,7 +164,7 @@ inline Quat quatY(double theta)
 
 /**
  * @brief: get the quaternion obtained by rotation about the Z-axis
- * @param {float} theta: rotation angle
+ * @param {double} theta: rotation angle
  * @return {Quat} quaternion
  */
 inline Quat quatZ(double theta)

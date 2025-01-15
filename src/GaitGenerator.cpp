@@ -99,26 +99,26 @@ Vec3 GaitGenerator::getFootVelDes(int legID)
     return footVel;
 }
 
-float GaitGenerator::cycloidXYPosition(float start, float end, float phase)
+double GaitGenerator::cycloidXYPosition(double start, double end, double phase)
 {
-    float phasePI = 2 * M_PI * phase;
+    double phasePI = 2 * M_PI * phase;
     return (end - start) * (phasePI - sin(phasePI)) / (2 * M_PI) + start;
 }
 
-float GaitGenerator::cycloidXYVelocity(float start, float end, float phase)
+double GaitGenerator::cycloidXYVelocity(double start, double end, double phase)
 {
-    float phasePI = 2 * M_PI * phase;
+    double phasePI = 2 * M_PI * phase;
     return (end - start) * (1 - cos(phasePI)) / _est->getTsw();
 }
 
-float GaitGenerator::cycloidZPosition(float start, float h, float phase)
+double GaitGenerator::cycloidZPosition(double start, double h, double phase)
 {
-    float phasePI = 2 * M_PI * phase;
+    double phasePI = 2 * M_PI * phase;
     return h * (1 - cos(phasePI)) / 2 + start;
 }
 
-float GaitGenerator::cycloidZVelocity(float h, float phase)
+double GaitGenerator::cycloidZVelocity(double h, double phase)
 {
-    float phasePI = 2 * M_PI * phase;
+    double phasePI = 2 * M_PI * phase;
     return h * M_PI * sin(phasePI) / _est->getTsw();
 }

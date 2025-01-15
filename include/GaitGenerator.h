@@ -14,10 +14,10 @@ private:
     Vec3 calFootholdPos(int legID);
     Vec3 getFootPosDes(int legID);
     Vec3 getFootVelDes(int legID);
-    float cycloidXYPosition(float start, float end, float phase);
-    float cycloidXYVelocity(float start, float end, float phase);
-    float cycloidZPosition(float startZ, float height, float phase);
-    float cycloidZVelocity(float height, float phase);
+    double cycloidXYPosition(double start, double end, double phase);
+    double cycloidXYVelocity(double start, double end, double phase);
+    double cycloidZPosition(double startZ, double height, double phase);
+    double cycloidZVelocity(double height, double phase);
 
     Estimator *_est;
 

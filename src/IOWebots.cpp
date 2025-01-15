@@ -48,13 +48,13 @@ void IOWebots::recvState()
 
     for (int i = 0; i < 3; i++)
     {
-        _lowState->imu.quaternion[i] = static_cast<float>(imuData[i]);
-        _lowState->imu.gyro[i] = static_cast<float>(gyroData[i]);
-        _lowState->imu.accelerometer[i] = static_cast<float>(accelerometerData[i]);
-        _lowState->supervisor.robotPos[i] = static_cast<float>(robotPosData[i]);
-        _lowState->supervisor.robotVel[i] = static_cast<float>(robotVelData[i]);
+        _lowState->imu.quaternion[i] = static_cast<double>(imuData[i]);
+        _lowState->imu.gyro[i] = static_cast<double>(gyroData[i]);
+        _lowState->imu.accelerometer[i] = static_cast<double>(accelerometerData[i]);
+        _lowState->supervisor.robotPos[i] = static_cast<double>(robotPosData[i]);
+        _lowState->supervisor.robotVel[i] = static_cast<double>(robotVelData[i]);
     }
-    _lowState->imu.quaternion[3] = static_cast<float>(imuData[3]);
+    _lowState->imu.quaternion[3] = static_cast<double>(imuData[3]);
 
     for (int i = 0; i < 12; i++)
     {
@@ -100,10 +100,10 @@ void IOWebots::recvState()
         break;
     }
 
-    _lowState->userValue.ly = -killSmallOffset(float(_joystick->getAxisValue(0)) / 32767, 0.25);
-    _lowState->userValue.lx = -killSmallOffset(float(_joystick->getAxisValue(1)) / 32767, 0.25);
-    _lowState->userValue.ry = -killSmallOffset(float(_joystick->getAxisValue(2)) / 32767, 0.25);
-    _lowState->userValue.rx = -killSmallOffset(float(_joystick->getAxisValue(3)) / 32767, 0.25);
+    _lowState->userValue.ly = -killSmallOffset(double(_joystick->getAxisValue(0)) / 32767, 0.25);
+    _lowState->userValue.lx = -killSmallOffset(double(_joystick->getAxisValue(1)) / 32767, 0.25);
+    _lowState->userValue.ry = -killSmallOffset(double(_joystick->getAxisValue(2)) / 32767, 0.25);
+    _lowState->userValue.rx = -killSmallOffset(double(_joystick->getAxisValue(3)) / 32767, 0.25);
 }
 
 void IOWebots::sendCmd()

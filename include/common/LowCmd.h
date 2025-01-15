@@ -5,11 +5,11 @@
 
 struct MotorCmd
 {
-    float q;
-    float dq;
-    float tau;
-    float Kp;
-    float Kd;
+    double q;
+    double dq;
+    double tau;
+    double Kp;
+    double Kd;
 
     MotorCmd()
     {

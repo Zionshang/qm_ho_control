@@ -6,8 +6,8 @@
 
 struct MotorState
 {
-    float q;
-    float dq;
+    double q;
+    double dq;
 
     MotorState()
     {
@@ -18,8 +18,8 @@ struct MotorState
 
 struct Supervisor
 {
-    float robotPos[3]; // position of robot node in webots
-    float robotVel[3]; // velocity of robot node in webots
+    double robotPos[3]; // position of robot node in webots
+    double robotVel[3]; // velocity of robot node in webots
 
     Supervisor()
     {
@@ -33,9 +33,9 @@ struct Supervisor
 
 struct IMU
 {
-    float quaternion[4]; // x,y,z,w
-    float gyro[3];
-    float accelerometer[3];
+    double quaternion[4]; // x,y,z,w
+    double gyro[3];
+    double accelerometer[3];
 
     IMU()
     {
@@ -64,11 +64,11 @@ struct IMU
 
 struct UserValue
 {
-    float lx;
-    float ly;
-    float rx;
-    float ry;
-    float z;
+    double lx;
+    double ly;
+    double rx;
+    double ry;
+    double z;
     UserValue() { setZero(); }
     void setZero()
     {
