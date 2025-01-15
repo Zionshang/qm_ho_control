@@ -10,19 +10,19 @@
 #include "yaml-cpp/yaml.h"
 #include "Task.h"
 
-class HoControl
+class HierarchicalWbc
 {
 
 public:
-    HoControl(HighCmd *highCmd, Estimator *est, WholeBodyDynamics *wbDyn);
-    ~HoControl();
+    HierarchicalWbc(HighCmd *highCmd, Estimator *est, WholeBodyDynamics *wbDyn);
+    ~HierarchicalWbc();
 
     void calTau(const Vector4i contact, Vec18 &tau);
 
 private:
     void paramInit(std::string fileName);
     void initVars(const Vector4i &contact);
-    Task buildFloatingBaseEomTask();
+    Task buildFloatingBaseEomTask(const VectorXd &q_gen, const VectorXd &v_gen);
     Task buildNoContactMotionTask();
     Task buildFrictionConeTask();
     Task buildBodyLinearTask();
@@ -34,7 +34,6 @@ private:
     Task buildArmJointTrackingTask();
 
     WholeBodyDynamics *_wbDyn;
-    LowState *_lowState;
     HighCmd *_highCmd;
     Estimator *_est;
 

@@ -1,6 +1,6 @@
-#include "HoControl.h"
+#include "hierarchical_wbc.hpp"
 
-HoControl::HoControl(HighCmd *highCmd, Estimator *est, WholeBodyDynamics *wbDyn)
+HierarchicalWbc::HierarchicalWbc(HighCmd *highCmd, Estimator *est, WholeBodyDynamics *wbDyn)
     : _highCmd(highCmd), _est(est), _wbDyn(wbDyn)
 {
     _nv = _wbDyn->getNv();
@@ -22,12 +22,12 @@ HoControl::HoControl(HighCmd *highCmd, Estimator *est, WholeBodyDynamics *wbDyn)
     paramInit(configFile);
 }
 
-HoControl::~HoControl()
+HierarchicalWbc::~HierarchicalWbc()
 {
     delete _wbDyn;
 }
 
-void HoControl::calTau(const Vector4i contact, Vec18 &tau)
+void HierarchicalWbc::calTau(const Vector4i contact, Vec18 &tau)
 {
     // struct timeval t1, t2;
     // gettimeofday(&t1, NULL);
@@ -37,7 +37,7 @@ void HoControl::calTau(const Vector4i contact, Vec18 &tau)
     initVars(contact);
 
     Task task0, task1, task2;
-    task0 = buildFloatingBaseEomTask() + buildNoContactMotionTask() + buildFrictionConeTask();
+    task0 = buildFloatingBaseEomTask(_q, _v) + buildNoContactMotionTask() + buildFrictionConeTask();
     task1 = buildBodyLinearTask() * _wBlinear + buildBodyAngularTask() * _wBangle + buildSwingLegTask() * _wSw;
     if (_est->getWorkMode() != WorkMode::ARM_JOINT)
     {
@@ -59,7 +59,7 @@ void HoControl::calTau(const Vector4i contact, Vec18 &tau)
     //           << tau.tail(6).transpose() << std::endl;
 }
 
-void HoControl::initVars(const Vector4i &contact)
+void HierarchicalWbc::initVars(const Vector4i &contact)
 {
     _R << _est->getRotB();
     _q << _est->getPosB(), _est->getQuatB(), vec34ToVec12(_est->getQLeg()), _est->getQArm();                                       // expressed in GLOBAL frame
@@ -67,7 +67,6 @@ void HoControl::initVars(const Vector4i &contact)
 
     // dynamic matrix
     _wbDyn->updateKinematics(_q, _v);
-    _wbDyn->setMandC(_q, _v, _M, _C);
 
     // feet Jacobian
     _nSt = contact.sum();
@@ -117,16 +116,16 @@ void HoControl::initVars(const Vector4i &contact)
     _dimDecisionVars = _nv + 3 * _nSt;
 }
 
-Task HoControl::buildFloatingBaseEomTask()
+Task HierarchicalWbc::buildFloatingBaseEomTask(const VectorXd &q_gen, const VectorXd &v_gen)
 {
-
+    _wbDyn->setMandC(q_gen, v_gen, _M, _C);
     MatX A = (MatX(6, _dimDecisionVars) << _M.topRows(6), -(_Jst.leftCols(6)).transpose()).finished();
     VecX b = -_C.topRows(6);
 
     return {A, b, MatX(), VecX()};
 }
 
-Task HoControl::buildNoContactMotionTask()
+Task HierarchicalWbc::buildNoContactMotionTask()
 {
     MatX A = MatX::Zero(3 * _nSt, _dimDecisionVars);
     A.topLeftCorner(3 * _nSt, _nv) = _Jst;
@@ -135,7 +134,7 @@ Task HoControl::buildNoContactMotionTask()
     return {A, b, MatX(), VecX()};
 }
 
-Task HoControl::buildFrictionConeTask()
+Task HierarchicalWbc::buildFrictionConeTask()
 {
     MatX D = MatX::Zero(6 * _nSt, _dimDecisionVars);
     VecX f = VecX(6 * _nSt);
@@ -148,7 +147,7 @@ Task HoControl::buildFrictionConeTask()
     return {MatX(), VecX(), D, f};
 }
 
-Task HoControl::buildBodyLinearTask()
+Task HierarchicalWbc::buildBodyLinearTask()
 {
     MatX A = MatX::Zero(3, _dimDecisionVars);
     VecX b = VecX(3);
@@ -163,13 +162,13 @@ Task HoControl::buildBodyLinearTask()
     return {A, b, MatX(), VecX()};
 }
 
-Task HoControl::buildBodyAccTask()
+Task HierarchicalWbc::buildBodyAccTask()
 {
     // MatX A = MatX::Zero(6, _dimDecisionVars);
     // A.block(0, 0, 6, 6) = MatX::Identity(6, 6);
 }
 
-Task HoControl::buildBodyAngularTask()
+Task HierarchicalWbc::buildBodyAngularTask()
 {
     MatX A = MatX::Zero(3, _dimDecisionVars);
     VecX b = VecX(3);
@@ -180,7 +179,7 @@ Task HoControl::buildBodyAngularTask()
     return {A, b, MatX(), VecX()};
 }
 
-Task HoControl::buildSwingLegTask()
+Task HierarchicalWbc::buildSwingLegTask()
 {
     MatX A = MatX::Zero(3 * _nSw, _dimDecisionVars);
     VecX b = VecX(3 * _nSw);
@@ -192,7 +191,7 @@ Task HoControl::buildSwingLegTask()
     return {A, b, MatX(), VecX()};
 }
 
-Task HoControl::buildGripperLinearTask()
+Task HierarchicalWbc::buildGripperLinearTask()
 {
     MatX A = MatX::Zero(3, _dimDecisionVars);
     VecX b = VecX(3);
@@ -203,7 +202,7 @@ Task HoControl::buildGripperLinearTask()
     return {A, b, MatX(), VecX()};
 }
 
-Task HoControl::buildGripperAngularTask()
+Task HierarchicalWbc::buildGripperAngularTask()
 {
     MatX A = MatX::Zero(3, _dimDecisionVars);
     VecX b = VecX(3);
@@ -214,7 +213,7 @@ Task HoControl::buildGripperAngularTask()
     return {A, b, MatX(), VecX()};
 }
 
-Task HoControl::buildArmJointTrackingTask()
+Task HierarchicalWbc::buildArmJointTrackingTask()
 {
     MatX A = MatX::Zero(6, _dimDecisionVars);
     VecX b = VecX(6);
@@ -225,7 +224,7 @@ Task HoControl::buildArmJointTrackingTask()
     return {A, b, MatX(), VecX()};
 }
 
-void HoControl::paramInit(std::string fileName)
+void HierarchicalWbc::paramInit(std::string fileName)
 {
     YAML::Node config;
     try

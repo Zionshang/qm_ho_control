@@ -2,7 +2,7 @@
 
 #include "common/LowCmd.h"
 #include "Estimator.h"
-#include "HoControl.h"
+#include "hierarchical_wbc.hpp"
 
 class Controller
 {
@@ -15,7 +15,7 @@ private:
     LowState *_lowstate;
     Estimator *_est;
     LowCmd *_lowCmd;
-    HoControl *_hieraOpt;
+    HierarchicalWbc *_hieraOpt;
 
     Vec18 _tau;
 };
