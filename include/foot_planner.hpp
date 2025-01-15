@@ -5,9 +5,10 @@
 class FootPlanner
 {
 public:
-    FootPlanner(Estimator *est);
+    FootPlanner();
     void setGait(Vec3 vBd, Vec3 wBd);
     void update(const BodyState &body_state, const Vector4d &phase, const Vector4i &contact,
+                const Matrix34d &pos_feet, double period_swing, double period_stance, 
                 Vec34 &feetPosDes, Vec34 &feetVelDes);
 
 private:
@@ -19,14 +20,14 @@ private:
     double cycloidZPosition(double startZ, double height, double phase);
     double cycloidZVelocity(double height, double phase);
 
-    Estimator *_est;
-
     Matrix34d _startP, _endP;
     double _gaitHeight;
     double _footOffset; // Radius of sphere at foot
     bool _firstRun;
     Vector4d _phase;
     VecInt4 _contact;
+    double period_swing_;
+    double period_stance_;
 
     // foothold
     double _kx, _ky, _kyaw;

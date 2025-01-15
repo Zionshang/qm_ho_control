@@ -1,7 +1,6 @@
 #include "foot_planner.hpp"
 
-FootPlanner::FootPlanner(Estimator *est)
-    : _est(est)
+FootPlanner::FootPlanner()
 {
     _gaitHeight = 0.04;
     _footOffset = 0.026;
@@ -22,20 +21,25 @@ FootPlanner::FootPlanner(Estimator *est)
     }
 }
 
+// TODO: haven't been used 
 void FootPlanner::setGait(Vec3 vBd, Vec3 wBd)
 {
     _vxyGoal = vBd.tail(2);
     _dYawGoal = wBd(2);
 }
 
-void FootPlanner::update(const BodyState &body_state,const Vector4d &phase, const Vector4i &contact, 
-                Vec34 &feetPosDes, Vec34 &feetVelDes)
+void FootPlanner::update(const BodyState &body_state, const Vector4d &phase, const Vector4i &contact,
+                         const Matrix34d &pos_feet, double period_swing, double period_stance, 
+                         Vec34 &feetPosDes, Vec34 &feetVelDes)
 {
     _phase =  phase;
     _contact = contact;
+    period_swing_ = period_swing;
+    period_stance_ = period_stance;
+
     if (_firstRun)
     {
-        _startP = _est->getPosF();
+        _startP = pos_feet;
         _firstRun = false;
     }
     for (int i = 0; i < 4; ++i)
@@ -43,20 +47,20 @@ void FootPlanner::update(const BodyState &body_state,const Vector4d &phase, cons
         if (_contact(i) == 1)
         {
             if (_phase(i) < 0.5)
-                _startP.col(i) = _est->getPosF().col(i);
+                _startP.col(i) = pos_feet.col(i);
             feetPosDes.col(i) = _startP.col(i);
             feetVelDes.col(i).setZero();
         }
         else
         {
-            _endP.col(i) = calcFootholdPosition(body_state,i);
+            _endP.col(i) = calcFootholdPosition(body_state, i);
             feetPosDes.col(i) = calcReferenceFootPosition(i);
             feetVelDes.col(i) = calcReferenceFootVelocity(i);
         }
     }
 }
 
-Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state,int legID)
+Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state, int legID)
 {
     const Vec3 pos_body = body_state.pos;
     const Vec3 vel_body = body_state.vel;
@@ -65,13 +69,13 @@ Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state,int legID)
 
     // TODO: 是否需要改成相对于body系下
     // Translation in x,y axis
-    _nextStep(0) = vel_body(0) * (1 - _phase(legID)) * _est->getTsw() + vel_body(0) * _est->getTst() / 2 + _kx * (vel_body(0) - _vxyGoal(0));
-    _nextStep(1) = vel_body(1) * (1 - _phase(legID)) * _est->getTsw() + vel_body(1) * _est->getTst() / 2 + _ky * (vel_body(1) - _vxyGoal(1));
+    _nextStep(0) = vel_body(0) * (1 - _phase(legID)) * period_swing_ + vel_body(0) * period_stance_ / 2 + _kx * (vel_body(0) - _vxyGoal(0));
+    _nextStep(1) = vel_body(1) * (1 - _phase(legID)) * period_swing_ + vel_body(1) * period_stance_ / 2 + _ky * (vel_body(1) - _vxyGoal(1));
     _nextStep(2) = 0;
 
     // rotation about z axis
     _yaw = rotMat2RPY(rotmat_body)(2);
-    _nextYaw = angvel_body(2) * (1 - _phase(legID)) * _est->getTsw() + angvel_body(2) * _est->getTst() / 2 + _kyaw * (_dYawGoal - angvel_body(2));
+    _nextYaw = angvel_body(2) * (1 - _phase(legID)) * period_swing_ + angvel_body(2) * period_stance_ / 2 + _kyaw * (_dYawGoal - angvel_body(2));
     _nextStep(0) += _feetRadius(legID) * cos(_yaw + _feetInitAngle(legID) + _nextYaw);
     _nextStep(1) += _feetRadius(legID) * sin(_yaw + _feetInitAngle(legID) + _nextYaw);
 
@@ -113,7 +117,7 @@ double FootPlanner::cycloidXYPosition(double start, double end, double phase)
 double FootPlanner::cycloidXYVelocity(double start, double end, double phase)
 {
     double phasePI = 2 * M_PI * phase;
-    return (end - start) * (1 - cos(phasePI)) / _est->getTsw();
+    return (end - start) * (1 - cos(phasePI)) / period_swing_;
 }
 
 double FootPlanner::cycloidZPosition(double start, double h, double phase)
@@ -125,5 +129,5 @@ double FootPlanner::cycloidZPosition(double start, double h, double phase)
 double FootPlanner::cycloidZVelocity(double h, double phase)
 {
     double phasePI = 2 * M_PI * phase;
-    return h * M_PI * sin(phasePI) / _est->getTsw();
+    return h * M_PI * sin(phasePI) / period_swing_;
 }
