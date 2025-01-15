@@ -4,18 +4,30 @@
 #include "model/WholeBodyDynamics.h"
 #include "pinocchio_interface.hpp"
 
+struct BodyState
+{
+    Vector3d pos; // position of body, expressed in WORLD frame
+    Quaternion quat;
+    RotMat rotmat; // rotation matrix of body relative to WORLD
+    Vector3d vel;
+    Vector3d angvel;
+    Vector3d vel_B;
+    Vector3d angvel_B;
+};
+
 class Estimator
 {
 public:
     Estimator(LowState *lowState, PinocchioInterface *pin_interface);
     void update(const Vec4 &phase, const Vector4i &contact, double T_sw, double T_st);
 
-    // body
-    Vec3 getPosB() const { return _posB; }       // get position of BODY, expressed in WORLD frame
-    Vec3 getVelB() const { return _velB; }       // get velocity of BODY, expressed in WORLD frame
-    Quat getQuatB() const { return _quatB; }     // get quaternion of BODY relative to WORLD
-    RotMat getRotB() const { return _rotB; }     // get rotation matrix of BODY relative to WORLD
-    Vec3 getAngVelB() const { return _angVelB; } // get angular velocity of BODY, expressed in WORLD frame
+    const BodyState &body_state() const { return body_state_; }
+
+    Vec3 getPosB() const { return body_state_.pos; }       // get position of BODY, expressed in WORLD frame
+    Vec3 getVelB() const { return body_state_.vel; }       // get velocity of BODY, expressed in WORLD frame
+    Quat getQuatB() const { return body_state_.quat; }     // get quaternion of BODY relative to WORLD
+    RotMat getRotB() const { return body_state_.rotmat; }  // get rotation matrix of BODY relative to WORLD
+    Vec3 getAngVelB() const { return body_state_.angvel; } // get angular velocity of BODY, expressed in WORLD frame
 
     // CoM
     Vec3 getPosCoM() const { return _posCoM; } // get position of CoM, expressed in WORLD frame
@@ -53,11 +65,7 @@ private:
     LowState *_lowState;
     PinocchioInterface *pin_interface_;
 
-    // body
-    Vec3 _posB, _velB; // position and velocity BODY, expressed in WORLD frame
-    RotMat _rotB;      // rotation matrix of BODY relative to WORLD
-    Quat _quatB;       // quaternion of BODY relative to WORLD
-    Vec3 _angVelB;     // angular velocity of BODY, expressed in WORLD frame
+    BodyState body_state_;
 
     // CoM
     VecNq _posGen;

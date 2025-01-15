@@ -6,14 +6,14 @@ class FootPlanner
 {
 public:
     FootPlanner(Estimator *est);
-    ~FootPlanner();
     void setGait(Vec3 vBd, Vec3 wBd);
-    void update(Vec34 &feetPosDes, Vec34 &feetVelDes);
+    void update(const BodyState &body_state, const Vector4d &phase, const Vector4i &contact,
+                Vec34 &feetPosDes, Vec34 &feetVelDes);
 
 private:
-    Vec3 calcFootholdPosition(int legID);
-    Vec3 calcReferenceFootPosition(int legID);
-    Vec3 calcReferenceFootVelocity(int legID);
+    Vector3d calcFootholdPosition(const BodyState &body_state, int legID);
+    Vector3d calcReferenceFootPosition(int legID);
+    Vector3d calcReferenceFootVelocity(int legID);
     double cycloidXYPosition(double start, double end, double phase);
     double cycloidXYVelocity(double start, double end, double phase);
     double cycloidZPosition(double startZ, double height, double phase);
@@ -21,18 +21,17 @@ private:
 
     Estimator *_est;
 
-    Vec34 _startP, _endP;
+    Matrix34d _startP, _endP;
     double _gaitHeight;
     double _footOffset; // Radius of sphere at foot
     bool _firstRun;
-    Vec4 _phase;
+    Vector4d _phase;
     VecInt4 _contact;
 
     // foothold
     double _kx, _ky, _kyaw;
     Vec2 _vxyGoal;
     double _dYawGoal, _nextYaw, _yaw;
-    Vec4 _feetRadius, _feetInitAngle;
-    Vec3 _nextStep;
+    Vector4d _feetRadius, _feetInitAngle;
+    Vector3d _nextStep;
 };
-

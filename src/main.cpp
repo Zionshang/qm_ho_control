@@ -26,37 +26,36 @@ int main()
         DataLog *log = new DataLog();
         KalmanFilterEstimator *kfe = new KalmanFilterEstimator(lowState, pin_interface, lowState->timeStep);
 
-        GaitName target_gait_name = GaitName::STANCE;
+        GaitName target_gait_name = GaitName::TROT;
         while (iowebots->isRunning())
         {
                 iowebots->recvState();
 
                 gait_sche->update(lowState->currentTime, target_gait_name);
 
-                // control
-                switch (lowState->getUserCmd())
-                {
-                case UserCommand::A:
-                    target_gait_name = GaitName::TROT;
-                    break;
-                case UserCommand::B:
-                    target_gait_name = GaitName::STANCE;
-                    break;
-                case UserCommand::X:
-                    target_gait_name = GaitName::RUNNING_TROT;
-                    break;
-                case UserCommand::Y:
-                    target_gait_name = GaitName::WALK;
-                    break;
-                }
-
-                est->update(gait_sche->getPhase(), gait_sche->getContact(), gait_sche->getTsw(), gait_sche->getTst());
+                // // control
+                // switch (lowState->getUserCmd())
+                // {
+                // case UserCommand::A:
+                //     target_gait_name = GaitName::TROT;
+                //     break;
+                // case UserCommand::B:
+                //     target_gait_name = GaitName::STANCE;
+                //     break;
+                // case UserCommand::X:
+                //     target_gait_name = GaitName::RUNNING_TROT;
+                //     break;
+                // case UserCommand::Y:
+                //     target_gait_name = GaitName::WALK;
+                //     break;
+                // }
+                est->update(gait_sche->phase(), gait_sche->contact(), gait_sche->period_swing(), gait_sche->period_stance());
                 // est->printState();
-                plan->setDesiredTraj();
+                // plan->setDesiredTraj();
                 // kfe->update(gait_sche->getContact());
                 // plan->showDemo();
                 // plan->showFrontMaxJointVelDemo();
-                // plan->showPickingDemo();
+                plan->showPickingDemo();
                 // plan->showSideMaxJointVelDemo();
                 // plan->printDesiredTraj();
                 ctlr->run();
@@ -67,8 +66,8 @@ int main()
                 iowebots->drawDesiredTraj(highCmd);
 #endif
 
-                // if (est->getCurrentTime() > 25)
-                //         break;
+                if (est->getCurrentTime() > 25)
+                        break;
         }
         log->saveData();
 

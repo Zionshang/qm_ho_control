@@ -47,7 +47,7 @@ void Planner::setDesiredTraj()
     gripperPlan();
     armJointPlan();
 
-    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_est->body_state(), _est->getPhase(), _est->getContact(), _highCmd->posF, _highCmd->velF); // foot trajectory
     _lastWorkMode = _est->getWorkMode();
 }
 
@@ -110,7 +110,7 @@ void Planner::showDemo()
 
     // com plan
     comPlan();
-    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_est->body_state(), _est->getPhase(), _est->getContact(), _highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 void Planner::showFrontMaxJointVelDemo()
@@ -142,9 +142,8 @@ void Planner::showFrontMaxJointVelDemo()
 
     // com plan
     comPlan();
-    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_est->body_state(), _est->getPhase(), _est->getContact(), _highCmd->posF, _highCmd->velF); // foot trajectory
 }
-
 
 void Planner::showPickingDemo()
 {
@@ -216,9 +215,8 @@ void Planner::showPickingDemo()
 
     // com plan
     comPlan();
-    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_est->body_state(), _est->getPhase(), _est->getContact(), _highCmd->posF, _highCmd->velF); // foot trajectory
 }
-
 
 void Planner::bodyPlan()
 {
@@ -249,7 +247,6 @@ void Planner::bodyPlan()
     _highCmd->quatB /= _highCmd->quatB.norm();
 }
 
-
 void Planner::showSideMaxJointVelDemo()
 {
     double tNow = _est->getCurrentTime();
@@ -279,9 +276,8 @@ void Planner::showSideMaxJointVelDemo()
 
     // com plan
     comPlan();
-    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_est->body_state(), _est->getPhase(), _est->getContact(), _highCmd->posF, _highCmd->velF); // foot trajectory
 }
-
 
 void Planner::comPlan()
 {

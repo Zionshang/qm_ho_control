@@ -22,18 +22,17 @@ FootPlanner::FootPlanner(Estimator *est)
     }
 }
 
-FootPlanner::~FootPlanner() {}
-
 void FootPlanner::setGait(Vec3 vBd, Vec3 wBd)
 {
     _vxyGoal = vBd.tail(2);
     _dYawGoal = wBd(2);
 }
 
-void FootPlanner::update(Vec34 &feetPosDes, Vec34 &feetVelDes)
+void FootPlanner::update(const BodyState &body_state,const Vector4d &phase, const Vector4i &contact, 
+                Vec34 &feetPosDes, Vec34 &feetVelDes)
 {
-    _phase = _est->getPhase();
-    _contact = _est->getContact();
+    _phase =  phase;
+    _contact = contact;
     if (_firstRun)
     {
         _startP = _est->getPosF();
@@ -50,28 +49,34 @@ void FootPlanner::update(Vec34 &feetPosDes, Vec34 &feetVelDes)
         }
         else
         {
-            _endP.col(i) = calcFootholdPosition(i);
+            _endP.col(i) = calcFootholdPosition(body_state,i);
             feetPosDes.col(i) = calcReferenceFootPosition(i);
             feetVelDes.col(i) = calcReferenceFootVelocity(i);
         }
     }
 }
 
-Vec3 FootPlanner::calcFootholdPosition(int legID)
+Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state,int legID)
 {
+    const Vec3 pos_body = body_state.pos;
+    const Vec3 vel_body = body_state.vel;
+    const RotMat rotmat_body = body_state.rotmat;
+    const Vec3 angvel_body = body_state.angvel;
+
+    // TODO: 是否需要改成相对于body系下
     // Translation in x,y axis
-    _nextStep(0) = _est->getVelB()(0) * (1 - _phase(legID)) * _est->getTsw() + _est->getVelB()(0) * _est->getTst() / 2 + _kx * (_est->getVelB()(0) - _vxyGoal(0));
-    _nextStep(1) = _est->getVelB()(1) * (1 - _phase(legID)) * _est->getTsw() + _est->getVelB()(1) * _est->getTst() / 2 + _ky * (_est->getVelB()(1) - _vxyGoal(1));
+    _nextStep(0) = vel_body(0) * (1 - _phase(legID)) * _est->getTsw() + vel_body(0) * _est->getTst() / 2 + _kx * (vel_body(0) - _vxyGoal(0));
+    _nextStep(1) = vel_body(1) * (1 - _phase(legID)) * _est->getTsw() + vel_body(1) * _est->getTst() / 2 + _ky * (vel_body(1) - _vxyGoal(1));
     _nextStep(2) = 0;
 
     // rotation about z axis
-    _yaw = rotMat2RPY(_est->getRotB())(2);
-    _nextYaw = _est->getAngVelB()(2) * (1 - _phase(legID)) * _est->getTsw() + _est->getAngVelB()(2) * _est->getTst() / 2 + _kyaw * (_dYawGoal - _est->getAngVelB()(2));
+    _yaw = rotMat2RPY(rotmat_body)(2);
+    _nextYaw = angvel_body(2) * (1 - _phase(legID)) * _est->getTsw() + angvel_body(2) * _est->getTst() / 2 + _kyaw * (_dYawGoal - angvel_body(2));
     _nextStep(0) += _feetRadius(legID) * cos(_yaw + _feetInitAngle(legID) + _nextYaw);
     _nextStep(1) += _feetRadius(legID) * sin(_yaw + _feetInitAngle(legID) + _nextYaw);
 
     Vec3 footholdPos;
-    footholdPos = _est->getPosB() + _nextStep;
+    footholdPos = pos_body + _nextStep;
     footholdPos(2) = _footOffset;
 
     return footholdPos;

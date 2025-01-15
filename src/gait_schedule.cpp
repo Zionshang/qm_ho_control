@@ -35,20 +35,10 @@ void GaitSchedule::update(double currentT, GaitName target_gait_name)
     
     const auto &current_gait = gait_list_->getGait(current_gait_name_);
     period_ = current_gait.period;
-    stance_ratio_ = current_gait.stancePhaseRatio;
+    stance_ratio_ = current_gait.stance_ratio;
     bias_ = current_gait.bias;
 
     calcGaitPhase(currentT);
-}
-
-double GaitSchedule::getTst() const
-{
-    return period_ * stance_ratio_;
-}
-
-double GaitSchedule::getTsw() const
-{
-    return period_ * (1 - stance_ratio_);
 }
 
 void GaitSchedule::calcGaitPhase(double currentT)
