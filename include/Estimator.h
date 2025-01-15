@@ -23,6 +23,9 @@ public:
 
     const BodyState &body_state() const { return body_state_; }
 
+    const VectorXd &pos_gen() const { return _posGen; }
+    const VectorXd &vel_gen() const { return _velGen; }
+
     Vec3 getPosB() const { return body_state_.pos; }       // get position of BODY, expressed in WORLD frame
     Vec3 getVelB() const { return body_state_.vel; }       // get velocity of BODY, expressed in WORLD frame
     Quat getQuatB() const { return body_state_.quat; }     // get quaternion of BODY relative to WORLD
@@ -62,8 +65,8 @@ private:
     BodyState body_state_;
 
     // CoM
-    VecNq _posGen;
-    VecNv _velGen;
+    VectorXd _posGen;
+    VectorXd _velGen;
     Vec3 _posCoM, _velCoM; // position and velocity CoM, expressed in WORLD frame
 
     // leg & foot

@@ -17,7 +17,7 @@ WholeBodyDynamics::WholeBodyDynamics()
     _idGripper = _model.getFrameId("gripperVirtual", pinocchio::BODY);
 }
 
-void WholeBodyDynamics::updateKinematics(const VecNq &q, const VecNv &v)
+void WholeBodyDynamics::calcZeroAccKinematics(const VecNq &q, const VecNv &v)
 {
     VecNv a;
     a.fill(0.);
@@ -47,7 +47,7 @@ void WholeBodyDynamics::setCoMPosVel(const VecNq &q, const VecNv &v, Vec3 &posCo
  */
 void WholeBodyDynamics::setFootJacob(const VecNq &q, int idLeg, Jacb &J)
 {
-    J.fill(0.);
+    J.setZero();
     pinocchio::computeFrameJacobian(_model, _data, q, _idFeet[idLeg], pinocchio::LOCAL_WORLD_ALIGNED, J);
 }
 

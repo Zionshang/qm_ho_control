@@ -14,7 +14,7 @@ Controller::~Controller()
 
 void Controller::run(const Vector4i contact)
 {
-    _hieraOpt->calTau(contact, _tau);
+    _hieraOpt->calTau(contact, _est->pos_gen(), _est->vel_gen(), _tau);
     _lowCmd->setLegTau(_tau.head(12));
     _lowCmd->setArmTau(_tau.tail(6));
 }

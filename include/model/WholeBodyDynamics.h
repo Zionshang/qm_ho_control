@@ -15,7 +15,7 @@ public:
     WholeBodyDynamics();
     int getNq() { return _nq; }
     int getNv() { return _nv; }
-    void updateKinematics(const VecNq &q, const VecNv &v);
+    void calcZeroAccKinematics(const VecNq &q, const VecNv &v);
     void setCoMPosVel(const VecNq &q, const VecNv &v, Vec3 &posCoM, Vec3 &velCoM);
     void setFootJacob(const VecNq &q, int idLeg, Jacb &J);
     void setFootdJdq(const VecNq &q, const VecNv &v, int idLeg, Vec6 &dJdq);

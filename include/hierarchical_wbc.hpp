@@ -17,17 +17,18 @@ public:
     HierarchicalWbc(HighCmd *highCmd, Estimator *est, WholeBodyDynamics *wbDyn);
     ~HierarchicalWbc();
 
-    void calTau(const Vector4i contact, Vec18 &tau);
+    void calTau(const Vector4i &contact, const VectorXd &q_gen, const VectorXd &v_gen, Vec18 &tau);
 
 private:
     void paramInit(std::string fileName);
-    void initVars(const Vector4i &contact);
-    Task buildFloatingBaseEomTask(const VectorXd &q_gen, const VectorXd &v_gen);
+    void updateJacobian(const VectorXd &pos_gen, const VectorXd &vel_gen, const Vector4i &contact);
+
+    Task buildFloatingBaseEomTask();
     Task buildNoContactMotionTask();
     Task buildFrictionConeTask();
     Task buildBodyLinearTask();
     Task buildBodyAngularTask();
-    Task buildBodyAccTask();
+    Task buildComLinearTask();
     Task buildSwingLegTask();
     Task buildGripperLinearTask();
     Task buildGripperAngularTask();
@@ -49,9 +50,6 @@ private:
     VecX _solFinal; // solution of fianl hierarchical optimization
 
     int _nSt, _nSw;                                     // number of stance and swing leg
-    RotMat _R;                                          // rotation of BODY reletive to GLOBAL
-    VecNq _q;                                           // Generalized position [body position; body quaternion; actuated joint position], expressed in Global frame
-    VecNv _v;                                           // Generalized velocity [body velocity; body anguler velocity; actuated joint position], expressed in BODY frame
     MatNv _M;                                           // Matrix M in M*ddq + C = tau
     VecNv _C;                                           // Matrix C in M*ddq + C = tau
     std::vector<Jacb> _Jfeet = std::vector<Jacb>(4);    // jacobian of all feet

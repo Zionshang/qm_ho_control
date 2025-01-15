@@ -4,6 +4,8 @@
 Estimator::Estimator(LowState *lowState, PinocchioInterface *pin_interface)
     : _lowState(lowState), pin_interface_(pin_interface)
 {
+    _posGen.setZero(pin_interface_->nq());
+    _velGen.setZero(pin_interface_->nv());
 }
 
 void Estimator::update()
@@ -20,9 +22,9 @@ void Estimator::update()
     body_state_.angvel << body_state_.rotmat * _lowState->getGyro();
     body_state_.vel_B = body_state_.rotmat.transpose() * body_state_.vel;
     body_state_.angvel_B = body_state_.rotmat.transpose() * body_state_.angvel;
-    
+
     // CoM
-    _posGen << body_state_.pos,  body_state_.quat, vec34ToVec12(_qLeg), _qArm;
+    _posGen << body_state_.pos, body_state_.quat, vec34ToVec12(_qLeg), _qArm;
     _velGen << body_state_.vel_B, body_state_.angvel_B, vec34ToVec12(_dqLeg), _dqArm;
     pin_interface_->calcComState(_posGen, _velGen, _posCoM, _velCoM);
 

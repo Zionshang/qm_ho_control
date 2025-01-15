@@ -27,46 +27,39 @@ HierarchicalWbc::~HierarchicalWbc()
     delete _wbDyn;
 }
 
-void HierarchicalWbc::calTau(const Vector4i contact, Vec18 &tau)
+void HierarchicalWbc::calTau(const Vector4i &contact, const VectorXd &q_gen, const VectorXd &v_gen, Vec18 &tau)
 {
     // struct timeval t1, t2;
     // gettimeofday(&t1, NULL);
     // gettimeofday(&t2, NULL);
     // std::cout << "Time of setMatrix: \t " << double(t2.tv_usec - t1.tv_usec) / 1000 << "ms" << std::endl;
 
-    initVars(contact);
+    _dimDecisionVars = _nv + 3 * contact.sum();
+
+    _wbDyn->setMandC(q_gen, v_gen, _M, _C);
+    updateJacobian(q_gen, v_gen, contact);
 
     Task task0, task1, task2;
-    task0 = buildFloatingBaseEomTask(_q, _v) + buildNoContactMotionTask() + buildFrictionConeTask();
-    task1 = buildBodyLinearTask() * _wBlinear + buildBodyAngularTask() * _wBangle + buildSwingLegTask() * _wSw;
-    if (_est->getWorkMode() != WorkMode::ARM_JOINT)
-    {
-        task1 = task1 + buildGripperAngularTask() * _wElinear + buildGripperLinearTask() * _wEangle;
-    }
-    else
-    {
-        task1 = task1 + buildArmJointTrackingTask() * _wArmJ;
-    }
+    task0 = buildFloatingBaseEomTask();
+    task0 = task0 + buildNoContactMotionTask();
+    task0 = task0 + buildFrictionConeTask();
+
+    task1 = buildComLinearTask() * _wBlinear;
+    task1 = task1 + buildBodyAngularTask() * _wBangle;
+    task1 = task1 + buildSwingLegTask() * _wSw;
+    task1 = task1 + buildArmJointTrackingTask() * _wArmJ;
 
     HoQp hoQp(task1, std::make_shared<HoQp>(task0));
     _solFinal = hoQp.getSolutions();
 
     tau = _M.bottomRows(_nv - 6) * _solFinal.head(_nv) + _C.bottomRows(_nv - 6) - (_Jst.rightCols(_nv - 6)).transpose() * _solFinal.tail(3 * _nSt);
-
-    // std::cout << "leg tau: \n"
-    //           << vec12ToVec34(tau.head(12)) << std::endl;
-    // std::cout << "arm tau: \n"
-    //           << tau.tail(6).transpose() << std::endl;
 }
 
-void HierarchicalWbc::initVars(const Vector4i &contact)
+void HierarchicalWbc::updateJacobian(const VectorXd &pos_gen, const VectorXd &vel_gen, const Vector4i &contact)
 {
-    _R << _est->getRotB();
-    _q << _est->getPosB(), _est->getQuatB(), vec34ToVec12(_est->getQLeg()), _est->getQArm();                                       // expressed in GLOBAL frame
-    _v << _R.transpose() * _est->getVelB(), _R.transpose() * _est->getAngVelB(), vec34ToVec12(_est->getDqLeg()), _est->getDqArm(); // expressed in BODY frame
-
-    // dynamic matrix
-    _wbDyn->updateKinematics(_q, _v);
+    // Set up zero-acceleration kinematics, used for calculate dJdq.
+    // Because a = J * ddq + dJ * dq. When ddq = 0, a = dJ * dq
+    _wbDyn->calcZeroAccKinematics(pos_gen, vel_gen);
 
     // feet Jacobian
     _nSt = contact.sum();
@@ -74,17 +67,17 @@ void HierarchicalWbc::initVars(const Vector4i &contact)
     _idSw.resize(_nSw);
 
     int indexSt = 0;
-    _Jst = MatX(3 * _nSt, ROBOTNV);
-    _dJdqst = VecX(3 * _nSt);
+    _Jst.setZero(3 * _nSt, ROBOTNV);
+    _dJdqst.setZero(3 * _nSt);
 
     int indexSw = 0;
-    _Jsw = MatX(3 * _nSw, ROBOTNV);
-    _dJdqsw = VecX(3 * _nSw);
+    _Jsw.setZero(3 * _nSw, ROBOTNV);
+    _dJdqsw.setZero(3 * _nSw);
 
     for (int i = 0; i < 4; i++)
     {
-        _wbDyn->setFootJacob(_q, i, _Jfeet[i]);
-        _wbDyn->setFootdJdq(_q, _v, i, _dJdqfeet[i]);
+        _wbDyn->setFootJacob(pos_gen, i, _Jfeet[i]);
+        _wbDyn->setFootdJdq(pos_gen, vel_gen, i, _dJdqfeet[i]);
 
         if (contact(i) == 1)
         {
@@ -102,23 +95,20 @@ void HierarchicalWbc::initVars(const Vector4i &contact)
     }
 
     // body Jacobian
-    _wbDyn->setBodyJacob(_q, _Jbody);
-    _wbDyn->setBodydJdq(_q, _v, _dJdqbody);
+    _wbDyn->setBodyJacob(pos_gen, _Jbody);
+    _wbDyn->setBodydJdq(pos_gen, vel_gen, _dJdqbody);
 
     // CoM Jacobian
-    _wbDyn->setCoMJacob(_q, _Jcom);
-    _wbDyn->setCoMdJdq(_q, _v, _dJdqcom);
+    _wbDyn->setCoMJacob(pos_gen, _Jcom);
+    _wbDyn->setCoMdJdq(pos_gen, vel_gen, _dJdqcom);
 
     // gripper Jacobian
-    _wbDyn->setGripperJacob(_q, _Jgrip);
-    _wbDyn->setGripperdJdq(_q, _v, _dJdqgrip);
-
-    _dimDecisionVars = _nv + 3 * _nSt;
+    _wbDyn->setGripperJacob(pos_gen, _Jgrip);
+    _wbDyn->setGripperdJdq(pos_gen, vel_gen, _dJdqgrip);
 }
 
-Task HierarchicalWbc::buildFloatingBaseEomTask(const VectorXd &q_gen, const VectorXd &v_gen)
+Task HierarchicalWbc::buildFloatingBaseEomTask()
 {
-    _wbDyn->setMandC(q_gen, v_gen, _M, _C);
     MatX A = (MatX(6, _dimDecisionVars) << _M.topRows(6), -(_Jst.leftCols(6)).transpose()).finished();
     VecX b = -_C.topRows(6);
 
@@ -153,19 +143,21 @@ Task HierarchicalWbc::buildBodyLinearTask()
     VecX b = VecX(3);
 
     // body linear motion tracking
-    // A.leftCols(_nv) = _Jbody.topRows(3);
-    // b = _KpPos * (_highCmd->posB - _est->getPosB()) + _KdPos * (_highCmd->velB - _est->getVelB()) - _dJdqbody.head(3);
+    A.leftCols(_nv) = _Jbody.topRows(3);
+    b = _KpPos * (_highCmd->posB - _est->getPosB()) + _KdPos * (_highCmd->velB - _est->getVelB()) - _dJdqbody.head(3);
 
-    // // CoM linear motion tracking
-    A.leftCols(_nv) = _Jcom.topRows(3);
-    b = _KpPos * (_highCmd->posCoM - _est->getPosCoM()) + _KdPos * (_highCmd->velCoM - _est->getVelCoM()) - _dJdqcom.head(3);
     return {A, b, MatX(), VecX()};
 }
 
-Task HierarchicalWbc::buildBodyAccTask()
+Task HierarchicalWbc::buildComLinearTask()
 {
-    // MatX A = MatX::Zero(6, _dimDecisionVars);
-    // A.block(0, 0, 6, 6) = MatX::Identity(6, 6);
+    MatX A = MatX::Zero(3, _dimDecisionVars);
+    VecX b = VecX(3);
+
+    // CoM linear motion tracking
+    A.leftCols(_nv) = _Jcom.topRows(3);
+    b = _KpPos * (_highCmd->posCoM - _est->getPosCoM()) + _KdPos * (_highCmd->velCoM - _est->getVelCoM()) - _dJdqcom.head(3);
+    return {A, b, MatX(), VecX()};
 }
 
 Task HierarchicalWbc::buildBodyAngularTask()
