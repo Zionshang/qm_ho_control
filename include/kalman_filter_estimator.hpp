@@ -7,31 +7,24 @@
 class KalmanFilterEstimator
 {
 public:
-    KalmanFilterEstimator(LowState *lowState, PinocchioInterface *pin_interface);
+    KalmanFilterEstimator(LowState *lowState, PinocchioInterface *pin_interface, double dt);
     void update(const Vector4i &contact_flag);
 
-    // body
-    Vec3 getPosB() const { return _posB; }       // get position of BODY, expressed in WORLD frame
-    Vec3 getVelB() const { return _velB; }       // get velocity of BODY, expressed in WORLD frame
-    Quat getQuatB() const { return _quatB; }     // get quaternion of BODY relative to WORLD
-    RotMat getRotB() const { return _rotB; }     // get rotation matrix of BODY relative to WORLD
-    Vec3 getAngVelB() const { return _angVelB; } // get angular velocity of BODY, expressed in WORLD frame
+    const Vector3d &pos_body() const { return pos_body_; }      // position body, expressed in world frame
+    const Vector3d &vel_body() const { return vel_body_; }      // velocity body, expressed in world frame
+    const Quaternion &getQuatB() const { return quat_body_; }   // quaternion of body frame relative to world frame
+    const RotMat &getRotB() const { return rotmat_body_; }      // rotation matrix of body frame relative to world frame
+    const Vector3d &getAngVelB() const { return angvel_body_; } // angular velocity of body, expressed in world frame
 
-    // // CoM
-    // Vec3 getPosCoM() const { return _posCoM; } // get position of CoM, expressed in WORLD frame
-    // Vec3 getVelCoM() const { return _velCoM; } // get velocity of CoM, expressed in WORLD frame
+    const Vector3d &pos_com() const { return pos_com_; } // get position of CoM, expressed in world frame
+    const Vector3d &vel_com() const { return vel_com_; } // get velocity of CoM, expressed in world frame
 
-    // foot
-    Vec34 getQLeg() const { return _qLeg; }            // get joint position of four legs
-    Vec34 getDqLeg() const { return _dqLeg; }          // get joint velocity of four legs
-    Vec3 getPosF(int i) const { return _posF.col(i); } // get position of id foot, expressed in WORLD frame
-    Vec3 getVelF(int i) const { return _velF.col(i); } // get velocity of id foot, expressed in WORLD frame
-    Vec34 getPosF() const { return _posF; }            // get position of four feet, expressed in WORLD frame
-    Vec34 getVelF() const { return _velF; }            // get velocity of four feet, expressed in WORLD frame
+    const Matrix34d &pos_leg() const { return pos_leg_; }   // joint position of leg
+    const Matrix34d &vel_leg() const { return vel_leg_; }   // joint velocity of leg
+    const Matrix34d &pos_feet() const { return pos_feet_; } // position of four feet, expressed in world frame
+    const Matrix34d &vel_feet() const { return vel_feet_; } // velocity of four feet, expressed in world frame
 
-    double getTimeStep() const { return _lowState->getTimeStep(); }
-    double getCurrentTime() const { return _lowState->getCurrentTime(); }
-    void printState();
+    double getCurrentTime() const { return low_state_->getCurrentTime(); }
 
 private:
     void updateCovarianceMatrix(const Vector4i &contact_flag);
@@ -41,36 +34,36 @@ private:
     static constexpr int kFeetDim = 12;  // 3 * feet number
     static constexpr int kStateDim = 18; // [positon, velocity, foot position]
     static constexpr int kMeasDim = 28;  // [four feet rela position, four feet rela velocity, foot height]
-
-    const double kTimeStep_ = 0.001; // timestep, second
     const double kLargeVariance_ = 1000;
 
     const Vector3d kGravity_{0, 0, -9.81};
     const Matrix3d kIdentity3_ = Matrix3d::Identity();
     const Vector4d kFeetHeight_ = Vector4d::Zero();
 
-    LowState *_lowState;
+    LowState *low_state_;
     PinocchioInterface *pin_interface_;
 
-    Vec3 _posB, _velB; // position and velocity BODY, expressed in WORLD frame
-    RotMat _rotB;      // rotation matrix of BODY relative to WORLD
-    Quat _quatB;       // quaternion of BODY relative to WORLD
-    Vec3 _angVelB;     // angular velocity of BODY, expressed in WORLD frame
-    Vec3 _angVelB_B;   // angular velocity of BODY, expressed in WORLD frame
-    Vec3 _accB;
+    Vector3d pos_body_;      // position body, expressed in world frame
+    Vector3d vel_body_;      // velocity body, expressed in world frame
+    RotMat rotmat_body_;     // rotation matrix of body frame relative to world frame
+    Quaternion quat_body_;   // quaternion of body frame relative to world frame
+    Vector3d angvel_body_;   // angular velocity of body, expressed in world frame
+    Vector3d angvel_body_B_; // angular velocity of body, expressed in world frame
 
-    Vector6d pos_arm_; // joint position of arm
-    Vector6d vel_arm_; // joint velocity of arm
+    Vector6d pos_arm_;  // joint position of arm
+    Vector6d vel_arm_;  // joint velocity of arm
+    Matrix34d pos_leg_; // joint position of leg
+    Matrix34d vel_leg_; // joint velocity of leg
 
     VectorXd pos_gen_; // generalized position [pos_body, vel_body, pos_leg, pos_arm]
     VectorXd vel_gen_; // generalized velocity [vel_body_B, angvel_body_B, vel_leg, vel_arm]
-    Vector3d pos_com_; // position of CoM, expressed in WORLD frame
-    Vector3d vel_com;  // position of CoM, expressed in WORLD frame
+    Vector3d pos_com_; // position of CoM, expressed in world frame
+    Vector3d vel_com_; // position of CoM, expressed in world frame
 
-    // leg & foot
-    Vec34 _qLeg, _dqLeg;    // joint position and velocity of leg
-    Vec34 _posF, _velF;     // position and velocity of FOOT, expressed in WORLD frame
-    Vec34 _posF2B, _velF2B; // position and velocity of FOOT relative to BODY, expressed in WORLD frame
+    Matrix34d pos_feet_;         // position of four feet, expressed in world frame
+    Matrix34d vel_feet_;         // velocity of four feet, expressed in world frame
+    Matrix34d pos_feet_rel_body; // position feet relative to body, expressed in world frame
+    Matrix34d vel_feet_rel_body; // velocity of feet relative to body, expressed in world frame
 
     Eigen::Matrix<double, kStateDim, kStateDim> A_;                       // State matrix in x = Ax + Bu
     Eigen::Matrix<double, kStateDim, 3> B_;                               // Measurement matrix in z = H
