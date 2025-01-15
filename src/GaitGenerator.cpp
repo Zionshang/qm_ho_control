@@ -30,7 +30,7 @@ void GaitGenerator::setGait(Vec3 vBd, Vec3 wBd)
     _dYawGoal = wBd(2);
 }
 
-void GaitGenerator::run(Vec34 &feetPosDes, Vec34 &feetVelDes)
+void GaitGenerator::update(Vec34 &feetPosDes, Vec34 &feetVelDes)
 {
     _phase = _est->getPhase();
     _contact = _est->getContact();

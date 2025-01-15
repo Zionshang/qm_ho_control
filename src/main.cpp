@@ -31,7 +31,7 @@ int main()
         {
                 iowebots->recvState();
 
-                gait_sche->run(lowState->currentTime, target_gait_name);
+                gait_sche->update(lowState->currentTime, target_gait_name);
 
                 // control
                 switch (lowState->getUserCmd())

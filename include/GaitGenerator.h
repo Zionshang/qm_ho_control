@@ -8,7 +8,7 @@ public:
     GaitGenerator(Estimator *est);
     ~GaitGenerator();
     void setGait(Vec3 vBd, Vec3 wBd);
-    void run(Vec34 &feetPosDes, Vec34 &feetVelDes);
+    void update(Vec34 &feetPosDes, Vec34 &feetVelDes);
 
 private:
     Vec3 calFootholdPos(int legID);

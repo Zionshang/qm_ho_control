@@ -47,7 +47,7 @@ void Planner::setDesiredTraj()
     gripperPlan();
     armJointPlan();
 
-    _gaitGen->run(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
     _lastWorkMode = _est->getWorkMode();
 }
 
@@ -110,7 +110,7 @@ void Planner::showDemo()
 
     // com plan
     comPlan();
-    _gaitGen->run(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 void Planner::showFrontMaxJointVelDemo()
@@ -142,7 +142,7 @@ void Planner::showFrontMaxJointVelDemo()
 
     // com plan
     comPlan();
-    _gaitGen->run(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 
@@ -216,7 +216,7 @@ void Planner::showPickingDemo()
 
     // com plan
     comPlan();
-    _gaitGen->run(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 
@@ -279,7 +279,7 @@ void Planner::showSideMaxJointVelDemo()
 
     // com plan
     comPlan();
-    _gaitGen->run(_highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(_highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 

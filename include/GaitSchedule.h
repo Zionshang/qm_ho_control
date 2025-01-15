@@ -80,7 +80,7 @@ class GaitSchedule
 public:
     GaitSchedule();
     ~GaitSchedule();
-    void run(double currentT, GaitName target_gait_name);
+    void update(double currentT, GaitName target_gait_name);
     Vec4 getPhase() const { return phase_; }
     VecInt4 getContact() const { return contact_; }
     double getTst() const;

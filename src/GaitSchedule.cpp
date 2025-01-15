@@ -16,7 +16,7 @@ GaitSchedule::~GaitSchedule()
     delete gait_list_;
 }
 
-void GaitSchedule::run(double currentT, GaitName target_gait_name)
+void GaitSchedule::update(double currentT, GaitName target_gait_name)
 {
 
     if (switch_to_stance_)
