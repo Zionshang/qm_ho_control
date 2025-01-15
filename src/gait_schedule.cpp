@@ -1,6 +1,4 @@
-#include "GaitSchedule.h"
-
-// ...existing code...
+#include "gait_schedule.hpp"
 
 GaitSchedule::GaitSchedule()
 {

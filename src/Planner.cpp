@@ -3,7 +3,7 @@
 Planner::Planner(HighCmd *highCmd, Estimator *est, LowState *lowState, WholeBodyDynamics *wbDyn)
     : _highCmd(highCmd), _est(est), _lowState(lowState), _wbDyn(wbDyn)
 {
-    _gaitGen = new GaitGenerator(est);
+    _gaitGen = new FootPlanner(est);
 
     _dt = _est->getTimeStep();
     _velBMax << 0.5, 0.5, 0.3;    // x,y,z direction

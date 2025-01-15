@@ -1,19 +1,19 @@
 #pragma once
-#include "GaitSchedule.h"
+#include "gait_schedule.hpp"
 #include "Estimator.h"
 
-class GaitGenerator
+class FootPlanner
 {
 public:
-    GaitGenerator(Estimator *est);
-    ~GaitGenerator();
+    FootPlanner(Estimator *est);
+    ~FootPlanner();
     void setGait(Vec3 vBd, Vec3 wBd);
     void update(Vec34 &feetPosDes, Vec34 &feetVelDes);
 
 private:
-    Vec3 calFootholdPos(int legID);
-    Vec3 getFootPosDes(int legID);
-    Vec3 getFootVelDes(int legID);
+    Vec3 calcFootholdPosition(int legID);
+    Vec3 calcReferenceFootPosition(int legID);
+    Vec3 calcReferenceFootVelocity(int legID);
     double cycloidXYPosition(double start, double end, double phase);
     double cycloidXYVelocity(double start, double end, double phase);
     double cycloidZPosition(double startZ, double height, double phase);

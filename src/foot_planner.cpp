@@ -1,6 +1,6 @@
-#include "GaitGenerator.h"
+#include "foot_planner.hpp"
 
-GaitGenerator::GaitGenerator(Estimator *est)
+FootPlanner::FootPlanner(Estimator *est)
     : _est(est)
 {
     _gaitHeight = 0.04;
@@ -22,15 +22,15 @@ GaitGenerator::GaitGenerator(Estimator *est)
     }
 }
 
-GaitGenerator::~GaitGenerator() {}
+FootPlanner::~FootPlanner() {}
 
-void GaitGenerator::setGait(Vec3 vBd, Vec3 wBd)
+void FootPlanner::setGait(Vec3 vBd, Vec3 wBd)
 {
     _vxyGoal = vBd.tail(2);
     _dYawGoal = wBd(2);
 }
 
-void GaitGenerator::update(Vec34 &feetPosDes, Vec34 &feetVelDes)
+void FootPlanner::update(Vec34 &feetPosDes, Vec34 &feetVelDes)
 {
     _phase = _est->getPhase();
     _contact = _est->getContact();
@@ -50,14 +50,14 @@ void GaitGenerator::update(Vec34 &feetPosDes, Vec34 &feetVelDes)
         }
         else
         {
-            _endP.col(i) = calFootholdPos(i);
-            feetPosDes.col(i) = getFootPosDes(i);
-            feetVelDes.col(i) = getFootVelDes(i);
+            _endP.col(i) = calcFootholdPosition(i);
+            feetPosDes.col(i) = calcReferenceFootPosition(i);
+            feetVelDes.col(i) = calcReferenceFootVelocity(i);
         }
     }
 }
 
-Vec3 GaitGenerator::calFootholdPos(int legID)
+Vec3 FootPlanner::calcFootholdPosition(int legID)
 {
     // Translation in x,y axis
     _nextStep(0) = _est->getVelB()(0) * (1 - _phase(legID)) * _est->getTsw() + _est->getVelB()(0) * _est->getTst() / 2 + _kx * (_est->getVelB()(0) - _vxyGoal(0));
@@ -77,7 +77,7 @@ Vec3 GaitGenerator::calFootholdPos(int legID)
     return footholdPos;
 }
 
-Vec3 GaitGenerator::getFootPosDes(int legID)
+Vec3 FootPlanner::calcReferenceFootPosition(int legID)
 {
     Vec3 footPos;
 
@@ -88,7 +88,7 @@ Vec3 GaitGenerator::getFootPosDes(int legID)
     return footPos;
 }
 
-Vec3 GaitGenerator::getFootVelDes(int legID)
+Vec3 FootPlanner::calcReferenceFootVelocity(int legID)
 {
     Vec3 footVel;
 
@@ -99,25 +99,25 @@ Vec3 GaitGenerator::getFootVelDes(int legID)
     return footVel;
 }
 
-double GaitGenerator::cycloidXYPosition(double start, double end, double phase)
+double FootPlanner::cycloidXYPosition(double start, double end, double phase)
 {
     double phasePI = 2 * M_PI * phase;
     return (end - start) * (phasePI - sin(phasePI)) / (2 * M_PI) + start;
 }
 
-double GaitGenerator::cycloidXYVelocity(double start, double end, double phase)
+double FootPlanner::cycloidXYVelocity(double start, double end, double phase)
 {
     double phasePI = 2 * M_PI * phase;
     return (end - start) * (1 - cos(phasePI)) / _est->getTsw();
 }
 
-double GaitGenerator::cycloidZPosition(double start, double h, double phase)
+double FootPlanner::cycloidZPosition(double start, double h, double phase)
 {
     double phasePI = 2 * M_PI * phase;
     return h * (1 - cos(phasePI)) / 2 + start;
 }
 
-double GaitGenerator::cycloidZVelocity(double h, double phase)
+double FootPlanner::cycloidZVelocity(double h, double phase)
 {
     double phasePI = 2 * M_PI * phase;
     return h * M_PI * sin(phasePI) / _est->getTsw();

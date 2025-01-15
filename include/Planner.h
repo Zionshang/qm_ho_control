@@ -2,7 +2,7 @@
 
 #include "common/HighCmd.h"
 #include "common/LowState.h"
-#include "GaitGenerator.h"
+#include "foot_planner.hpp"
 
 class Planner
 {
@@ -23,7 +23,7 @@ private:
     void comPlan();
 
     HighCmd *_highCmd;
-    GaitGenerator *_gaitGen;
+    FootPlanner *_gaitGen;
     Estimator *_est;
     LowState *_lowState;
     WholeBodyDynamics *_wbDyn;

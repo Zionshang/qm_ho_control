@@ -9,7 +9,7 @@
 #include "DataLog.h"
 #include "pinocchio_interface.hpp"
 #include "kalman_filter_estimator.hpp"
-#include "GaitSchedule.h"
+#include "gait_schedule.hpp"
 
 int main()
 {
