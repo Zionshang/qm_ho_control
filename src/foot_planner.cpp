@@ -2,65 +2,64 @@
 
 FootPlanner::FootPlanner()
 {
-    _gaitHeight = 0.04;
-    _footOffset = 0.026;
-    _firstRun = true;
+    height_swing = 0.04;
+    offset_foot_ = 0.026;
+    first_run_ = true;
 
     // used in caculation of foothold
-    _kx = 0.005;
-    _ky = 0.005;
-    _kyaw = 0.005;
+    kx_ = 0.005;
+    ky_ = 0.005;
+    kyaw_ = 0.005;
 
     Vec24 posStill;                               // XY position when stance in still
     posStill << 0.2407, -0.2407, 0.2407, -0.2407, // clang-format off
                 -0.138,  -0.138,  0.138,   0.138;  // clang-foramt on
     for (int i = 0; i < 4; ++i)
     {
-        _feetRadius(i) = sqrt(pow(posStill(0, i), 2) + pow(posStill(1, i), 2));
-        _feetInitAngle(i) = atan2(posStill(1, i), posStill(0, i));
+        feet_radius_(i) = sqrt(pow(posStill(0, i), 2) + pow(posStill(1, i), 2));
+        feet_init_angle(i) = atan2(posStill(1, i), posStill(0, i));
     }
 }
 
 // TODO: haven't been used 
 void FootPlanner::setGait(Vec3 vBd, Vec3 wBd)
 {
-    _vxyGoal = vBd.tail(2);
-    _dYawGoal = wBd(2);
+    vxyGoal_ = vBd.tail(2);
+    dYawGoal_ = wBd(2);
 }
 
 void FootPlanner::update(const BodyState &body_state, const Vector4d &phase, const Vector4i &contact,
                          const Matrix34d &pos_feet, double period_swing, double period_stance, 
-                         Vec34 &feetPosDes, Vec34 &feetVelDes)
+                         Vec34 &pos_feet_ref, Vec34 &vel_feet_ref)
 {
-    _phase =  phase;
-    _contact = contact;
+    phase_ =  phase;
     period_swing_ = period_swing;
     period_stance_ = period_stance;
 
-    if (_firstRun)
+    if (first_run_)
     {
-        _startP = pos_feet;
-        _firstRun = false;
+        pos_start_ = pos_feet;
+        first_run_ = false;
     }
     for (int i = 0; i < 4; ++i)
     {
-        if (_contact(i) == 1)
+        if (contact(i) == 1)
         {
-            if (_phase(i) < 0.5)
-                _startP.col(i) = pos_feet.col(i);
-            feetPosDes.col(i) = _startP.col(i);
-            feetVelDes.col(i).setZero();
+            if (phase_(i) < 0.5)
+                pos_start_.col(i) = pos_feet.col(i);
+            pos_feet_ref.col(i) = pos_start_.col(i);
+            vel_feet_ref.col(i).setZero();
         }
         else
         {
-            _endP.col(i) = calcFootholdPosition(body_state, i);
-            feetPosDes.col(i) = calcReferenceFootPosition(i);
-            feetVelDes.col(i) = calcReferenceFootVelocity(i);
+            pos_end_.col(i) = calcFootholdPosition(body_state, i);
+            pos_feet_ref.col(i) = calcReferenceFootPosition(i);
+            vel_feet_ref.col(i) = calcReferenceFootVelocity(i);
         }
     }
 }
 
-Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state, int legID)
+Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state, int leg_id)
 {
     const Vec3 pos_body = body_state.pos;
     const Vec3 vel_body = body_state.vel;
@@ -69,41 +68,41 @@ Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state, int legID)
 
     // TODO: 是否需要改成相对于body系下
     // Translation in x,y axis
-    _nextStep(0) = vel_body(0) * (1 - _phase(legID)) * period_swing_ + vel_body(0) * period_stance_ / 2 + _kx * (vel_body(0) - _vxyGoal(0));
-    _nextStep(1) = vel_body(1) * (1 - _phase(legID)) * period_swing_ + vel_body(1) * period_stance_ / 2 + _ky * (vel_body(1) - _vxyGoal(1));
-    _nextStep(2) = 0;
+    next_step_(0) = vel_body(0) * (1 - phase_(leg_id)) * period_swing_ + vel_body(0) * period_stance_ / 2 + kx_ * (vel_body(0) - vxyGoal_(0));
+    next_step_(1) = vel_body(1) * (1 - phase_(leg_id)) * period_swing_ + vel_body(1) * period_stance_ / 2 + ky_ * (vel_body(1) - vxyGoal_(1));
+    next_step_(2) = 0;
 
     // rotation about z axis
-    _yaw = rotMat2RPY(rotmat_body)(2);
-    _nextYaw = angvel_body(2) * (1 - _phase(legID)) * period_swing_ + angvel_body(2) * period_stance_ / 2 + _kyaw * (_dYawGoal - angvel_body(2));
-    _nextStep(0) += _feetRadius(legID) * cos(_yaw + _feetInitAngle(legID) + _nextYaw);
-    _nextStep(1) += _feetRadius(legID) * sin(_yaw + _feetInitAngle(legID) + _nextYaw);
+    yaw_ = rotMat2RPY(rotmat_body)(2);
+    nextYaw_ = angvel_body(2) * (1 - phase_(leg_id)) * period_swing_ + angvel_body(2) * period_stance_ / 2 + kyaw_ * (dYawGoal_ - angvel_body(2));
+    next_step_(0) += feet_radius_(leg_id) * cos(yaw_ + feet_init_angle(leg_id) + nextYaw_);
+    next_step_(1) += feet_radius_(leg_id) * sin(yaw_ + feet_init_angle(leg_id) + nextYaw_);
 
     Vec3 footholdPos;
-    footholdPos = pos_body + _nextStep;
-    footholdPos(2) = _footOffset;
+    footholdPos = pos_body + next_step_;
+    footholdPos(2) = offset_foot_;
 
     return footholdPos;
 }
 
-Vec3 FootPlanner::calcReferenceFootPosition(int legID)
+Vec3 FootPlanner::calcReferenceFootPosition(int leg_id)
 {
     Vec3 footPos;
 
-    footPos(0) = cycloidXYPosition(_startP.col(legID)(0), _endP.col(legID)(0), _phase(legID));
-    footPos(1) = cycloidXYPosition(_startP.col(legID)(1), _endP.col(legID)(1), _phase(legID));
-    footPos(2) = cycloidZPosition(_startP.col(legID)(2), _gaitHeight + _footOffset, _phase(legID));
+    footPos(0) = cycloidXYPosition(pos_start_.col(leg_id)(0), pos_end_.col(leg_id)(0), phase_(leg_id));
+    footPos(1) = cycloidXYPosition(pos_start_.col(leg_id)(1), pos_end_.col(leg_id)(1), phase_(leg_id));
+    footPos(2) = cycloidZPosition(pos_start_.col(leg_id)(2), height_swing + offset_foot_, phase_(leg_id));
 
     return footPos;
 }
 
-Vec3 FootPlanner::calcReferenceFootVelocity(int legID)
+Vec3 FootPlanner::calcReferenceFootVelocity(int leg_id)
 {
     Vec3 footVel;
 
-    footVel(0) = cycloidXYVelocity(_startP.col(legID)(0), _endP.col(legID)(0), _phase(legID));
-    footVel(1) = cycloidXYVelocity(_startP.col(legID)(1), _endP.col(legID)(1), _phase(legID));
-    footVel(2) = cycloidZVelocity(_gaitHeight + _footOffset, _phase(legID));
+    footVel(0) = cycloidXYVelocity(pos_start_.col(leg_id)(0), pos_end_.col(leg_id)(0), phase_(leg_id));
+    footVel(1) = cycloidXYVelocity(pos_start_.col(leg_id)(1), pos_end_.col(leg_id)(1), phase_(leg_id));
+    footVel(2) = cycloidZVelocity(height_swing + offset_foot_, phase_(leg_id));
 
     return footVel;
 }

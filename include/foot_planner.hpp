@@ -9,30 +9,29 @@ public:
     void setGait(Vec3 vBd, Vec3 wBd);
     void update(const BodyState &body_state, const Vector4d &phase, const Vector4i &contact,
                 const Matrix34d &pos_feet, double period_swing, double period_stance, 
-                Vec34 &feetPosDes, Vec34 &feetVelDes);
+                Vec34 &pos_feet_ref, Vec34 &vel_feet_ref);
 
 private:
-    Vector3d calcFootholdPosition(const BodyState &body_state, int legID);
-    Vector3d calcReferenceFootPosition(int legID);
-    Vector3d calcReferenceFootVelocity(int legID);
+    Vector3d calcFootholdPosition(const BodyState &body_state, int leg_id);
+    Vector3d calcReferenceFootPosition(int leg_id);
+    Vector3d calcReferenceFootVelocity(int leg_id);
     double cycloidXYPosition(double start, double end, double phase);
     double cycloidXYVelocity(double start, double end, double phase);
     double cycloidZPosition(double startZ, double height, double phase);
     double cycloidZVelocity(double height, double phase);
 
-    Matrix34d _startP, _endP;
-    double _gaitHeight;
-    double _footOffset; // Radius of sphere at foot
-    bool _firstRun;
-    Vector4d _phase;
-    VecInt4 _contact;
+    Matrix34d pos_start_, pos_end_;
+    double height_swing;
+    double offset_foot_; // Radius of sphere at foot
+    bool first_run_;
+    Vector4d phase_;
     double period_swing_;
     double period_stance_;
 
     // foothold
-    double _kx, _ky, _kyaw;
-    Vec2 _vxyGoal;
-    double _dYawGoal, _nextYaw, _yaw;
-    Vector4d _feetRadius, _feetInitAngle;
-    Vector3d _nextStep;
+    double kx_, ky_, kyaw_;
+    Vec2 vxyGoal_;
+    double dYawGoal_, nextYaw_, yaw_;
+    Vector4d feet_radius_, feet_init_angle;
+    Vector3d next_step_;
 };
