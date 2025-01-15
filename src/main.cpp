@@ -49,7 +49,7 @@ int main()
                 //     target_gait_name = GaitName::WALK;
                 //     break;
                 // }
-                est->update(gait_sche->phase(), gait_sche->contact(), gait_sche->period_swing(), gait_sche->period_stance());
+                est->update();
                 // est->printState();
                 // plan->setDesiredTraj();
                 // kfe->update(gait_sche->getContact());
@@ -58,7 +58,7 @@ int main()
                 plan->showPickingDemo(gait_sche->gait_state());
                 // plan->showSideMaxJointVelDemo();
                 // plan->printDesiredTraj();
-                ctlr->run();
+                ctlr->run(gait_sche->contact());
                 iowebots->sendCmd();
                 log->loadData(est, highCmd);
 

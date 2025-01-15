@@ -19,7 +19,7 @@ class Estimator
 {
 public:
     Estimator(LowState *lowState, PinocchioInterface *pin_interface);
-    void update(const Vec4 &phase, const Vector4i &contact, double T_sw, double T_st);
+    void update();
 
     const BodyState &body_state() const { return body_state_; }
 
@@ -40,12 +40,6 @@ public:
     Vec3 getVelF(int i) const { return _velF.col(i); } // get velocity of id foot, expressed in WORLD frame
     Vec34 getPosF() const { return _posF; }            // get position of four feet, expressed in WORLD frame
     Vec34 getVelF() const { return _velF; }            // get velocity of four feet, expressed in WORLD frame
-
-    // gait
-    Vec4 getPhase() const { return _phase; }        // get progress of swing/stance as a proportion of swing/stace cycle [0,1]
-    VecInt4 getContact() const { return _contact; } // get contact state. 1:contact  0:swting
-    double getTsw() const { return T_sw_; }         // get peroid of swing phase
-    double getTst() const { return T_st_; }         // get peroid of stance phase
 
     // gripper
     Vec6 getQArm() const { return _qArm; }        // get joint position of arm

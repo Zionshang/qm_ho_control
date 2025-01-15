@@ -6,14 +6,8 @@ Estimator::Estimator(LowState *lowState, PinocchioInterface *pin_interface)
 {
 }
 
-void Estimator::update(const Vec4 &phase, const Vector4i &contact, double T_sw, double T_st)
+void Estimator::update()
 {
-    // gait
-    _phase = phase;
-    _contact = contact;
-    T_st_ = T_st;
-    T_sw_ = T_sw;
-
     // joint
     _qLeg = _lowState->getQLeg();
     _dqLeg = _lowState->getDqLeg();

@@ -9,7 +9,7 @@ class Controller
 public:
     Controller(Estimator *est, HighCmd *highCmd, LowCmd *lowCmd, WholeBodyDynamics *wbDyn);
     ~Controller();
-    void run();
+    void run(const Vector4i contact);
 
 private:
     LowState *_lowstate;

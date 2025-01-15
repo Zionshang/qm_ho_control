@@ -27,14 +27,14 @@ HoControl::~HoControl()
     delete _wbDyn;
 }
 
-void HoControl::calTau(Vec18 &tau)
+void HoControl::calTau(const Vector4i contact, Vec18 &tau)
 {
     // struct timeval t1, t2;
     // gettimeofday(&t1, NULL);
     // gettimeofday(&t2, NULL);
     // std::cout << "Time of setMatrix: \t " << double(t2.tv_usec - t1.tv_usec) / 1000 << "ms" << std::endl;
 
-    initVars();
+    initVars(contact);
 
     Task task0, task1, task2;
     task0 = buildFloatingBaseEomTask() + buildNoContactMotionTask() + buildFrictionConeTask();
@@ -59,7 +59,7 @@ void HoControl::calTau(Vec18 &tau)
     //           << tau.tail(6).transpose() << std::endl;
 }
 
-void HoControl::initVars()
+void HoControl::initVars(const Vector4i &contact)
 {
     _R << _est->getRotB();
     _q << _est->getPosB(), _est->getQuatB(), vec34ToVec12(_est->getQLeg()), _est->getQArm();                                       // expressed in GLOBAL frame
@@ -70,7 +70,7 @@ void HoControl::initVars()
     _wbDyn->setMandC(_q, _v, _M, _C);
 
     // feet Jacobian
-    _nSt = _est->getContact().sum();
+    _nSt = contact.sum();
     _nSw = 4 - _nSt;
     _idSw.resize(_nSw);
 
@@ -87,7 +87,7 @@ void HoControl::initVars()
         _wbDyn->setFootJacob(_q, i, _Jfeet[i]);
         _wbDyn->setFootdJdq(_q, _v, i, _dJdqfeet[i]);
 
-        if (_est->getContact()(i) == 1)
+        if (contact(i) == 1)
         {
             _Jst.middleRows(3 * indexSt, 3) = _Jfeet[i].topRows(3);    // only get the linear part
             _dJdqst.segment(3 * indexSt, 3) = _dJdqfeet[i].topRows(3); // only get the linear part

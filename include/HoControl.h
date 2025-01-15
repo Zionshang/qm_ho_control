@@ -17,11 +17,11 @@ public:
     HoControl(HighCmd *highCmd, Estimator *est, WholeBodyDynamics *wbDyn);
     ~HoControl();
 
-    void calTau(Vec18 &tau);
+    void calTau(const Vector4i contact, Vec18 &tau);
 
 private:
     void paramInit(std::string fileName);
-    void initVars();
+    void initVars(const Vector4i &contact);
     Task buildFloatingBaseEomTask();
     Task buildNoContactMotionTask();
     Task buildFrictionConeTask();
