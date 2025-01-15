@@ -55,7 +55,7 @@ int main()
                 // kfe->update(gait_sche->getContact());
                 // plan->showDemo();
                 // plan->showFrontMaxJointVelDemo();
-                plan->showPickingDemo();
+                plan->showPickingDemo(gait_sche->gait_state());
                 // plan->showSideMaxJointVelDemo();
                 // plan->printDesiredTraj();
                 ctlr->run();

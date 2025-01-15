@@ -21,20 +21,14 @@ FootPlanner::FootPlanner()
     }
 }
 
-// TODO: haven't been used 
-void FootPlanner::setGait(Vec3 vBd, Vec3 wBd)
-{
-    vxyGoal_ = vBd.tail(2);
-    dYawGoal_ = wBd(2);
-}
 
-void FootPlanner::update(const BodyState &body_state, const Vector4d &phase, const Vector4i &contact,
-                         const Matrix34d &pos_feet, double period_swing, double period_stance, 
+void FootPlanner::update(const BodyState &body_state, const GaitState &gait_state, const Matrix34d &pos_feet,
+                         const Vector3d &vel_body_ref, const Vector3d &angvel_body_ref,
                          Vec34 &pos_feet_ref, Vec34 &vel_feet_ref)
 {
-    phase_ =  phase;
-    period_swing_ = period_swing;
-    period_stance_ = period_stance;
+    phase_ =  gait_state.phase;
+    period_swing_ = gait_state.period_swing;
+    period_stance_ = gait_state.period_stance;
 
     if (first_run_)
     {
@@ -43,7 +37,7 @@ void FootPlanner::update(const BodyState &body_state, const Vector4d &phase, con
     }
     for (int i = 0; i < 4; ++i)
     {
-        if (contact(i) == 1)
+        if (gait_state.contact(i) == 1)
         {
             if (phase_(i) < 0.5)
                 pos_start_.col(i) = pos_feet.col(i);
@@ -52,14 +46,15 @@ void FootPlanner::update(const BodyState &body_state, const Vector4d &phase, con
         }
         else
         {
-            pos_end_.col(i) = calcFootholdPosition(body_state, i);
+            pos_end_.col(i) = calcFootholdPosition(body_state, vel_body_ref, angvel_body_ref, i);
             pos_feet_ref.col(i) = calcReferenceFootPosition(i);
             vel_feet_ref.col(i) = calcReferenceFootVelocity(i);
         }
     }
 }
 
-Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state, int leg_id)
+Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state, const Vector3d &vel_body_ref,
+                                       const Vector3d &angvel_body_ref, int leg_id)
 {
     const Vec3 pos_body = body_state.pos;
     const Vec3 vel_body = body_state.vel;
@@ -68,15 +63,15 @@ Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state, int leg_id)
 
     // TODO: 是否需要改成相对于body系下
     // Translation in x,y axis
-    next_step_(0) = vel_body(0) * (1 - phase_(leg_id)) * period_swing_ + vel_body(0) * period_stance_ / 2 + kx_ * (vel_body(0) - vxyGoal_(0));
-    next_step_(1) = vel_body(1) * (1 - phase_(leg_id)) * period_swing_ + vel_body(1) * period_stance_ / 2 + ky_ * (vel_body(1) - vxyGoal_(1));
-    next_step_(2) = 0;
+    next_step_(0) = vel_body(0) * (1 - phase_(leg_id)) * period_swing_ + vel_body(0) * period_stance_ / 2 + kx_ * (vel_body(0) - vel_body_ref_(0));
+    next_step_(1) = vel_body(1) * (1 - phase_(leg_id)) * period_swing_ + vel_body(1) * period_stance_ / 2 + ky_ * (vel_body(1) - vel_body_ref_(1));
+    next_step_(2) = 0; 
 
     // rotation about z axis
     yaw_ = rotMat2RPY(rotmat_body)(2);
-    nextYaw_ = angvel_body(2) * (1 - phase_(leg_id)) * period_swing_ + angvel_body(2) * period_stance_ / 2 + kyaw_ * (dYawGoal_ - angvel_body(2));
-    next_step_(0) += feet_radius_(leg_id) * cos(yaw_ + feet_init_angle(leg_id) + nextYaw_);
-    next_step_(1) += feet_radius_(leg_id) * sin(yaw_ + feet_init_angle(leg_id) + nextYaw_);
+    next_yaw_ = angvel_body(2) * (1 - phase_(leg_id)) * period_swing_ + angvel_body(2) * period_stance_ / 2 + kyaw_ * (angvel_body_ref_(2) - angvel_body(2));
+    next_step_(0) += feet_radius_(leg_id) * cos(yaw_ + feet_init_angle(leg_id) + next_yaw_);
+    next_step_(1) += feet_radius_(leg_id) * sin(yaw_ + feet_init_angle(leg_id) + next_yaw_);
 
     Vec3 footholdPos;
     footholdPos = pos_body + next_step_;

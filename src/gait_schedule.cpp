@@ -2,16 +2,10 @@
 
 GaitSchedule::GaitSchedule()
 {
-    gait_list_ = new GaitList();
     current_gait_name_ = GaitName::STANCE;
     time_gait_start_ = 0.0;
     switch_to_stance_ = false;
     time_switch_to_stance_ = 0.0;
-}
-
-GaitSchedule::~GaitSchedule()
-{
-    delete gait_list_;
 }
 
 void GaitSchedule::update(double currentT, GaitName target_gait_name)
@@ -32,13 +26,18 @@ void GaitSchedule::update(double currentT, GaitName target_gait_name)
         time_switch_to_stance_ = currentT;
         current_gait_name_ = GaitName::STANCE;
     }
-    
-    const auto &current_gait = gait_list_->getGait(current_gait_name_);
+
+    const auto &current_gait = gait_list_.getGait(current_gait_name_);
     period_ = current_gait.period;
     stance_ratio_ = current_gait.stance_ratio;
     bias_ = current_gait.bias;
 
     calcGaitPhase(currentT);
+
+    gait_state_.contact = contact_;
+    gait_state_.phase = phase_;
+    gait_state_.period_stance = period_ * stance_ratio_;
+    gait_state_.period_swing = period_ * (1 - stance_ratio_);
 }
 
 void GaitSchedule::calcGaitPhase(double currentT)

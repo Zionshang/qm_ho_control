@@ -9,12 +9,12 @@ class Planner
 public:
     Planner(HighCmd *highCmd, Estimator *est, LowState *lowState, WholeBodyDynamics *wbDyn);
     ~Planner();
-    void setDesiredTraj();
-    void showDemo();
+    void setDesiredTraj(const GaitState &gait_state);
+    void showDemo(const GaitState &gait_state);
     void printDesiredTraj();
-    void showFrontMaxJointVelDemo();
-    void showSideMaxJointVelDemo();
-    void showPickingDemo();
+    void showFrontMaxJointVelDemo(const GaitState &gait_state);
+    void showSideMaxJointVelDemo(const GaitState &gait_state);
+    void showPickingDemo(const GaitState &gait_state);
     
 private:
     void bodyPlan();

@@ -6,13 +6,13 @@ class FootPlanner
 {
 public:
     FootPlanner();
-    void setGait(Vec3 vBd, Vec3 wBd);
-    void update(const BodyState &body_state, const Vector4d &phase, const Vector4i &contact,
-                const Matrix34d &pos_feet, double period_swing, double period_stance, 
+    void update(const BodyState &body_state, const GaitState &gait_state, const Matrix34d &pos_feet,
+                const Vector3d &vel_body_ref, const Vector3d &angvel_body_ref,
                 Vec34 &pos_feet_ref, Vec34 &vel_feet_ref);
 
 private:
-    Vector3d calcFootholdPosition(const BodyState &body_state, int leg_id);
+    Vector3d calcFootholdPosition(const BodyState &body_state, const Vector3d &vel_body_ref,
+                                  const Vector3d &angvel_body_ref, int leg_id);
     Vector3d calcReferenceFootPosition(int leg_id);
     Vector3d calcReferenceFootVelocity(int leg_id);
     double cycloidXYPosition(double start, double end, double phase);
@@ -30,8 +30,9 @@ private:
 
     // foothold
     double kx_, ky_, kyaw_;
-    Vec2 vxyGoal_;
-    double dYawGoal_, nextYaw_, yaw_;
+    Vector3d vel_body_ref_;
+    Vector3d angvel_body_ref_;
+    double next_yaw_, yaw_;
     Vector4d feet_radius_, feet_init_angle;
     Vector3d next_step_;
 };

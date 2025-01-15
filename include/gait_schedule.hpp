@@ -9,11 +9,9 @@
 struct Gait
 {
     GaitName gait_name;
-    double period;        // 步态周期(包含支撑腿周期和摆动腿周期的完整周期)
-    double stance_ratio;  // 触底系数
-    Vector4d bias;        // 偏移比例
-    double period_stance; // 支撑腿周期
-    double period_swing;  // 摆动腿周期
+    double period;       // 步态周期(包含支撑腿周期和摆动腿周期的完整周期)
+    double stance_ratio; // 触底系数
+    Vector4d bias;       // 偏移比例
 
     Gait(GaitName gait_name = GaitName::STANCE) : gait_name(gait_name)
     {
@@ -45,9 +43,6 @@ struct Gait
             bias << 0, 0.5, 0.5, 0;
             break;
         }
-
-        period_stance = period * stance_ratio;
-        period_swing = period * (1 - stance_ratio);
     }
 };
 
@@ -80,24 +75,32 @@ struct GaitList
     std::vector<Gait> gaits;
 };
 
+struct GaitState
+{
+    Vector4d phase;
+    Vector4i contact;
+    double period_stance;
+    double period_swing;
+};
+
 class GaitSchedule
 {
 public:
     GaitSchedule();
-    ~GaitSchedule();
     void update(double currentT, GaitName target_gait_name);
 
-    const Vector4d &phase() const { return phase_; }
-    const Vector4i &contact() const { return contact_; }
-    const Gait &current_gait() const { return gait_list_->getGait(current_gait_name_); }
-    const double &period_stance() const { return current_gait().period_stance; }
-    const double &period_swing() const { return current_gait().period_swing; }
+    const GaitState &gait_state() const { return gait_state_; }
+    const Vector4d &phase() const { return gait_state_.phase; }
+    const Vector4i &contact() const { return gait_state_.contact; }
+    const double &period_stance() const { return gait_state_.period_stance; }
+    const double &period_swing() const { return gait_state_.period_swing; }
 
 private:
     void calcGaitPhase(double currentT);
 
+    GaitState gait_state_;
     GaitName current_gait_name_;
-    GaitList *gait_list_;
+    GaitList gait_list_;
     double period_, stance_ratio_;
     Vector4d bias_;
 
