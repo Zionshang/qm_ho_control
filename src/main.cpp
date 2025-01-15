@@ -19,24 +19,44 @@ int main()
         WholeBodyDynamics *wbDyn = new WholeBodyDynamics();
         PinocchioInterface *pin_interface = new PinocchioInterface();
         IOWebots *iowebots = new IOWebots(lowState, lowCmd);
-        GaitSchedule *gait_sche = new GaitSchedule(GaitName::TROT);
+        GaitSchedule *gait_sche = new GaitSchedule();
         Estimator *est = new Estimator(lowState, pin_interface);
         Planner *plan = new Planner(highCmd, est, lowState, wbDyn);
         Controller *ctlr = new Controller(est, highCmd, lowCmd, wbDyn);
         DataLog *log = new DataLog();
         KalmanFilterEstimator *kfe = new KalmanFilterEstimator(lowState, pin_interface, lowState->timeStep);
 
+        GaitName target_gait_name = GaitName::STANCE;
         while (iowebots->isRunning())
         {
                 iowebots->recvState();
-                gait_sche->run(lowState->currentTime);
+
+                gait_sche->run(lowState->currentTime, target_gait_name);
+
+                // control
+                switch (lowState->getUserCmd())
+                {
+                case UserCommand::A:
+                    target_gait_name = GaitName::TROT;
+                    break;
+                case UserCommand::B:
+                    target_gait_name = GaitName::STANCE;
+                    break;
+                case UserCommand::X:
+                    target_gait_name = GaitName::RUNNING_TROT;
+                    break;
+                case UserCommand::Y:
+                    target_gait_name = GaitName::WALK;
+                    break;
+                }
+
                 est->update(gait_sche->getPhase(), gait_sche->getContact(), gait_sche->getTsw(), gait_sche->getTst());
-                est->printState();
-                // plan->setDesiredTraj();
-                kfe->update(gait_sche->getContact());
+                // est->printState();
+                plan->setDesiredTraj();
+                // kfe->update(gait_sche->getContact());
                 // plan->showDemo();
                 // plan->showFrontMaxJointVelDemo();
-                plan->showPickingDemo();
+                // plan->showPickingDemo();
                 // plan->showSideMaxJointVelDemo();
                 // plan->printDesiredTraj();
                 ctlr->run();
@@ -47,8 +67,8 @@ int main()
                 iowebots->drawDesiredTraj(highCmd);
 #endif
 
-                if (est->getCurrentTime() > 25)
-                        break;
+                // if (est->getCurrentTime() > 25)
+                //         break;
         }
         log->saveData();
 
