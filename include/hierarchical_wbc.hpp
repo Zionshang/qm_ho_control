@@ -43,43 +43,43 @@ private:
     HighCmd *_highCmd;
 
     // friction cone
-    double _fzMin, _fzMax;                // limitation of contact force in z direction
-    double _fricRatio;                    // static friction ratio
-    Eigen::Matrix<double, 6, 3> _fricMat; // Friction cone matrix  _fricMat * F <= _fricVec
-    Vector6d _fricVec;                        // Friction cone vector  _fricMat * F <= _fricVec
+    double fz_min_, fz_max_;               // limitation of contact force in z direction
+    double fric_coef_;                     // static friction ratio
+    Eigen::Matrix<double, 6, 3> fric_mat_; // Friction cone matrix  fric_mat_ * F <= fric_vec_
+    Vector6d fric_vec_;                    // Friction cone vector  fric_mat_ * F <= fric_vec_
 
-    int _nv;
-    int _dimDecisionVars;
-    VectorXd _idSw;     // stores the ID of swing leg
-    VectorXd _solFinal; // solution of fianl hierarchical optimization
+    int nv_;
+    int dim_decision_vars_;
+    VectorXd id_sw_;     // stores the ID of swing leg
+    VectorXd sol_final_; // solution of fianl hierarchical optimization
 
-    int _nSt, _nSw; // number of stance and swing leg
-    MatrixXd _M;       // Matrix M in M*ddq + C = tau
-    VecNv _C;       // Matrix C in M*ddq + C = tau
+    int num_st_, num_sw_; // number of stance and swing leg
+    MatrixXd M_;          // Matrix M in M*ddq + C = tau
+    VecNv C_;             // Matrix C in M*ddq + C = tau
+
     // TODO: 是否需要使用std::Vector
-    std::vector<Matrix6xd> _Jfeet = std::vector<Matrix6xd>(4); // jacobian of all feet
-    std::vector<Vector6d> _dJdqfeet = std::vector<Vector6d>(4);        // jacobian's derviative times v of all feet
-    Eigen::Matrix<double, -1, ROBOTNV> _Jst, _Jsw;             // jacobian of stacked swing and stance feet
-    Eigen::VectorXd _dJdqst, _dJdqsw;                          // jacobian's derviative times v of stacked swing and stance feet
-    Matrix6xd _Jbody;                                          // jacobian of body
-    Vector6d _dJdqbody;                                            // jacobian's derviative times v of body
-    Matrix3xd _Jcom;                                           // jacobian of CoM
-    Vector3d _dJdqcom;                                             // jacobian's derviative times v of CoM
-    Vector3d _posCoM;                                              // position of full body CoM
-    Vector3d _velCoM;                                              // velocity of full body CoM
+    std::vector<Matrix6xd> J_feet_ = std::vector<Matrix6xd>(4);  // jacobian of all feet
+    std::vector<Vector6d> dJdq_feet_ = std::vector<Vector6d>(4); // jacobian's derviative times v of all feet
+    Eigen::Matrix<double, -1, ROBOTNV> J_st_, J_sw_;             // jacobian of stacked swing and stance feet
+    VectorXd dJdq_st_;                                           // jacobian's derviative times v of stacked stance feet
+    VectorXd dJdq_sw_;                                           // jacobian's derviative times v of stacked swing feet
+    Matrix6xd J_body_;                                           // jacobian of body
+    Vector6d dJdq_body_;                                         // jacobian's derviative times v of body
+    Matrix3xd J_com_;                                            // jacobian of CoM
+    Vector3d dJdq_com_;                                          // jacobian's derviative times v of CoM
 
-    // PD parameter
-    Diagonal3d _KpPos, _KdPos; // PD parameter of body position control
-    Diagonal3d _KpAng, _KdAng; // PD parameter of body angular control
-    Diagonal3d _KpSw, _KdSw;   // PD parameter of swing leg control
+    Diagonal3d kp_pos_, kd_pos_; // PD parameter of body position control
+    Diagonal3d kp_ang_, kd_ang_; // PD parameter of body angular control
+    Diagonal3d kp_sw_, kd_sw_;   // PD parameter of swing leg control
+    Diagonal6d kp_arm_, kd_arm_; // PD parameter of arm joint
 
-    // weight of QP
-    double _wBlinear, _wBangle, _wSw, _wElinear, _wEangle, _wArmJ;
+    double weight_pos_body_, weight_pos_ang_; // weight of body task
+    double weight_swing_;                     // weight of swing leg task
+    double weight_arm_;                       // weight of arm joint task
 
-    // Matrix6xd _Jgrip; // jacobian of gripper
-    // Vector6d _dJdqgrip;   // jacobian's derviative times v of gripper
-
-    Diagonal3d _KpEePos, _KdEePos; // PD parameter of EE position control
-    Diagonal3d _KpEeAng, _KdEeAng; // PD parameter of EE angular control
-    Diagonal6d _KpArmJ, _KdArmJ;   // PD parameter of arm joing
+    // Matrix6xd J_grip_; // jacobian of gripper
+    // Vector6d dJdq_grip_;   // jacobian's derviative times v of gripper
+    // double weight_gripper_pos_, weight_gripper_ang_; // weight of gripper task
+    // Diagonal3d _KpEePos, _KdEePos; // PD parameter of EE position control
+    // Diagonal3d _KpEeAng, _KdEeAng; // PD parameter of EE angular control
 };

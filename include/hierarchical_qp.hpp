@@ -42,7 +42,7 @@ private:
     bool _hasEqConstraints, _hasIneqConstraints; // Whether or not the task have a certain constraint
 
     int _dimSlackVars;     // dimension of slack variables, = rows of inequal constraints
-    int _dimDecisionVars;  // dimension of decision variables, = cols of inequal/equal constraints
+    int dim_decision_vars_;  // dimension of decision variables, = cols of inequal/equal constraints
     int _dimPrevSlackVars; // dimension of the slack variable stacked by the previous tasks
 
     MatrixXd _stackedZPrev;        // null space of stacked higher task
@@ -53,7 +53,7 @@ private:
     VectorXd _stackedSlackSolPrev; // stacked slack variables soluted by each higher tasks
     VectorXd _stackedSlackSol;     // stacked slack variables soluted by (each higher tasks + current task)
 
-    MatrixXd _zeroNvNx; // zero matrix [_dimSlackVars, _dimDecisionVars].Used many times in build QP matrix
+    MatrixXd _zeroNvNx; // zero matrix [_dimSlackVars, dim_decision_vars_].Used many times in build QP matrix
     MatrixXd _eyeNvNv;  // Identity matrix [_dimSlackVars, _dimSlackVars. Used many times in build QP matrix
 
     /************************QP form***************************
