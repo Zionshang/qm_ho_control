@@ -13,26 +13,26 @@ DataLog::DataLog()
  */
 void DataLog::loadData(Estimator *est, HighCmd *highCmd)
 {
-    appendVar(est->getCurrentTime()); // 0
+    // appendVar(est->getCurrentTime()); // 0
 
-    appendMat(est->getPosCoM());          // 1,2,3
-    appendMat(est->getVelCoM());          // 4,5,6
-    appendMat(quat2RPY(est->getQuatB())); // 7,8,9
-    appendMat(est->getAngVelB());         // 10,11,12
+    // appendMat(est->getPosCoM());          // 1,2,3
+    // appendMat(est->getVelCoM());          // 4,5,6
+    // appendMat(quat2RPY(est->getQuatB())); // 7,8,9
+    // appendMat(est->getAngVelB());         // 10,11,12
 
-    appendMat(highCmd->posCoM);          // 13,14,15
-    appendMat(highCmd->velCoM);          // 16,17,18
-    appendMat(quat2RPY(highCmd->quatB)); // 19,20,21
-    appendMat(highCmd->angVelB);         // 22,23,24
+    // appendMat(highCmd->posCoM);          // 13,14,15
+    // appendMat(highCmd->velCoM);          // 16,17,18
+    // appendMat(quat2RPY(highCmd->quatB)); // 19,20,21
+    // appendMat(highCmd->angVelB);         // 22,23,24
 
-    appendMat(est->getQArm().head(3)); // 25,26,27
-    appendMat(highCmd->qAJ.head(3));  // 28,29,30
+    // appendMat(est->getQArm().head(3)); // 25,26,27
+    // appendMat(highCmd->qAJ.head(3));  // 28,29,30
 
 
-    appendMat(est->getQArm().tail(3)); // 31,32,33
-    appendMat(highCmd->qAJ.tail(3));  // 34,35,36
-    varCount = 0;
-    runTimes++;
+    // appendMat(est->getQArm().tail(3)); // 31,32,33
+    // appendMat(highCmd->qAJ.tail(3));  // 34,35,36
+    // varCount = 0;
+    // runTimes++;
 }
 
 /**

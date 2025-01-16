@@ -12,9 +12,9 @@ Controller::~Controller()
     delete _hieraOpt;
 }
 
-void Controller::run(const Vector4i contact)
+void Controller::run(const RobotState &robot_state, const Vector4i &contact)
 {
-    _hieraOpt->calTau(contact, _est->pos_gen(), _est->vel_gen(), _tau);
+    _hieraOpt->calTau(robot_state, contact, _tau);
     _lowCmd->setLegTau(_tau.head(12));
     _lowCmd->setArmTau(_tau.tail(6));
 }

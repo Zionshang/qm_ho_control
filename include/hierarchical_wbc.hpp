@@ -17,7 +17,7 @@ public:
     HierarchicalWbc(HighCmd *highCmd, Estimator *est, WholeBodyDynamics *wbDyn);
     ~HierarchicalWbc();
 
-    void calTau(const Vector4i &contact, const VectorXd &q_gen, const VectorXd &v_gen, Vec18 &tau);
+    void calTau(const RobotState &robot_state, const Vector4i contact, Vec18 &tau);
 
 private:
     void paramInit(std::string fileName);
@@ -26,13 +26,16 @@ private:
     Task buildFloatingBaseEomTask();
     Task buildNoContactMotionTask();
     Task buildFrictionConeTask();
-    Task buildBodyLinearTask();
-    Task buildBodyAngularTask();
-    Task buildComLinearTask();
+    Task buildBodyLinearTask(const Vector3d &pos_body, const Vector3d &vel_body,
+                             const Vector3d &pos_body_ref, const Vector3d &vel_body_ref);
+    Task buildBodyAngularTask(const Quaternion &quat_body, const Vector3d &angvel_body,
+                                           const Quaternion &quat_body_ref, const Vector3d &angvel_body_ref);
+    Task buildComLinearTask(const Vector3d &pos_com, const Vector3d &vel_com,
+                            const Vector3d &pos_com_ref, const Vector3d &vel_com_ref);
     Task buildSwingLegTask();
-    Task buildGripperLinearTask();
-    Task buildGripperAngularTask();
     Task buildArmJointTrackingTask();
+    // Task buildGripperLinearTask();
+    // Task buildGripperAngularTask();
 
     WholeBodyDynamics *_wbDyn;
     HighCmd *_highCmd;

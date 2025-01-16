@@ -2,46 +2,47 @@
 #include <iostream>
 
 Estimator::Estimator(LowState *lowState, PinocchioInterface *pin_interface)
-    : _lowState(lowState), pin_interface_(pin_interface)
-{
-    _posGen.setZero(pin_interface_->nq());
-    _velGen.setZero(pin_interface_->nv());
-}
+    : _lowState(lowState), pin_interface_(pin_interface) {}
 
-void Estimator::update()
+void Estimator::update(RobotState &robot_state)
 {
     // joint
     _qLeg = _lowState->getQLeg();
     _dqLeg = _lowState->getDqLeg();
+    _qArm = _lowState->getQArm();
+    _dqArm = _lowState->getDqArm();
 
     // body
-    body_state_.pos << _lowState->supervisor.robotPos[0], _lowState->supervisor.robotPos[1], _lowState->supervisor.robotPos[2];
-    body_state_.vel << _lowState->supervisor.robotVel[0], _lowState->supervisor.robotVel[1], _lowState->supervisor.robotVel[2];
-    body_state_.quat = _lowState->getQuaternion();
-    body_state_.rotmat = quat2RotMat(body_state_.quat);
-    body_state_.angvel << body_state_.rotmat * _lowState->getGyro();
-    body_state_.vel_B = body_state_.rotmat.transpose() * body_state_.vel;
-    body_state_.angvel_B = body_state_.rotmat.transpose() * body_state_.angvel;
+    auto &body_state = robot_state.body;
+    body_state.pos << _lowState->supervisor.robotPos[0], _lowState->supervisor.robotPos[1], _lowState->supervisor.robotPos[2];
+    body_state.vel << _lowState->supervisor.robotVel[0], _lowState->supervisor.robotVel[1], _lowState->supervisor.robotVel[2];
+    body_state.quat = _lowState->getQuaternion();
+    body_state.rotmat = quat2RotMat(body_state.quat);
+    body_state.angvel << body_state.rotmat * _lowState->getGyro();
+    RotMat R_T = body_state.rotmat.transpose();
 
     // CoM
-    _posGen << body_state_.pos, body_state_.quat, vec34ToVec12(_qLeg), _qArm;
-    _velGen << body_state_.vel_B, body_state_.angvel_B, vec34ToVec12(_dqLeg), _dqArm;
-    pin_interface_->calcComState(_posGen, _velGen, _posCoM, _velCoM);
+    auto &pos_gen = robot_state.pos_gen;
+    auto &vel_gen = robot_state.vel_gen;
+    auto &pos_com = robot_state.pos_com;
+    auto &vel_com = robot_state.vel_com;
+
+    pos_gen << body_state.pos, body_state.quat, vec34ToVec12(_qLeg), _qArm;
+    vel_gen << R_T * body_state.vel, R_T * body_state.angvel, vec34ToVec12(_dqLeg), _dqArm;
+    pin_interface_->calcComState(pos_gen, vel_gen, pos_com, vel_com);
 
     // foot
-    pin_interface_->updateKinematics(_posGen, _velGen);
+    pin_interface_->updateKinematics(pos_gen, vel_gen);
     const auto &feet_id = pin_interface_->feet_id();
     for (size_t i = 0; i < feet_id.size(); i++)
     {
         _posF.col(i) = pin_interface_->calcFootPosition(feet_id[i]);
         _velF.col(i) = pin_interface_->calcFootVelocity(feet_id[i]);
-        _posF2B.col(i) = _posF.col(i) - body_state_.pos;
-        _velF2B.col(i) = _velF.col(i) - body_state_.vel;
+        _posF2B.col(i) = _posF.col(i) - body_state.pos;
+        _velF2B.col(i) = _velF.col(i) - body_state.vel;
     }
 
     // arm
-    _qArm = _lowState->getQArm();
-    _dqArm = _lowState->getDqArm();
     pin_interface_->calcGripperState(_posG, _velG, _quatG, _angVelG);
 
     // // control
@@ -65,10 +66,10 @@ void Estimator::update()
 
 void Estimator::printState()
 {
-    std::cout << std::setw(12) << std::left << "Current Body Position:     \t"
-              << body_state_.pos.transpose() << std::endl;
-    std::cout << std::setw(12) << std::left << "Current Body Velocity:     \t"
-              << body_state_.vel.transpose() << std::endl;
+    // std::cout << std::setw(12) << std::left << "Current Body Position:     \t"
+    //           << body_state_.pos.transpose() << std::endl;
+    // std::cout << std::setw(12) << std::left << "Current Body Velocity:     \t"
+    //           << body_state_.vel.transpose() << std::endl;
     // std::cout << std::setw(12) << std::left << "LKF Body Position:     \t" << std::fixed << std::setprecision(2)
     //           << x_.head(3).transpose() << std::endl;
     // std::cout << std::setw(12) << std::left << "LKF Body Velocity:     \t" << std::fixed << std::setprecision(2)

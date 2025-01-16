@@ -27,12 +27,28 @@ HierarchicalWbc::~HierarchicalWbc()
     delete _wbDyn;
 }
 
-void HierarchicalWbc::calTau(const Vector4i &contact, const VectorXd &q_gen, const VectorXd &v_gen, Vec18 &tau)
+void HierarchicalWbc::calTau(const RobotState &robot_state, const Vector4i contact, Vec18 &tau)
 {
     // struct timeval t1, t2;
     // gettimeofday(&t1, NULL);
     // gettimeofday(&t2, NULL);
     // std::cout << "Time of setMatrix: \t " << double(t2.tv_usec - t1.tv_usec) / 1000 << "ms" << std::endl;
+
+    const auto &q_gen = robot_state.pos_gen;
+    const auto &v_gen = robot_state.vel_gen;
+    const auto &pos_body = robot_state.body.pos;
+    const auto &vel_body = robot_state.body.vel;
+    const auto &quat_body = robot_state.body.quat;
+    const auto &angvel_body = robot_state.body.angvel;
+    const auto &pos_com = robot_state.pos_com;
+    const auto &vel_com = robot_state.vel_com;
+
+    const auto &pos_body_ref = _highCmd->posB;
+    const auto &vel_body_ref = _highCmd->velB;
+    const auto &quat_body_ref = _highCmd->quatB;
+    const auto &angvel_body_ref = _highCmd->angVelB;
+    const auto &pos_com_ref = _highCmd->posCoM;
+    const auto &vel_com_ref = _highCmd->velCoM;
 
     _dimDecisionVars = _nv + 3 * contact.sum();
 
@@ -44,8 +60,8 @@ void HierarchicalWbc::calTau(const Vector4i &contact, const VectorXd &q_gen, con
     task0 = task0 + buildNoContactMotionTask();
     task0 = task0 + buildFrictionConeTask();
 
-    task1 = buildComLinearTask() * _wBlinear;
-    task1 = task1 + buildBodyAngularTask() * _wBangle;
+    task1 = buildComLinearTask(pos_com, vel_com, pos_com_ref, vel_com_ref) * _wBlinear;
+    task1 = task1 + buildBodyAngularTask(quat_body, angvel_body, quat_body_ref, angvel_body_ref) * _wBangle;
     task1 = task1 + buildSwingLegTask() * _wSw;
     task1 = task1 + buildArmJointTrackingTask() * _wArmJ;
 
@@ -137,37 +153,39 @@ Task HierarchicalWbc::buildFrictionConeTask()
     return {MatX(), VecX(), D, f};
 }
 
-Task HierarchicalWbc::buildBodyLinearTask()
+Task HierarchicalWbc::buildBodyLinearTask(const Vector3d &pos_body, const Vector3d &vel_body,
+                                          const Vector3d &pos_body_ref, const Vector3d &vel_body_ref)
 {
     MatX A = MatX::Zero(3, _dimDecisionVars);
     VecX b = VecX(3);
 
     // body linear motion tracking
     A.leftCols(_nv) = _Jbody.topRows(3);
-    b = _KpPos * (_highCmd->posB - _est->getPosB()) + _KdPos * (_highCmd->velB - _est->getVelB()) - _dJdqbody.head(3);
+    b = _KpPos * (pos_body_ref - pos_body) + _KdPos * (vel_body_ref - vel_body) - _dJdqbody.head(3);
 
     return {A, b, MatX(), VecX()};
 }
 
-Task HierarchicalWbc::buildComLinearTask()
+Task HierarchicalWbc::buildComLinearTask(const Vector3d &pos_com, const Vector3d &vel_com,
+                                         const Vector3d &pos_com_ref, const Vector3d &vel_com_ref)
 {
     MatX A = MatX::Zero(3, _dimDecisionVars);
     VecX b = VecX(3);
 
     // CoM linear motion tracking
     A.leftCols(_nv) = _Jcom.topRows(3);
-    b = _KpPos * (_highCmd->posCoM - _est->getPosCoM()) + _KdPos * (_highCmd->velCoM - _est->getVelCoM()) - _dJdqcom.head(3);
+    b = _KpPos * (pos_com_ref - pos_com) + _KdPos * (vel_com_ref - vel_com) - _dJdqcom.head(3);
     return {A, b, MatX(), VecX()};
 }
 
-Task HierarchicalWbc::buildBodyAngularTask()
+Task HierarchicalWbc::buildBodyAngularTask(const Quaternion &quat_body, const Vector3d &angvel_body,
+                                           const Quaternion &quat_body_ref, const Vector3d &angvel_body_ref)
 {
     MatX A = MatX::Zero(3, _dimDecisionVars);
     VecX b = VecX(3);
 
     A.leftCols(_nv) = _Jbody.bottomRows(3);
-    b = _KpAng * quatErr(_highCmd->quatB, _est->getQuatB()) + _KdAng * (_highCmd->angVelB - _est->getAngVelB()) - _dJdqbody.tail(3);
-
+    b = _KpAng * quatErr(quat_body_ref, quat_body) + _KdAng * (angvel_body_ref - angvel_body) - _dJdqbody.tail(3);
     return {A, b, MatX(), VecX()};
 }
 
@@ -183,27 +201,27 @@ Task HierarchicalWbc::buildSwingLegTask()
     return {A, b, MatX(), VecX()};
 }
 
-Task HierarchicalWbc::buildGripperLinearTask()
-{
-    MatX A = MatX::Zero(3, _dimDecisionVars);
-    VecX b = VecX(3);
+// Task HierarchicalWbc::buildGripperLinearTask()
+// {
+//     MatX A = MatX::Zero(3, _dimDecisionVars);
+//     VecX b = VecX(3);
 
-    A.leftCols(_nv) = _Jgrip.topRows(3);
-    b = _KpEePos * (_highCmd->posG - _est->getPosG()) + _KdEePos * (_highCmd->velG - _est->getVelG()) - _dJdqgrip.head(3);
+//     A.leftCols(_nv) = _Jgrip.topRows(3);
+//     b = _KpEePos * (_highCmd->posG - _est->getPosG()) + _KdEePos * (_highCmd->velG - _est->getVelG()) - _dJdqgrip.head(3);
 
-    return {A, b, MatX(), VecX()};
-}
+//     return {A, b, MatX(), VecX()};
+// }
 
-Task HierarchicalWbc::buildGripperAngularTask()
-{
-    MatX A = MatX::Zero(3, _dimDecisionVars);
-    VecX b = VecX(3);
+// Task HierarchicalWbc::buildGripperAngularTask()
+// {
+//     MatX A = MatX::Zero(3, _dimDecisionVars);
+//     VecX b = VecX(3);
 
-    A.leftCols(_nv) = _wEangle * _Jgrip.bottomRows(3);
-    b = _KpEeAng * quatErr(_highCmd->quatG, _est->getQuatG()) + _KdEeAng * (_highCmd->angVelG - _est->getAngVelG()) - _dJdqgrip.tail(3);
+//     A.leftCols(_nv) = _wEangle * _Jgrip.bottomRows(3);
+//     b = _KpEeAng * quatErr(_highCmd->quatG, _est->getQuatG()) + _KdEeAng * (_highCmd->angVelG - _est->getAngVelG()) - _dJdqgrip.tail(3);
 
-    return {A, b, MatX(), VecX()};
-}
+//     return {A, b, MatX(), VecX()};
+// }
 
 Task HierarchicalWbc::buildArmJointTrackingTask()
 {

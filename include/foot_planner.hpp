@@ -6,6 +6,7 @@ class FootPlanner
 {
 public:
     FootPlanner();
+    // TODO: 更简洁的参数传递
     void update(const BodyState &body_state, const GaitState &gait_state, const Matrix34d &pos_feet,
                 const Vector3d &vel_body_ref, const Vector3d &angvel_body_ref,
                 Vec34 &pos_feet_ref, Vec34 &vel_feet_ref);

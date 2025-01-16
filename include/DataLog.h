@@ -4,6 +4,7 @@
 #include "Estimator.h"
 #include "HighCmd.h"
 #include "Eigen/Dense"
+#include "ctrl_component.hpp"
 
 class DataLog
 {

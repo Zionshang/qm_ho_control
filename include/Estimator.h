@@ -3,38 +3,28 @@
 #include "common/LowState.h"
 #include "model/WholeBodyDynamics.h"
 #include "pinocchio_interface.hpp"
-
-struct BodyState
-{
-    Vector3d pos; // position of body, expressed in WORLD frame
-    Quaternion quat;
-    RotMat rotmat; // rotation matrix of body relative to WORLD
-    Vector3d vel;
-    Vector3d angvel;
-    Vector3d vel_B;
-    Vector3d angvel_B;
-};
+#include "ctrl_component.hpp"
 
 class Estimator
 {
 public:
     Estimator(LowState *lowState, PinocchioInterface *pin_interface);
-    void update();
+    void update(RobotState &robot_state);
 
-    const BodyState &body_state() const { return body_state_; }
+    // const BodyState &body_state() const { return body_state_; }
 
-    const VectorXd &pos_gen() const { return _posGen; }
-    const VectorXd &vel_gen() const { return _velGen; }
+    // const VectorXd &pos_gen() const { return _posGen; }
+    // const VectorXd &vel_gen() const { return _velGen; }
 
-    Vec3 getPosB() const { return body_state_.pos; }       // get position of BODY, expressed in WORLD frame
-    Vec3 getVelB() const { return body_state_.vel; }       // get velocity of BODY, expressed in WORLD frame
-    Quat getQuatB() const { return body_state_.quat; }     // get quaternion of BODY relative to WORLD
-    RotMat getRotB() const { return body_state_.rotmat; }  // get rotation matrix of BODY relative to WORLD
-    Vec3 getAngVelB() const { return body_state_.angvel; } // get angular velocity of BODY, expressed in WORLD frame
+    // Vec3 getPosB() const { return body_state_.pos; }       // get position of BODY, expressed in WORLD frame
+    // Vec3 getVelB() const { return body_state_.vel; }       // get velocity of BODY, expressed in WORLD frame
+    // Quat getQuatB() const { return body_state_.quat; }     // get quaternion of BODY relative to WORLD
+    // RotMat getRotB() const { return body_state_.rotmat; }  // get rotation matrix of BODY relative to WORLD
+    // Vec3 getAngVelB() const { return body_state_.angvel; } // get angular velocity of BODY, expressed in WORLD frame
 
-    // CoM
-    Vec3 getPosCoM() const { return _posCoM; } // get position of CoM, expressed in WORLD frame
-    Vec3 getVelCoM() const { return _velCoM; } // get velocity of CoM, expressed in WORLD frame
+    // // CoM
+    // Vec3 getPosCoM() const { return _posCoM; } // get position of CoM, expressed in WORLD frame
+    // Vec3 getVelCoM() const { return _velCoM; } // get velocity of CoM, expressed in WORLD frame
 
     // foot
     Vec34 getQLeg() const { return _qLeg; }            // get joint position of four legs
@@ -62,12 +52,10 @@ private:
     LowState *_lowState;
     PinocchioInterface *pin_interface_;
 
-    BodyState body_state_;
-
-    // CoM
-    VectorXd _posGen;
-    VectorXd _velGen;
-    Vec3 _posCoM, _velCoM; // position and velocity CoM, expressed in WORLD frame
+    // // // CoM
+    // // VectorXd _posGen;
+    // // VectorXd _velGen;
+    // Vec3 _posCoM, _velCoM; // position and velocity CoM, expressed in WORLD frame
 
     // leg & foot
     Vec34 _qLeg, _dqLeg;    // joint position and velocity of leg

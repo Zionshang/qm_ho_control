@@ -35,7 +35,7 @@ Planner::~Planner()
     delete _gaitGen;
 };
 
-void Planner::setDesiredTraj(const GaitState &gait_state)
+void Planner::setDesiredTraj(const RobotState &robot_state, const GaitState &gait_state)
 {
     _rotB_d = quat2RotMat(_highCmd->quatB);
     if (_lastWorkMode != WorkMode::ARM_JOINT && _est->getWorkMode() == WorkMode::ARM_JOINT)
@@ -47,11 +47,11 @@ void Planner::setDesiredTraj(const GaitState &gait_state)
     gripperPlan();
     armJointPlan();
 
-    _gaitGen->update(_est->body_state(), gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
     _lastWorkMode = _est->getWorkMode();
 }
 
-void Planner::showDemo(const GaitState &gait_state)
+void Planner::showDemo(const RobotState &robot_state, const GaitState &gait_state)
 {
     double tNow = _est->getCurrentTime();
 
@@ -110,10 +110,10 @@ void Planner::showDemo(const GaitState &gait_state)
 
     // com plan
     comPlan();
-    _gaitGen->update(_est->body_state(), gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
-void Planner::showFrontMaxJointVelDemo(const GaitState &gait_state)
+void Planner::showFrontMaxJointVelDemo(const RobotState &robot_state, const GaitState &gait_state)
 {
     double tNow = _est->getCurrentTime();
 
@@ -142,10 +142,10 @@ void Planner::showFrontMaxJointVelDemo(const GaitState &gait_state)
 
     // com plan
     comPlan();
-    _gaitGen->update(_est->body_state(), gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
-void Planner::showPickingDemo(const GaitState &gait_state)
+void Planner::showPickingDemo(const RobotState &robot_state, const GaitState &gait_state)
 {
     double tNow = _est->getCurrentTime();
 
@@ -215,7 +215,7 @@ void Planner::showPickingDemo(const GaitState &gait_state)
 
     // com plan
     comPlan();
-    _gaitGen->update(_est->body_state(), gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 void Planner::bodyPlan()
@@ -247,7 +247,7 @@ void Planner::bodyPlan()
     _highCmd->quatB /= _highCmd->quatB.norm();
 }
 
-void Planner::showSideMaxJointVelDemo(const GaitState &gait_state)
+void Planner::showSideMaxJointVelDemo(const RobotState &robot_state, const GaitState &gait_state)
 {
     double tNow = _est->getCurrentTime();
 
@@ -276,7 +276,7 @@ void Planner::showSideMaxJointVelDemo(const GaitState &gait_state)
 
     // com plan
     comPlan();
-    _gaitGen->update(_est->body_state(), gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 void Planner::comPlan()
@@ -288,41 +288,41 @@ void Planner::comPlan()
 
 void Planner::gripperPlan()
 {
-    if (_est->getWorkMode() == WorkMode::ARM_CARTESIAN_BODY) // Control the gripper in BODY frame
-    {
-        _velGCmd(0) = invNormalize(_lowState->userValue.lx, _velGMin(0), _velGMax(0));          // x
-        _velGCmd(1) = invNormalize(_lowState->userValue.ly, _velGMin(1), _velGMax(1));          // y
-        _velGCmd(2) = invNormalize(_lowState->userValue.z, _velGMin(2), _velGMax(2));           // z
-        _angVelGCmd(0) = 0;                                                                     // wx
-        _angVelGCmd(1) = invNormalize(_lowState->userValue.rx, _angVelGMin(1), _angVelGMax(1)); // wy
-        _angVelGCmd(2) = invNormalize(_lowState->userValue.ry, _angVelGMin(2), _angVelGMax(2)); // wz
-    }
-    else if (_est->getWorkMode() == WorkMode::ARM_FIXED_BODY) // Control the gripper fixed in BODY frame
-    {
-        _velGCmd.setZero();
-        _angVelGCmd.setZero();
-    }
-    else if (_est->getWorkMode() == WorkMode::ARM_FIXED_WORLD) // Control the gripper fixed in WORLD frame
-    {
-        _highCmd->velG.setZero();
-        _highCmd->angVelG.setZero();
-    }
-    else
-    {
-        _velGCmd.setZero();
-        _angVelGCmd.setZero();
-    }
+    // if (_est->getWorkMode() == WorkMode::ARM_CARTESIAN_BODY) // Control the gripper in BODY frame
+    // {
+    //     _velGCmd(0) = invNormalize(_lowState->userValue.lx, _velGMin(0), _velGMax(0));          // x
+    //     _velGCmd(1) = invNormalize(_lowState->userValue.ly, _velGMin(1), _velGMax(1));          // y
+    //     _velGCmd(2) = invNormalize(_lowState->userValue.z, _velGMin(2), _velGMax(2));           // z
+    //     _angVelGCmd(0) = 0;                                                                     // wx
+    //     _angVelGCmd(1) = invNormalize(_lowState->userValue.rx, _angVelGMin(1), _angVelGMax(1)); // wy
+    //     _angVelGCmd(2) = invNormalize(_lowState->userValue.ry, _angVelGMin(2), _angVelGMax(2)); // wz
+    // }
+    // else if (_est->getWorkMode() == WorkMode::ARM_FIXED_BODY) // Control the gripper fixed in BODY frame
+    // {
+    //     _velGCmd.setZero();
+    //     _angVelGCmd.setZero();
+    // }
+    // else if (_est->getWorkMode() == WorkMode::ARM_FIXED_WORLD) // Control the gripper fixed in WORLD frame
+    // {
+    //     _highCmd->velG.setZero();
+    //     _highCmd->angVelG.setZero();
+    // }
+    // else
+    // {
+    //     _velGCmd.setZero();
+    //     _angVelGCmd.setZero();
+    // }
 
-    // velocity transformation from BODY to WORLD
-    if (_est->getWorkMode() != WorkMode::ARM_FIXED_WORLD)
-    {
-        _highCmd->velG = _highCmd->velB + skew(_highCmd->angVelB) * (_est->getPosG() - _est->getPosB()) + _rotB_d * _velGCmd;
-        _highCmd->angVelG = _rotB_d * _angVelGCmd;
-    }
-    // position iteration
-    _highCmd->posG += _highCmd->velG * _dt;
-    _highCmd->quatG += quatDeriv(_highCmd->quatG, _highCmd->angVelG) * _dt;
-    _highCmd->quatG /= _highCmd->quatG.norm();
+    // // velocity transformation from BODY to WORLD
+    // if (_est->getWorkMode() != WorkMode::ARM_FIXED_WORLD)
+    // {
+    //     _highCmd->velG = _highCmd->velB + skew(_highCmd->angVelB) * (_est->getPosG() - _est->getPosB()) + _rotB_d * _velGCmd;
+    //     _highCmd->angVelG = _rotB_d * _angVelGCmd;
+    // }
+    // // position iteration
+    // _highCmd->posG += _highCmd->velG * _dt;
+    // _highCmd->quatG += quatDeriv(_highCmd->quatG, _highCmd->angVelG) * _dt;
+    // _highCmd->quatG /= _highCmd->quatG.norm();
 }
 
 void Planner::armJointPlan()
