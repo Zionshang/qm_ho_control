@@ -212,8 +212,6 @@ Task HierarchicalWbc::buildSwingLegTask(const Matrix34d &pos_feet, const Matrix3
     VectorXd b = VectorXd(3 * num_sw_);
 
     A.leftCols(nv_) = J_sw_;
-    // for (int i = 0; i < num_sw_; i++)
-    //     b.segment(3 * i, 3) = kp_sw_ * (_highCmd->posF.col(id_sw_(i)) - _est->getPosF().col(id_sw_(i))) + kd_sw_ * (_highCmd->velF.col(id_sw_(i)) - _est->getVelF().col(id_sw_(i))) - dJdq_sw_.segment(3 * i, 3);
 
     for (int i = 0; i < num_sw_; i++)
     {

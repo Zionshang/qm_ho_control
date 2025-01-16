@@ -48,10 +48,10 @@ private:
     Eigen::Matrix<double, 6, 3> fric_mat_; // Friction cone matrix  fric_mat_ * F <= fric_vec_
     Vector6d fric_vec_;                    // Friction cone vector  fric_mat_ * F <= fric_vec_
 
-    int nv_;
-    int dim_decision_vars_;
-    VectorXd id_sw_;     // stores the ID of swing leg
-    VectorXd sol_final_; // solution of fianl hierarchical optimization
+    int nv_;                // dimension of generalized velocity
+    int dim_decision_vars_; // dimension of decision variables
+    VectorXd id_sw_;        // stores the ID of swing leg
+    VectorXd sol_final_;    // solution of fianl hierarchical optimization
 
     int num_st_, num_sw_; // number of stance and swing leg
     MatrixXd M_;          // Matrix M in M*ddq + C = tau
