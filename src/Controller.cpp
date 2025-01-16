@@ -3,8 +3,8 @@
 Controller::Controller(Estimator *est, HighCmd *highCmd, LowCmd *lowCmd, WholeBodyDynamics *wbDyn)
     : _est(est), _lowCmd(lowCmd)
 {
-    _hieraOpt = new HierarchicalWbc(highCmd, est, wbDyn);
-    _tau.setZero();
+    _hieraOpt = new HierarchicalWbc(highCmd, wbDyn);
+    _tau.setZero(18);
 }
 
 Controller::~Controller()

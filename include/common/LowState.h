@@ -48,17 +48,17 @@ struct IMU
         quaternion[3] = 1;
     }
 
-    Quat getQuaternion()
+    Quaternion getQuaternion()
     {
-        return Quat(quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+        return Quaternion(quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
     }
-    Vec3 getGyro()
+    Vector3d getGyro()
     {
-        return Vec3(gyro[0], gyro[1], gyro[2]);
+        return Vector3d(gyro[0], gyro[1], gyro[2]);
     }
-    Vec3 getAccelerometer()
+    Vector3d getAccelerometer()
     {
-        return Vec3(accelerometer[0], accelerometer[1], accelerometer[2]);
+        return Vector3d(accelerometer[0], accelerometer[1], accelerometer[2]);
     }
 };
 
@@ -98,9 +98,9 @@ struct LowState
         currentTime = 0.0;
     }
 
-    Vec34 getQLeg()
+    Matrix34d getQLeg()
     {
-        Vec34 qLegs;
+        Matrix34d qLegs;
         for (int i = 0; i < 4; i++)
         {
             qLegs.col(i)(0) = motorLeg[3 * i].q;
@@ -110,9 +110,9 @@ struct LowState
         return qLegs;
     }
 
-    Vec34 getDqLeg()
+    Matrix34d getDqLeg()
     {
-        Vec34 qdLegs;
+        Matrix34d qdLegs;
         for (int i = 0; i < 4; i++)
         {
             qdLegs.col(i)(0) = motorLeg[3 * i].dq;
@@ -122,25 +122,25 @@ struct LowState
         return qdLegs;
     }
 
-    Vec6 getQArm()
+    Vector6d getQArm()
     {
-        Vec6 qArm;
+        Vector6d qArm;
         for (int i = 0; i < 6; i++)
             qArm(i) = motorArm[i].q;
         return qArm;
     }
 
-    Vec6 getDqArm()
+    Vector6d getDqArm()
     {
-        Vec6 dqArm;
+        Vector6d dqArm;
         for (int i = 0; i < 6; i++)
             dqArm(i) = motorArm[i].dq;
         return dqArm;
     }
 
-    Quat getQuaternion() { return imu.getQuaternion(); }
-    Vec3 getGyro() { return imu.getGyro(); }
-    Vec3 getAccelerometer() { return imu.getAccelerometer(); }
+    Quaternion getQuaternion() { return imu.getQuaternion(); }
+    Vector3d getGyro() { return imu.getGyro(); }
+    Vector3d getAccelerometer() { return imu.getAccelerometer(); }
     double getCurrentTime() { return currentTime; }
     double getTimeStep() { return timeStep; }
     UserCommand getUserCmd() { return userCmd; }

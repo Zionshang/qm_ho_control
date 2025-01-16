@@ -34,19 +34,19 @@ private:
     WorkMode _lastWorkMode;
 
     // body
-    Vec3 _velBMax, _angVelBMax; // the maximum of body linear velocity and body angular velocity
-    Vec3 _velBMin, _angVelBMin; // the minimum of body linear velocity and body angular velocity
-    Vec3 _velBCmd, _angVelBCmd; // expressed in BODY frame
+    Vector3d _velBMax, _angVelBMax; // the maximum of body linear velocity and body angular velocity
+    Vector3d _velBMin, _angVelBMin; // the minimum of body linear velocity and body angular velocity
+    Vector3d _velBCmd, _angVelBCmd; // expressed in BODY frame
 
     // gripper
-    Vec3 _velGMax, _angVelGMax; // the maximum of gripper linear velocity and gripper angular velocity
-    Vec3 _velGMin, _angVelGMin; // the minimum of gripper linear velocity and gripper angular velocity
-    Vec3 _velGCmd, _angVelGCmd; // expressed in BODY or WORLD frame
+    Vector3d _velGMax, _angVelGMax; // the maximum of gripper linear velocity and gripper angular velocity
+    Vector3d _velGMin, _angVelGMin; // the minimum of gripper linear velocity and gripper angular velocity
+    Vector3d _velGCmd, _angVelGCmd; // expressed in BODY or WORLD frame
 
     // arm joint
-    Vec6 _qAJMax, _dqAJMax; // the maximum of arm joint position and arm joint velocity
-    Vec6 _qAJMin, _dqAJMin; // the minimum of arm joint position and arm joint velocity
-    Vec6 _dqAJCmd;          // expressed in joint LOCAL frame
+    Vector6d _qAJMax, _dqAJMax; // the maximum of arm joint position and arm joint velocity
+    Vector6d _qAJMin, _dqAJMin; // the minimum of arm joint position and arm joint velocity
+    Vector6d _dqAJCmd;          // expressed in joint LOCAL frame
 
     // Generalized
     VecNq _posGenCmd;

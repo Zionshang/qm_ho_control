@@ -19,10 +19,10 @@ public:
     explicit HoQp(const Task &task) : HoQp(task, nullptr){};
     HoQp(Task task, HoQpPtr higherProblem);
 
-    MatX getStackedZMatrix() const { return _stackedZ; }
+    MatrixXd getStackedZMatrix() const { return _stackedZ; }
     Task getStackedTasks() const { return _stackedTasks; }
-    VecX getStackedSlackSol() const { return _stackedSlackSol; }
-    VecX getSolutions() const { return _xPrev + _stackedZPrev * _decisionVarsSol; }
+    VectorXd getStackedSlackSol() const { return _stackedSlackSol; }
+    VectorXd getSolutions() const { return _xPrev + _stackedZPrev * _decisionVarsSol; }
 
 private:
     void initVars();
@@ -45,21 +45,21 @@ private:
     int _dimDecisionVars;  // dimension of decision variables, = cols of inequal/equal constraints
     int _dimPrevSlackVars; // dimension of the slack variable stacked by the previous tasks
 
-    MatX _stackedZPrev;        // null space of stacked higher task
-    MatX _stackedZ;            // null space of stacked (higher tasks + current task)
-    VecX _xPrev;               // solution of previous higher tasks
-    VecX _decisionVarsSol;     // solution of current task in decisiton variables
-    VecX _slackVarsSol;        // solution of current task in slack variables
-    VecX _stackedSlackSolPrev; // stacked slack variables soluted by each higher tasks
-    VecX _stackedSlackSol;     // stacked slack variables soluted by (each higher tasks + current task)
+    MatrixXd _stackedZPrev;        // null space of stacked higher task
+    MatrixXd _stackedZ;            // null space of stacked (higher tasks + current task)
+    VectorXd _xPrev;               // solution of previous higher tasks
+    VectorXd _decisionVarsSol;     // solution of current task in decisiton variables
+    VectorXd _slackVarsSol;        // solution of current task in slack variables
+    VectorXd _stackedSlackSolPrev; // stacked slack variables soluted by each higher tasks
+    VectorXd _stackedSlackSol;     // stacked slack variables soluted by (each higher tasks + current task)
 
-    MatX _zeroNvNx; // zero matrix [_dimSlackVars, _dimDecisionVars].Used many times in build QP matrix
-    MatX _eyeNvNv;  // Identity matrix [_dimSlackVars, _dimSlackVars. Used many times in build QP matrix
+    MatrixXd _zeroNvNx; // zero matrix [_dimSlackVars, _dimDecisionVars].Used many times in build QP matrix
+    MatrixXd _eyeNvNv;  // Identity matrix [_dimSlackVars, _dimSlackVars. Used many times in build QP matrix
 
     /************************QP form***************************
                  min  0.5 * x^T H x + c^T x
                 s.t.  D^T x <= f
     **********************************************************/
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> _H, _D; // matrix in QP form
-    VecX _c, _f;
+    VectorXd _c, _f;
 };

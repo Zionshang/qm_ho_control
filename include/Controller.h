@@ -18,5 +18,5 @@ private:
     LowCmd *_lowCmd;
     HierarchicalWbc *_hieraOpt;
 
-    Vec18 _tau;
+    VectorXd _tau;
 };

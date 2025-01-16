@@ -20,7 +20,7 @@ WholeBodyDynamics::WholeBodyDynamics()
 void WholeBodyDynamics::calcZeroAccKinematics(const VecNq &q, const VecNv &v)
 {
     VecNv a;
-    a.fill(0.);
+    a.setZero();
     pinocchio::forwardKinematics(_model, _data, q, v, a);
 }
 
@@ -28,10 +28,10 @@ void WholeBodyDynamics::calcZeroAccKinematics(const VecNq &q, const VecNv &v)
  * @brief Calculate and set the position and velocity of whole body center of mass
  * @param {VecNq} &q: Generalized position. dim:[nq x 1]
  * @param {VecNv} &v: Generalized velocity. dim:[nv x 1]
- * @param {Vec3} &posCoM: position of CoM, expressed in WORLD frame
- * @param {Vec3} &velCoM: velocity of CoM, expressed in WORLD frame
+ * @param {Vector3d} &posCoM: position of CoM, expressed in WORLD frame
+ * @param {Vector3d} &velCoM: velocity of CoM, expressed in WORLD frame
  */
-void WholeBodyDynamics::setCoMPosVel(const VecNq &q, const VecNv &v, Vec3 &posCoM, Vec3 &velCoM)
+void WholeBodyDynamics::setCoMPosVel(const VecNq &q, const VecNv &v, Vector3d &posCoM, Vector3d &velCoM)
 {
     pinocchio::centerOfMass(_model, _data, q, v, false);
     posCoM = _data.com[0];
@@ -42,10 +42,10 @@ void WholeBodyDynamics::setCoMPosVel(const VecNq &q, const VecNv &v, Vec3 &posCo
  * @brief Calculate and set whole body Jacobian of the foot.
  * @param {VecNq} &q: Generalized position. dim:[nq x 1]
  * @param {int} idLeg: Can only be 0,1,2,3
- * @param {Jacb} Jacobian to be set. dim:[6 x nv]
+ * @param {Matrix6xd} Jacobian to be set. dim:[6 x nv]
  * @note This jacobian maps q to velocity of FOOT, expressed in WORLD frame
  */
-void WholeBodyDynamics::setFootJacob(const VecNq &q, int idLeg, Jacb &J)
+void WholeBodyDynamics::setFootJacob(const VecNq &q, int idLeg, Matrix6xd &J)
 {
     J.setZero();
     pinocchio::computeFrameJacobian(_model, _data, q, _idFeet[idLeg], pinocchio::LOCAL_WORLD_ALIGNED, J);
@@ -56,10 +56,10 @@ void WholeBodyDynamics::setFootJacob(const VecNq &q, int idLeg, Jacb &J)
  * @param {VecNq} &q: Generalized position. dim:[nq x 1]
  * @param {VecNv} &v: Generalized velocity. dim:[nv x 1]
  * @param {int} idLeg: Can only be 0,1,2,3
- * @param {Vec6} &dJdq: Jacobian's derivative times v, which is in "a = J * ddq + dJ * dq"
+ * @param {Vector6d} &dJdq: Jacobian's derivative times v, which is in "a = J * ddq + dJ * dq"
  * @note You must call WholeBodyDynamics::updateKinematics() in advance
  */
-void WholeBodyDynamics::setFootdJdq(const VecNq &q, const VecNv &v, int idLeg, Vec6 &dJdq)
+void WholeBodyDynamics::setFootdJdq(const VecNq &q, const VecNv &v, int idLeg, Vector6d &dJdq)
 {
     // VecNv a;
     // a.fill(0.);
@@ -74,7 +74,7 @@ void WholeBodyDynamics::setFootdJdq(const VecNq &q, const VecNv &v, int idLeg, V
  * @param {MatNv} &M: The M to be set
  * @param {VecNv} &C: The C to be set
  */
-void WholeBodyDynamics::setMandC(const VecNq &q, const VecNv &v, MatNv &M, VecNv &C)
+void WholeBodyDynamics::setMandC(const VecNq &q, const VecNv &v, MatrixXd &M, VecNv &C)
 {
     pinocchio::crba(_model, _data, q);
     pinocchio::nonLinearEffects(_model, _data, q, v);
@@ -86,12 +86,12 @@ void WholeBodyDynamics::setMandC(const VecNq &q, const VecNv &v, MatNv &M, VecNv
 /**
  * @brief Calculate and set whole body Jacobian of the body.
  * @param {VecNq} &q: Generalized position. dim:[nq x 1]
- * @param {Jacb} &J: Jacobian to be set. dim:[6 x nv]
+ * @param {Matrix6xd} &J: Jacobian to be set. dim:[6 x nv]
  * @note This jacobian maps q to velocity of BODY, expressed in WORLD frame
  */
-void WholeBodyDynamics::setBodyJacob(const VecNq &q, Jacb &J)
+void WholeBodyDynamics::setBodyJacob(const VecNq &q, Matrix6xd &J)
 {
-    J.fill(0.);
+    J.setZero();
     pinocchio::computeFrameJacobian(_model, _data, q, _idBody, pinocchio::LOCAL_WORLD_ALIGNED, J);
 }
 
@@ -99,10 +99,10 @@ void WholeBodyDynamics::setBodyJacob(const VecNq &q, Jacb &J)
  * @brief Calculate and set whole body Jacobian's derivative times generalized velocity of BODY. dim:[6 x 1]
  * @param {VecNq} &q: Generalized position. dim:[nq x 1]
  * @param {VecNv} &v: Generalized velocity. dim:[nv x 1]
- * @param {Vec6} &dJdq: Jacobian's derivative times v, which is in "a = J * ddq + dJ * dq"
+ * @param {Vector6d} &dJdq: Jacobian's derivative times v, which is in "a = J * ddq + dJ * dq"
  * @note You must call WholeBodyDynamics::updateKinematics() in advance
  */
-void WholeBodyDynamics::setBodydJdq(const VecNq &q, const VecNv &v, Vec6 &dJdq)
+void WholeBodyDynamics::setBodydJdq(const VecNq &q, const VecNv &v, Vector6d &dJdq)
 {
     // VecNv a;
     // a.fill(0.);
@@ -113,12 +113,12 @@ void WholeBodyDynamics::setBodydJdq(const VecNq &q, const VecNv &v, Vec6 &dJdq)
 /**
  * @brief Calculate and set whole body Jacobian of the CoM.
  * @param {VecNq} &q: Generalized position. dim:[nq x 1]
- * @param {Jacb} &J: Jacobian to be set. dim:[6 x nv]
+ * @param {Matrix6xd} &J: Jacobian to be set. dim:[6 x nv]
  * @note This jacobian maps q to velocity of COM, expressed in WORLD frame
  */
-void WholeBodyDynamics::setCoMJacob(const VecNq &q, JacbP &J)
+void WholeBodyDynamics::setCoMJacob(const VecNq &q, Matrix3xd &J)
 {
-    J.fill(0.);
+    J.setZero();
     pinocchio::jacobianCenterOfMass(_model, _data, q, false);
     J = _data.Jcom;
 }
@@ -127,9 +127,9 @@ void WholeBodyDynamics::setCoMJacob(const VecNq &q, JacbP &J)
  * @brief Calculate and set whole body Jacobian's derivative times generalized velocity of COM. dim:[6 x 1]
  * @param {VecNq} &q: Generalized position. dim:[nq x 1]
  * @param {VecNv} &v: Generalized velocity. dim:[nv x 1]
- * @param {Vec6} &dJdq: Jacobian's derivative times v, which is in "a = J * ddq + dJ * dq"
+ * @param {Vector6d} &dJdq: Jacobian's derivative times v, which is in "a = J * ddq + dJ * dq"
  */
-void WholeBodyDynamics::setCoMdJdq(const VecNq &q, const VecNv &v, Vec3 &dJdq)
+void WholeBodyDynamics::setCoMdJdq(const VecNq &q, const VecNv &v, Vector3d &dJdq)
 {
     // VecNv a;
     // a.fill(0.);
@@ -140,12 +140,12 @@ void WholeBodyDynamics::setCoMdJdq(const VecNq &q, const VecNv &v, Vec3 &dJdq)
 /**
  * @brief Calculate and set whole body Jacobian of the GRIPPER.
  * @param {VecNq} &q: Generalized position. dim:[nq x 1]
- * @param {Jacb} &J: Jacobian to be set. dim:[6 x nv]
+ * @param {Matrix6xd} &J: Jacobian to be set. dim:[6 x nv]
  * @note This jacobian maps q to velocity of GRIPPER, expressed in WORLD frame
  */
-void WholeBodyDynamics::setGripperJacob(const VecNq &q, Jacb &J)
+void WholeBodyDynamics::setGripperJacob(const VecNq &q, Matrix6xd &J)
 {
-    J.fill(0.);
+    J.setZero();
     pinocchio::computeFrameJacobian(_model, _data, q, _idGripper, pinocchio::LOCAL_WORLD_ALIGNED, J);
 }
 
@@ -153,10 +153,10 @@ void WholeBodyDynamics::setGripperJacob(const VecNq &q, Jacb &J)
  * @brief Calculate and set whole body Jacobian's derivative times generalized velocity of gripper. dim:[6 x 1]
  * @param {VecNq} &q: Generalized position. dim:[nq x 1]
  * @param {VecNv} &v: Generalized velocity. dim:[nv x 1]
- * @param {Vec6} &dJdq: Jacobian's derivative times v, which is in "a = J * ddq + dJ * dq"
+ * @param {Vector6d} &dJdq: Jacobian's derivative times v, which is in "a = J * ddq + dJ * dq"
  * @note You must call WholeBodyDynamics::updateKinematics() in advance
  */
-void WholeBodyDynamics::setGripperdJdq(const VecNq &q, const VecNv &v, Vec6 &dJdq)
+void WholeBodyDynamics::setGripperdJdq(const VecNq &q, const VecNv &v, Vector6d &dJdq)
 {
     // VecNv a;
     // a.fill(0.);

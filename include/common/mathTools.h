@@ -4,12 +4,12 @@
 #include <iostream>
 /**
  * @brief: convert rotation matrix to ZYX Euler angle
- * @param {Mat3} &R: rotation matrix
- * @return {Vec3} ZYX euler anlge
+ * @param {Matrix3d} &R: rotation matrix
+ * @return {Vector3d} ZYX euler anlge
  */
-inline Vec3 rotMat2RPY(const Mat3 &R)
+inline Vector3d rotMat2RPY(const Matrix3d &R)
 {
-    Vec3 rpy;
+    Vector3d rpy;
     rpy(0) = atan2(R(2, 1), R(2, 2));
     rpy(1) = asin(-R(2, 0));
     rpy(2) = atan2(R(1, 0), R(0, 0));
@@ -18,12 +18,12 @@ inline Vec3 rotMat2RPY(const Mat3 &R)
 
 /**
  * @brief: convert vector to skew-symmetric matrix
- * @param {Vec3} &v: vector
- * @return {Mat3} skew-symmetric matrix
+ * @param {Vector3d} &v: vector
+ * @return {Matrix3d} skew-symmetric matrix
  */
-inline Mat3 skew(const Vec3 &v)
+inline Matrix3d skew(const Vector3d &v)
 {
-    Mat3 m;
+    Matrix3d m;
     m << 0, -v(2), v(1),
         v(2), 0, -v(0),
         -v(1), v(0), 0;
@@ -79,11 +79,11 @@ inline T saturation(const T a, const T &min, const T &max)
 /***************************************Quaternion***********************************************/
 /**
  * @brief: convert quaternion to rotation matrix
- * @param {Quat} &q: quaternion [x,y,z,w]
+ * @param {Quaternion} &q: quaternion [x,y,z,w]
  * @return {RotMat} rotation matrix
  * @note quaternion must be unit ( ||q|| = 1 )
  */
-inline RotMat quat2RotMat(const Quat &q)
+inline RotMat quat2RotMat(const Quaternion &q)
 {
     double e0 = q(0); // x
     double e1 = q(1); // y
@@ -99,18 +99,18 @@ inline RotMat quat2RotMat(const Quat &q)
 
 /**
  * @brief convert quaternion to ZYX Euler angle
- * @param {Quat} &q: quaternion [x,y,z,w]
- * @return {Vec3} ZYX Euler angle
+ * @param {Quaternion} &q: quaternion [x,y,z,w]
+ * @return {Vector3d} ZYX Euler angle
  * @warning quaternion must be unit ( ||q|| = 1 )
  */
-inline Vec3 quat2RPY(const Quat &q)
+inline Vector3d quat2RPY(const Quaternion &q)
 {
     double qx = q(0); // x
     double qy = q(1); // y
     double qz = q(2); // z
     double qw = q(3); // w
 
-    Vec3 RPY;
+    Vector3d RPY;
 
     // roll (x-axis rotation)
     double sinr_cosp = 2 * (qw * qx + qy * qz);
@@ -132,7 +132,7 @@ inline Vec3 quat2RPY(const Quat &q)
     return RPY;
 }
 
-inline Quat rpy2Quat(const Vec3 &RPY)
+inline Quaternion rpy2Quat(const Vector3d &RPY)
 {
     Eigen::AngleAxisd rotationZ(RPY(2), Eigen::Vector3d::UnitZ());
     Eigen::AngleAxisd rotationY(RPY(1), Eigen::Vector3d::UnitY());
@@ -145,42 +145,42 @@ inline Quat rpy2Quat(const Vec3 &RPY)
 /**
  * @brief: get the quaternion obtained by rotation about the X-axis
  * @param {double} theta: rotation angle
- * @return {Quat} quaternion
+ * @return {Quaternion} quaternion
  */
-inline Quat quatX(double theta)
+inline Quaternion quatX(double theta)
 {
-    return Quat(std::sin(theta / 2), 0, 0, std::cos(theta / 2));
+    return Quaternion(std::sin(theta / 2), 0, 0, std::cos(theta / 2));
 }
 
 /**
  * @brief: get the quaternion obtained by rotation about the Y-axis
  * @param {double} theta: rotation angle
- * @return {Quat} quaternion
+ * @return {Quaternion} quaternion
  */
-inline Quat quatY(double theta)
+inline Quaternion quatY(double theta)
 {
-    return Quat(0, std::sin(theta / 2), 0, std::cos(theta / 2));
+    return Quaternion(0, std::sin(theta / 2), 0, std::cos(theta / 2));
 }
 
 /**
  * @brief: get the quaternion obtained by rotation about the Z-axis
  * @param {double} theta: rotation angle
- * @return {Quat} quaternion
+ * @return {Quaternion} quaternion
  */
-inline Quat quatZ(double theta)
+inline Quaternion quatZ(double theta)
 {
-    return Quat(0, 0, std::sin(theta / 2), std::cos(theta / 2));
+    return Quaternion(0, 0, std::sin(theta / 2), std::cos(theta / 2));
 }
 
 /**
  * @brief: Multiplication between two quaternion
- * @param {Quat} &q1
- * @param {Quat} &q2
- * @return {Quat} q1 * q2
+ * @param {Quaternion} &q1
+ * @param {Quaternion} &q2
+ * @return {Quaternion} q1 * q2
  */
-inline Quat quatTimes(const Quat &q1, const Quat &q2)
+inline Quaternion quatTimes(const Quaternion &q1, const Quaternion &q2)
 {
-    Quat out = Quat(q1(3) * q2(0) + q1(0) * q2(3) + q1(1) * q2(2) - q1(2) * q2(1),
+    Quaternion out = Quaternion(q1(3) * q2(0) + q1(0) * q2(3) + q1(1) * q2(2) - q1(2) * q2(1),
                     q1(3) * q2(1) - q1(0) * q2(2) + q1(1) * q2(3) + q1(2) * q2(0),
                     q1(3) * q2(2) + q1(0) * q2(1) - q1(1) * q2(0) + q1(2) * q2(3),
                     q1(3) * q2(3) - q1(0) * q2(0) - q1(1) * q2(1) - q1(2) * q2(2));
@@ -189,23 +189,23 @@ inline Quat quatTimes(const Quat &q1, const Quat &q2)
 
 /**
  * @brief: Conjugation of quaternions
- * @param {Quat} &q
- * @return {Quat} q* (Conjugation of quaternions)
+ * @param {Quaternion} &q
+ * @return {Quaternion} q* (Conjugation of quaternions)
  */
-inline Quat quatConj(const Quat &q)
+inline Quaternion quatConj(const Quaternion &q)
 {
-    return Quat(-q(0), -q(1), -q(2), q(3));
+    return Quaternion(-q(0), -q(1), -q(2), q(3));
 }
 
 /**
  * @brief: caculate the 3D rotation error from quaternion
- * @param {Quat} qd: desired quaternion
- * @param {Quat} q: current quaternion
- * @return {Vec3} 3D rotation err. err = qd - q
+ * @param {Quaternion} qd: desired quaternion
+ * @param {Quaternion} q: current quaternion
+ * @return {Vector3d} 3D rotation err. err = qd - q
  */
-inline Vec3 quatErr(const Quat &qd, const Quat &q)
+inline Vector3d quatErr(const Quaternion &qd, const Quaternion &q)
 {
-    Quat qDiff = quatTimes(qd, quatConj(q));
+    Quaternion qDiff = quatTimes(qd, quatConj(q));
     if (qDiff(3) < 0)
         qDiff = -qDiff;
 
@@ -214,11 +214,11 @@ inline Vec3 quatErr(const Quat &qd, const Quat &q)
 
 /**
  * @brief: caculate the derivative of quaternion
- * @param {Quat} &q: a unit quaternion representing the orientation of B relative to A
- * @param {Vec3} w: angular velocity, expressed in frame B
- * @return {Quat} derivative of quaternion
+ * @param {Quaternion} &q: a unit quaternion representing the orientation of B relative to A
+ * @param {Vector3d} w: angular velocity, expressed in frame B
+ * @return {Quaternion} derivative of quaternion
  */
-inline Quat quatDeriv(const Quat &q, const Vec3 &w)
+inline Quaternion quatDeriv(const Quaternion &q, const Vector3d &w)
 {
     Eigen::Matrix<double, 4, 3> Q;
     Q << q(3), -q(2), q(1),
@@ -264,7 +264,7 @@ inline void cubicSpline(const double &pos0, const double &posf, const double &ve
  * @brief Cubic polynomial interpolation
  */
 template <typename T>
-inline void cubicSpline(const VecX &pos0, const VecX &posf, const VecX &vel0, const VecX &velf,
+inline void cubicSpline(const VectorXd &pos0, const VectorXd &posf, const VectorXd &vel0, const VectorXd &velf,
                         const double &t0, const double &tf, const double &tnow,
                         Eigen::DenseBase<T> &posNow, Eigen::DenseBase<T> &velNow)
 {
@@ -280,8 +280,8 @@ inline void cubicSpline(const VecX &pos0, const VecX &posf, const VecX &vel0, co
     }
     else
     {
-        VecX a0, a1, a2, a3; // pos = a0 + a1*(tnow-t0) + a2*(tnow-t0)^2 + a3*(tnow-t0)^3
-        VecX h = posf - pos0;
+        VectorXd a0, a1, a2, a3; // pos = a0 + a1*(tnow-t0) + a2*(tnow-t0)^2 + a3*(tnow-t0)^3
+        VectorXd h = posf - pos0;
         double T0f = tf - t0;
         a0 = pos0;
         a1 = vel0;

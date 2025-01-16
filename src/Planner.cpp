@@ -75,7 +75,7 @@ void Planner::showDemo(const RobotState &robot_state, const GaitState &gait_stat
     // arm joint plan
     // _highCmd->qArm.setZero();
     // _highCmd->dqArm.setZero();
-    Vec6 qArm_d0, qArm_d1, qArm_d2, qArm_d3, qArm_d4;
+    Vector6d qArm_d0, qArm_d1, qArm_d2, qArm_d3, qArm_d4;
     double t1, t2, t3, t4, tTemp;
     qArm_d0.setZero();
     qArm_d1 << 0, 3, -2.5, 0.5, 0, 0;
@@ -132,7 +132,7 @@ void Planner::showFrontMaxJointVelDemo(const RobotState &robot_state, const Gait
     // arm joint plan
     // _highCmd->qArm.setZero();
     // _highCmd->dqArm.setZero();
-    Vec6 qArm_d0, qArm_d1;
+    Vector6d qArm_d0, qArm_d1;
     double t1;
     qArm_d0.setZero();
     qArm_d1 << 0, 3.2, -2.6, 0.9, 0, 0;
@@ -152,20 +152,20 @@ void Planner::showPickingDemo(const RobotState &robot_state, const GaitState &ga
     double tForward, tTrun, tSideway, tFinal;
     tForward = 5, tTrun = tForward + 5, tSideway = tTrun + 8, tFinal = tSideway + 5;
 
-    Vec3 rpyForward, rpyTurn, rpySideway, rpyFinal, rpyNow;
+    Vector3d rpyForward, rpyTurn, rpySideway, rpyFinal, rpyNow;
     rpyForward << 0, 15 * M_PI / 180, 0;
     rpyTurn << 0, 0, M_PI;
     rpySideway << -5 * M_PI / 180, 15 * M_PI / 180, M_PI;
     rpyFinal << 0, 0, M_PI;
 
-    Vec3 posForward, posTurn, posSideway, posFinal, posInitial;
+    Vector3d posForward, posTurn, posSideway, posFinal, posInitial;
     posForward << 1.5, 0, 0.42;
     posTurn << 1.5, 0, 0.42;
     posSideway << 0.75, 0, 0.35;
     posFinal << 0, 0, 0.42;
     posInitial << 0, 0, 0.42;
 
-    Vec6 qArmForward, qArmTurn, qArmSideway, qArmFinal;
+    Vector6d qArmForward, qArmTurn, qArmSideway, qArmFinal;
     qArmForward << 0, 3, -2.5, 0.5, 0, 0;
     qArmTurn.setZero();
     qArmSideway << 3.14 / 2, 2.45, -1.68, 0.5, 0, 0;
@@ -266,7 +266,7 @@ void Planner::showSideMaxJointVelDemo(const RobotState &robot_state, const GaitS
     // arm joint plan
     // _highCmd->qArm.setZero();
     // _highCmd->dqArm.setZero();
-    Vec6 qArm_d0, qArm_d1;
+    Vector6d qArm_d0, qArm_d1;
     double t1;
     qArm_d0.setZero();
     qArm_d1 << -M_PI / 2, 3.2, -2.6, 0.9, 0, 0;

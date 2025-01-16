@@ -45,7 +45,7 @@ KalmanFilterEstimator::KalmanFilterEstimator(LowState *lowState, PinocchioInterf
     // 初始化预测误差
     P_ = 100. * Q_init_;
 }
-void KalmanFilterEstimator::update(const VecInt4 &contact_flag)
+void KalmanFilterEstimator::update(const Vector4i &contact_flag)
 {
     pos_body_ = x_hat_.segment<3>(0);
     vel_body_ = x_hat_.segment<3>(3);

@@ -11,6 +11,7 @@ FootPlanner::FootPlanner()
     ky_ = 0.005;
     kyaw_ = 0.005;
 
+    // TODO: 使用pinocchio计算
     Vec24 posStill;                               // XY position when stance in still
     posStill << 0.2407, -0.2407, 0.2407, -0.2407, // clang-format off
                 -0.138,  -0.138,  0.138,   0.138;  // clang-foramt on
@@ -24,7 +25,7 @@ FootPlanner::FootPlanner()
 
 void FootPlanner::update(const BodyState &body_state, const GaitState &gait_state, const FootState &feet_state,
                          const Vector3d &vel_body_ref, const Vector3d &angvel_body_ref,
-                         Vec34 &pos_feet_ref, Vec34 &vel_feet_ref)
+                         Matrix34d &pos_feet_ref, Matrix34d &vel_feet_ref)
 {
     const auto & pos_feet = feet_state.pos;
      
@@ -55,13 +56,13 @@ void FootPlanner::update(const BodyState &body_state, const GaitState &gait_stat
     }
 }
 
-Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state, const Vector3d &vel_body_ref,
+Vector3d FootPlanner::calcFootholdPosition(const BodyState &body_state, const Vector3d &vel_body_ref,
                                        const Vector3d &angvel_body_ref, int leg_id)
 {
-    const Vec3 pos_body = body_state.pos;
-    const Vec3 vel_body = body_state.vel;
+    const Vector3d pos_body = body_state.pos;
+    const Vector3d vel_body = body_state.vel;
     const RotMat rotmat_body = body_state.rotmat;
-    const Vec3 angvel_body = body_state.angvel;
+    const Vector3d angvel_body = body_state.angvel;
 
     // TODO: 是否需要改成相对于body系下
     // Translation in x,y axis
@@ -75,16 +76,16 @@ Vec3 FootPlanner::calcFootholdPosition(const BodyState &body_state, const Vector
     next_step_(0) += feet_radius_(leg_id) * cos(yaw_ + feet_init_angle(leg_id) + next_yaw_);
     next_step_(1) += feet_radius_(leg_id) * sin(yaw_ + feet_init_angle(leg_id) + next_yaw_);
 
-    Vec3 footholdPos;
+    Vector3d footholdPos;
     footholdPos = pos_body + next_step_;
     footholdPos(2) = offset_foot_;
 
     return footholdPos;
 }
 
-Vec3 FootPlanner::calcReferenceFootPosition(int leg_id)
+Vector3d FootPlanner::calcReferenceFootPosition(int leg_id)
 {
-    Vec3 footPos;
+    Vector3d footPos;
 
     footPos(0) = cycloidXYPosition(pos_start_.col(leg_id)(0), pos_end_.col(leg_id)(0), phase_(leg_id));
     footPos(1) = cycloidXYPosition(pos_start_.col(leg_id)(1), pos_end_.col(leg_id)(1), phase_(leg_id));
@@ -93,9 +94,9 @@ Vec3 FootPlanner::calcReferenceFootPosition(int leg_id)
     return footPos;
 }
 
-Vec3 FootPlanner::calcReferenceFootVelocity(int leg_id)
+Vector3d FootPlanner::calcReferenceFootVelocity(int leg_id)
 {
-    Vec3 footVel;
+    Vector3d footVel;
 
     footVel(0) = cycloidXYVelocity(pos_start_.col(leg_id)(0), pos_end_.col(leg_id)(0), phase_(leg_id));
     footVel(1) = cycloidXYVelocity(pos_start_.col(leg_id)(1), pos_end_.col(leg_id)(1), phase_(leg_id));

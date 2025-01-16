@@ -16,17 +16,17 @@ public:
     int getNq() { return _nq; }
     int getNv() { return _nv; }
     void calcZeroAccKinematics(const VecNq &q, const VecNv &v);
-    void setCoMPosVel(const VecNq &q, const VecNv &v, Vec3 &posCoM, Vec3 &velCoM);
-    void setFootJacob(const VecNq &q, int idLeg, Jacb &J);
-    void setFootdJdq(const VecNq &q, const VecNv &v, int idLeg, Vec6 &dJdq);
-    void setMandC(const VecNq &q, const VecNv &v, MatNv &M, VecNv &C);
-    void setBodyJacob(const VecNq &q, Jacb &J);
-    void setBodydJdq(const VecNq &q, const VecNv &v, Vec6 &dJdq);
-    void setCoMJacob(const VecNq &q, JacbP &J);
-    void setCoMdJdq(const VecNq &q, const VecNv &v, Vec3 &dJdq);
+    void setCoMPosVel(const VecNq &q, const VecNv &v, Vector3d &posCoM, Vector3d &velCoM);
+    void setFootJacob(const VecNq &q, int idLeg, Matrix6xd &J);
+    void setFootdJdq(const VecNq &q, const VecNv &v, int idLeg, Vector6d &dJdq);
+    void setMandC(const VecNq &q, const VecNv &v, MatrixXd &M, VecNv &C);
+    void setBodyJacob(const VecNq &q, Matrix6xd &J);
+    void setBodydJdq(const VecNq &q, const VecNv &v, Vector6d &dJdq);
+    void setCoMJacob(const VecNq &q, Matrix3xd &J);
+    void setCoMdJdq(const VecNq &q, const VecNv &v, Vector3d &dJdq);
 
-    void setGripperJacob(const VecNq &q, Jacb &J);
-    void setGripperdJdq(const VecNq &q, const VecNv &v, Vec6 &dJdq);
+    void setGripperJacob(const VecNq &q, Matrix6xd &J);
+    void setGripperdJdq(const VecNq &q, const VecNv &v, Vector6d &dJdq);
 
 private:
     pinocchio::Model _model;

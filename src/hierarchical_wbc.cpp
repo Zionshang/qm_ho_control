@@ -1,7 +1,7 @@
 #include "hierarchical_wbc.hpp"
 
-HierarchicalWbc::HierarchicalWbc(HighCmd *highCmd, Estimator *est, WholeBodyDynamics *wbDyn)
-    : _highCmd(highCmd), _est(est), _wbDyn(wbDyn)
+HierarchicalWbc::HierarchicalWbc(HighCmd *highCmd, WholeBodyDynamics *wbDyn)
+    : _highCmd(highCmd), _wbDyn(wbDyn)
 {
     _nv = _wbDyn->getNv();
     _fricRatio = 0.7;
@@ -20,6 +20,15 @@ HierarchicalWbc::HierarchicalWbc(HighCmd *highCmd, Estimator *est, WholeBodyDyna
     // PD paramerter
     std::string configFile = getProjectPath() + "/config/config.yml";
     paramInit(configFile);
+
+    for (int i = 0; i < 4; i++)
+    {
+        _Jfeet[i].setZero(6, _nv);
+    }
+
+    _Jbody.setZero(6, _nv);
+    _Jcom.setZero(3, _nv);
+    _M.setZero(_nv, _nv);
 }
 
 HierarchicalWbc::~HierarchicalWbc()
@@ -27,7 +36,7 @@ HierarchicalWbc::~HierarchicalWbc()
     delete _wbDyn;
 }
 
-void HierarchicalWbc::calTau(const RobotState &robot_state, const Vector4i contact, Vec18 &tau)
+void HierarchicalWbc::calTau(const RobotState &robot_state, const Vector4i contact, VectorXd &tau)
 {
     // struct timeval t1, t2;
     // gettimeofday(&t1, NULL);
@@ -117,7 +126,6 @@ void HierarchicalWbc::updateJacobian(const VectorXd &pos_gen, const VectorXd &ve
             indexSw++;
         }
     }
-
     // body Jacobian
     _wbDyn->setBodyJacob(pos_gen, _Jbody);
     _wbDyn->setBodydJdq(pos_gen, vel_gen, _dJdqbody);
@@ -126,82 +134,82 @@ void HierarchicalWbc::updateJacobian(const VectorXd &pos_gen, const VectorXd &ve
     _wbDyn->setCoMJacob(pos_gen, _Jcom);
     _wbDyn->setCoMdJdq(pos_gen, vel_gen, _dJdqcom);
 
-    // gripper Jacobian
-    _wbDyn->setGripperJacob(pos_gen, _Jgrip);
-    _wbDyn->setGripperdJdq(pos_gen, vel_gen, _dJdqgrip);
+    // // gripper Jacobian
+    // _wbDyn->setGripperJacob(pos_gen, _Jgrip);
+    // _wbDyn->setGripperdJdq(pos_gen, vel_gen, _dJdqgrip);
 }
 
 Task HierarchicalWbc::buildFloatingBaseEomTask()
 {
-    MatX A = (MatX(6, _dimDecisionVars) << _M.topRows(6), -(_Jst.leftCols(6)).transpose()).finished();
-    VecX b = -_C.topRows(6);
+    MatrixXd A = (MatrixXd(6, _dimDecisionVars) << _M.topRows(6), -(_Jst.leftCols(6)).transpose()).finished();
+    VectorXd b = -_C.topRows(6);
 
-    return {A, b, MatX(), VecX()};
+    return {A, b, MatrixXd(), VectorXd()};
 }
 
 Task HierarchicalWbc::buildNoContactMotionTask()
 {
-    MatX A = MatX::Zero(3 * _nSt, _dimDecisionVars);
+    MatrixXd A = MatrixXd::Zero(3 * _nSt, _dimDecisionVars);
     A.topLeftCorner(3 * _nSt, _nv) = _Jst;
-    VecX b = -_dJdqst;
+    VectorXd b = -_dJdqst;
 
-    return {A, b, MatX(), VecX()};
+    return {A, b, MatrixXd(), VectorXd()};
 }
 
 Task HierarchicalWbc::buildFrictionConeTask()
 {
-    MatX D = MatX::Zero(6 * _nSt, _dimDecisionVars);
-    VecX f = VecX(6 * _nSt);
+    MatrixXd D = MatrixXd::Zero(6 * _nSt, _dimDecisionVars);
+    VectorXd f = VectorXd(6 * _nSt);
     for (int i = 0; i < _nSt; i++)
     {
         D.block(6 * i, _nv + 3 * i, 6, 3) = _fricMat;
         f.segment(6 * i, 6) = _fricVec;
     }
 
-    return {MatX(), VecX(), D, f};
+    return {MatrixXd(), VectorXd(), D, f};
 }
 
 Task HierarchicalWbc::buildBodyLinearTask(const Vector3d &pos_body, const Vector3d &vel_body,
                                           const Vector3d &pos_body_ref, const Vector3d &vel_body_ref)
 {
-    MatX A = MatX::Zero(3, _dimDecisionVars);
-    VecX b = VecX(3);
+    MatrixXd A = MatrixXd::Zero(3, _dimDecisionVars);
+    VectorXd b = VectorXd(3);
 
     // body linear motion tracking
     A.leftCols(_nv) = _Jbody.topRows(3);
     b = _KpPos * (pos_body_ref - pos_body) + _KdPos * (vel_body_ref - vel_body) - _dJdqbody.head(3);
 
-    return {A, b, MatX(), VecX()};
+    return {A, b, MatrixXd(), VectorXd()};
 }
 
 Task HierarchicalWbc::buildComLinearTask(const Vector3d &pos_com, const Vector3d &vel_com,
                                          const Vector3d &pos_com_ref, const Vector3d &vel_com_ref)
 {
-    MatX A = MatX::Zero(3, _dimDecisionVars);
-    VecX b = VecX(3);
+    MatrixXd A = MatrixXd::Zero(3, _dimDecisionVars);
+    VectorXd b = VectorXd(3);
 
     // CoM linear motion tracking
     A.leftCols(_nv) = _Jcom.topRows(3);
     b = _KpPos * (pos_com_ref - pos_com) + _KdPos * (vel_com_ref - vel_com) - _dJdqcom.head(3);
-    return {A, b, MatX(), VecX()};
+    return {A, b, MatrixXd(), VectorXd()};
 }
 
 Task HierarchicalWbc::buildBodyAngularTask(const Quaternion &quat_body, const Vector3d &angvel_body,
                                            const Quaternion &quat_body_ref, const Vector3d &angvel_body_ref)
 {
-    MatX A = MatX::Zero(3, _dimDecisionVars);
-    VecX b = VecX(3);
+    MatrixXd A = MatrixXd::Zero(3, _dimDecisionVars);
+    VectorXd b = VectorXd(3);
 
     A.leftCols(_nv) = _Jbody.bottomRows(3);
     b = _KpAng * quatErr(quat_body_ref, quat_body) + _KdAng * (angvel_body_ref - angvel_body) - _dJdqbody.tail(3);
-    return {A, b, MatX(), VecX()};
+    return {A, b, MatrixXd(), VectorXd()};
 }
 
 Task HierarchicalWbc::buildSwingLegTask(const Matrix34d &pos_feet, const Matrix34d &vel_feet,
                                         const Matrix34d &pos_feet_ref, const Matrix34d &vel_feet_ref)
 {
-    MatX A = MatX::Zero(3 * _nSw, _dimDecisionVars);
-    VecX b = VecX(3 * _nSw);
+    MatrixXd A = MatrixXd::Zero(3 * _nSw, _dimDecisionVars);
+    VectorXd b = VectorXd(3 * _nSw);
 
     A.leftCols(_nv) = _Jsw;
     // for (int i = 0; i < _nSw; i++)
@@ -213,42 +221,42 @@ Task HierarchicalWbc::buildSwingLegTask(const Matrix34d &pos_feet, const Matrix3
                               _KdSw * (vel_feet_ref.col(_idSw(i)) - vel_feet.col(_idSw(i))) - _dJdqsw.segment(3 * i, 3);
     }
 
-    return {A, b, MatX(), VecX()};
+    return {A, b, MatrixXd(), VectorXd()};
 }
 
 // Task HierarchicalWbc::buildGripperLinearTask()
 // {
-//     MatX A = MatX::Zero(3, _dimDecisionVars);
-//     VecX b = VecX(3);
+//     MatrixXd A = MatrixXd::Zero(3, _dimDecisionVars);
+//     VectorXd b = VectorXd(3);
 
 //     A.leftCols(_nv) = _Jgrip.topRows(3);
 //     b = _KpEePos * (_highCmd->posG - _est->getPosG()) + _KdEePos * (_highCmd->velG - _est->getVelG()) - _dJdqgrip.head(3);
 
-//     return {A, b, MatX(), VecX()};
+//     return {A, b, MatrixXd(), VectorXd()};
 // }
 
 // Task HierarchicalWbc::buildGripperAngularTask()
 // {
-//     MatX A = MatX::Zero(3, _dimDecisionVars);
-//     VecX b = VecX(3);
+//     MatrixXd A = MatrixXd::Zero(3, _dimDecisionVars);
+//     VectorXd b = VectorXd(3);
 
 //     A.leftCols(_nv) = _wEangle * _Jgrip.bottomRows(3);
 //     b = _KpEeAng * quatErr(_highCmd->quatG, _est->getQuatG()) + _KdEeAng * (_highCmd->angVelG - _est->getAngVelG()) - _dJdqgrip.tail(3);
 
-//     return {A, b, MatX(), VecX()};
+//     return {A, b, MatrixXd(), VectorXd()};
 // }
 
 Task HierarchicalWbc::buildArmJointTask(const Vector6d &pos_arm, const Vector6d &vel_arm,
                                         const Vector6d &pos_arm_ref, const Vector6d &vel_arm_ref)
 {
-    MatX A = MatX::Zero(6, _dimDecisionVars);
-    VecX b = VecX(6);
+    MatrixXd A = MatrixXd::Zero(6, _dimDecisionVars);
+    VectorXd b = VectorXd(6);
 
     A.block(0, _nv - 6, 6, 6) = Eigen::MatrixXd::Identity(6, 6);
     // b = _KpArmJ * (_highCmd->qAJ - _est->getQArm()) + _KdArmJ * (_highCmd->dqAJ - _est->getDqArm());
     b = _KpArmJ * (pos_arm_ref - pos_arm) + _KdArmJ * (vel_arm_ref - vel_arm);
 
-    return {A, b, MatX(), VecX()};
+    return {A, b, MatrixXd(), VectorXd()};
 }
 
 void HierarchicalWbc::paramInit(std::string fileName)
@@ -265,7 +273,7 @@ void HierarchicalWbc::paramInit(std::string fileName)
     }
 
     // PD parameter
-    Vec3 kpPos, kdPos, kpAng, kdAng, kpSw, kdSw;
+    Vector3d kpPos, kdPos, kpAng, kdAng, kpSw, kdSw;
     for (int i = 0; i < 3; i++)
     {
         kpPos(i) = config["kpPos"][i].as<double>();
@@ -299,8 +307,8 @@ void HierarchicalWbc::paramInit(std::string fileName)
     std::cout << "_wBangle : " << _wBangle << "\t\t";
     std::cout << "_wSw     : " << _wSw << std::endl;
 
-    Vec3 kpEePos, kdEePos, kpEeAng, kdEeAng;
-    Vec6 kpArmJ, kdArmJ;
+    Vector3d kpEePos, kdEePos, kpEeAng, kdEeAng;
+    Vector6d kpArmJ, kdArmJ;
     for (int i = 0; i < 3; i++)
     {
         kpEePos(i) = config["kpEePos"][i].as<double>();

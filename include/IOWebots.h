@@ -31,7 +31,7 @@ private:
     void initSend();
 
     int _timeStep;
-    Vec34 _lastqLeg;
+    Matrix34d _lastqLeg;
 
     LowState *_lowState;
     LowCmd *_lowCmd;
@@ -59,7 +59,7 @@ private:
                                      "leg3_hip_joint", "leg3_thigh_joint", "leg3_calf_joint",
                                      "leg4_hip_joint", "leg4_thigh_joint", "leg4_calf_joint"};
 
-    Vec6 _lastqArm;
+    Vector6d _lastqArm;
 
     webots::Motor *_jointArm[6];
     webots::PositionSensor *_jointSensorArm[6];

@@ -23,9 +23,9 @@ void HoQp::initVars()
 
         _dimDecisionVars = _task._A.cols();
         _stackedTasksPrev = Task(_dimDecisionVars);
-        _stackedZPrev = MatX::Identity(_dimDecisionVars, _dimDecisionVars);
-        _stackedSlackSolPrev = VecX::Zero(0);
-        _xPrev = VecX::Zero(_dimDecisionVars);
+        _stackedZPrev = MatrixXd::Identity(_dimDecisionVars, _dimDecisionVars);
+        _stackedSlackSolPrev = VectorXd::Zero(0);
+        _xPrev = VectorXd::Zero(_dimDecisionVars);
         _dimPrevSlackVars = 0;
     }
     else
@@ -41,8 +41,8 @@ void HoQp::initVars()
     _stackedTasks = _task + _stackedTasksPrev;
 
     // Init convenience matrices
-    _eyeNvNv = MatX::Identity(_dimSlackVars, _dimSlackVars);
-    _zeroNvNx = MatX::Zero(_dimSlackVars, _dimDecisionVars);
+    _eyeNvNv = MatrixXd::Identity(_dimSlackVars, _dimSlackVars);
+    _zeroNvNx = MatrixXd::Zero(_dimSlackVars, _dimDecisionVars);
 }
 
 void HoQp::formulateProblem()
@@ -55,18 +55,18 @@ void HoQp::formulateProblem()
 
 void HoQp::buildHMatrix()
 {
-    MatX ZtAtAZ(_dimDecisionVars, _dimDecisionVars); // t means transpose
+    MatrixXd ZtAtAZ(_dimDecisionVars, _dimDecisionVars); // t means transpose
     if (_hasEqConstraints)
     {
         // Make sure that all eigenvalues of A_t_A are non-negative, which could arise due to numerical issues
-        MatX ACurrZPrev = _task._A * _stackedZPrev;
+        MatrixXd ACurrZPrev = _task._A * _stackedZPrev;
         // This way of splitting up the multiplication is about twice as fast as multiplying 4 matrices
-        ZtAtAZ = ACurrZPrev.transpose() * ACurrZPrev + 1e-12 * MatX::Identity(_dimDecisionVars, _dimDecisionVars);
+        ZtAtAZ = ACurrZPrev.transpose() * ACurrZPrev + 1e-12 * MatrixXd::Identity(_dimDecisionVars, _dimDecisionVars);
     }
     else
         ZtAtAZ.setZero();
 
-    _H = (MatX(_dimDecisionVars + _dimSlackVars, _dimDecisionVars + _dimSlackVars) // clang-format off
+    _H = (MatrixXd(_dimDecisionVars + _dimSlackVars, _dimDecisionVars + _dimSlackVars) // clang-format off
               <<   ZtAtAZ, _zeroNvNx.transpose(), 
                 _zeroNvNx, _eyeNvNv) // clang-format on
              .finished();
@@ -74,15 +74,15 @@ void HoQp::buildHMatrix()
 
 void HoQp::buildCVector()
 {
-    VecX c = VecX::Zero(_dimDecisionVars + _dimSlackVars);
-    VecX zeroVec = VecX::Zero(_dimSlackVars);
-    VecX temp(_dimDecisionVars);
+    VectorXd c = VectorXd::Zero(_dimDecisionVars + _dimSlackVars);
+    VectorXd zeroVec = VectorXd::Zero(_dimSlackVars);
+    VectorXd temp(_dimDecisionVars);
     if (_hasEqConstraints)
         temp = (_task._A * _stackedZPrev).transpose() * (_task._A * _xPrev - _task._b);
     else
         temp.setZero();
 
-    _c = (VecX(_dimDecisionVars + _dimSlackVars) // clang-format off
+    _c = (VectorXd(_dimDecisionVars + _dimSlackVars) // clang-format off
              << temp, 
                 zeroVec) // clang-format on
              .finished();
@@ -90,15 +90,15 @@ void HoQp::buildCVector()
 
 void HoQp::buildDMatrix()
 {
-    MatX stackedZero = MatX::Zero(_dimPrevSlackVars, _dimSlackVars);
-    MatX DCurrZ;
+    MatrixXd stackedZero = MatrixXd::Zero(_dimPrevSlackVars, _dimSlackVars);
+    MatrixXd DCurrZ;
     if (_hasIneqConstraints)
         DCurrZ = _task._D * _stackedZPrev;
     else
-        DCurrZ = MatX::Zero(0, _dimDecisionVars);
+        DCurrZ = MatrixXd::Zero(0, _dimDecisionVars);
 
     // NOTE: This is upside down compared to the paper, but more consistent with the rest of the algorithm
-    _D = (MatX(2 * _dimSlackVars + _dimPrevSlackVars, _dimDecisionVars + _dimSlackVars) // clang-format off
+    _D = (MatrixXd(2 * _dimSlackVars + _dimPrevSlackVars, _dimDecisionVars + _dimSlackVars) // clang-format off
               << _zeroNvNx                           , -_eyeNvNv,
                  _stackedTasksPrev._D * _stackedZPrev, stackedZero,
                  DCurrZ                              , -_eyeNvNv) // clang-format on
@@ -107,14 +107,14 @@ void HoQp::buildDMatrix()
 
 void HoQp::buildFVector()
 {
-    VecX zeroVec = VecX::Zero(_dimSlackVars);
-    VecX fMinusDXPrev;
+    VectorXd zeroVec = VectorXd::Zero(_dimSlackVars);
+    VectorXd fMinusDXPrev;
     if (_hasIneqConstraints)
         fMinusDXPrev = _task._f - _task._D * _xPrev;
     else
-        fMinusDXPrev = VecX::Zero(0);
+        fMinusDXPrev = VectorXd::Zero(0);
 
-    _f = (VecX(2 * _dimSlackVars + _dimPrevSlackVars) // clang-format off
+    _f = (VectorXd(2 * _dimSlackVars + _dimPrevSlackVars) // clang-format off
               << zeroVec,
                 _stackedTasksPrev._f - _stackedTasksPrev._D * _xPrev + _stackedSlackSolPrev,
                 fMinusDXPrev)
@@ -139,7 +139,7 @@ void HoQp::solveProblem()
     int nWsr = 20;
 
     qpProblem.init(_H.data(), _c.data(), _D.data(), nullptr, nullptr, nullptr, _f.data(), nWsr);
-    VecX qpSol(_dimDecisionVars + _dimSlackVars);
+    VectorXd qpSol(_dimDecisionVars + _dimSlackVars);
 
     qpProblem.getPrimalSolution(qpSol.data());
 

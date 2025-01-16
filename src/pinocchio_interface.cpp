@@ -43,7 +43,7 @@ Vector3d PinocchioInterface::calcFootVelocity(int foot_id)
 }
 
 void PinocchioInterface::calcGripperState(Vector3d &pos_gripper, Vector3d &vel_gripper,
-                                          Quat &quat_gripper, Vector3d &angvel_gripper)
+                                          Quaternion &quat_gripper, Vector3d &angvel_gripper)
 {
     pos_gripper = data_.oMf[gripper_id_].translation();
     pinocchio::SE3::Quaternion quat(data_.oMf[gripper_id_].rotation());

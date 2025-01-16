@@ -27,7 +27,7 @@ struct LowCmd
 
     MotorCmd motorArmCmd[6];
 
-    void setLegTau(Vec12 tau, double tauMin = -200, double tauMax = 200)
+    void setLegTau(Vector12d tau, double tauMin = -200, double tauMax = 200)
     {
         for (int i = 0; i < 12; ++i)
         {
@@ -37,7 +37,7 @@ struct LowCmd
         }
     }
 
-    void setArmTau(Vec6 tau, double tauMin = -200, double tauMax = 200)
+    void setArmTau(Vector6d tau, double tauMin = -200, double tauMax = 200)
     {
         for (int i = 0; i < 6; ++i)
         {

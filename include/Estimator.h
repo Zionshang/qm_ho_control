@@ -16,31 +16,31 @@ public:
     // const VectorXd &pos_gen() const { return _posGen; }
     // const VectorXd &vel_gen() const { return _velGen; }
 
-    // Vec3 getPosB() const { return body_state_.pos; }       // get position of BODY, expressed in WORLD frame
-    // Vec3 getVelB() const { return body_state_.vel; }       // get velocity of BODY, expressed in WORLD frame
-    // Quat getQuatB() const { return body_state_.quat; }     // get quaternion of BODY relative to WORLD
+    // Vector3d getPosB() const { return body_state_.pos; }       // get position of BODY, expressed in WORLD frame
+    // Vector3d getVelB() const { return body_state_.vel; }       // get velocity of BODY, expressed in WORLD frame
+    // Quaternion getQuatB() const { return body_state_.quat; }     // get quaternion of BODY relative to WORLD
     // RotMat getRotB() const { return body_state_.rotmat; }  // get rotation matrix of BODY relative to WORLD
-    // Vec3 getAngVelB() const { return body_state_.angvel; } // get angular velocity of BODY, expressed in WORLD frame
+    // Vector3d getAngVelB() const { return body_state_.angvel; } // get angular velocity of BODY, expressed in WORLD frame
 
     // // CoM
-    // Vec3 getPosCoM() const { return _posCoM; } // get position of CoM, expressed in WORLD frame
-    // Vec3 getVelCoM() const { return _velCoM; } // get velocity of CoM, expressed in WORLD frame
+    // Vector3d getPosCoM() const { return _posCoM; } // get position of CoM, expressed in WORLD frame
+    // Vector3d getVelCoM() const { return _velCoM; } // get velocity of CoM, expressed in WORLD frame
 
     // // foot
-    // Vec34 getQLeg() const { return _qLeg; }            // get joint position of four legs
-    // Vec34 getDqLeg() const { return _dqLeg; }          // get joint velocity of four legs
-    // Vec3 getPosF(int i) const { return _posF.col(i); } // get position of id foot, expressed in WORLD frame
-    // Vec3 getVelF(int i) const { return _velF.col(i); } // get velocity of id foot, expressed in WORLD frame
-    // Vec34 getPosF() const { return _posF; }            // get position of four feet, expressed in WORLD frame
-    // Vec34 getVelF() const { return _velF; }            // get velocity of four feet, expressed in WORLD frame
+    // Matrix34d getQLeg() const { return _qLeg; }            // get joint position of four legs
+    // Matrix34d getDqLeg() const { return _dqLeg; }          // get joint velocity of four legs
+    // Vector3d getPosF(int i) const { return _posF.col(i); } // get position of id foot, expressed in WORLD frame
+    // Vector3d getVelF(int i) const { return _velF.col(i); } // get velocity of id foot, expressed in WORLD frame
+    // Matrix34d getPosF() const { return _posF; }            // get position of four feet, expressed in WORLD frame
+    // Matrix34d getVelF() const { return _velF; }            // get velocity of four feet, expressed in WORLD frame
 
     // // gripper
-    // Vec6 getQArm() const { return _qArm; }        // get joint position of arm
-    // Vec6 getDqArm() const { return _dqArm; }      // get joint velocity of arm
-    Vec3 getPosG() const { return _posG; }        // get position of GRIPPER, expressed in WORLD frame
-    Vec3 getVelG() const { return _velG; };       // get velocity of GRIPPER, expressed in WORLD frame
-    Vec3 getAngVelG() const { return _angVelG; }; // get angular velocity of GRIPPER, expressed in WORLD frame
-    Quat getQuatG() const { return _quatG; };     // get quaternion of GRIPPER relative to WORLD frame
+    // Vector6d getQArm() const { return _qArm; }        // get joint position of arm
+    // Vector6d getDqArm() const { return _dqArm; }      // get joint velocity of arm
+    Vector3d getPosG() const { return _posG; }        // get position of GRIPPER, expressed in WORLD frame
+    Vector3d getVelG() const { return _velG; };       // get velocity of GRIPPER, expressed in WORLD frame
+    Vector3d getAngVelG() const { return _angVelG; }; // get angular velocity of GRIPPER, expressed in WORLD frame
+    Quaternion getQuatG() const { return _quatG; };     // get quaternion of GRIPPER relative to WORLD frame
     RotMat getRotG() const { return _rotG; }      // get rotation matrix of GRIPPER relative to WORLD frame
 
     WorkMode getWorkMode() const { return _workMode; }
@@ -55,23 +55,23 @@ private:
     // // // CoM
     // // VectorXd _posGen;
     // // VectorXd _velGen;
-    // Vec3 _posCoM, _velCoM; // position and velocity CoM, expressed in WORLD frame
+    // Vector3d _posCoM, _velCoM; // position and velocity CoM, expressed in WORLD frame
 
     // // leg & foot
-    // Vec34 _qLeg, _dqLeg;    // joint position and velocity of leg
-    // Vec34 _posF, _velF;     // position and velocity of FOOT, expressed in WORLD frame
-    // Vec34 _posF2B, _velF2B; // position and velocity of FOOT, expressed in WORLD frame
+    // Matrix34d _qLeg, _dqLeg;    // joint position and velocity of leg
+    // Matrix34d _posF, _velF;     // position and velocity of FOOT, expressed in WORLD frame
+    // Matrix34d _posF2B, _velF2B; // position and velocity of FOOT, expressed in WORLD frame
 
     // gait
-    Vec4 _phase;      // progress of swing/stance as a proportion of swing/stace cycle [0,1]
-    VecInt4 _contact; // 1:contact  0:swting
+    Vector4d _phase;      // progress of swing/stance as a proportion of swing/stace cycle [0,1]
+    Vector4i _contact; // 1:contact  0:swting
     double T_sw_;
     double T_st_;
 
     // arm & gripper
-    // Vec6 _qArm, _dqArm;          // joint position and velocity of arm
-    Quat _quatG;                 // quaternion of GRIPER reletive to GLOBAL
-    Vec3 _posG, _velG, _angVelG; // position, velocity and angular velocity of GRIPER, expressed in WORLD frame
+    // Vector6d _qArm, _dqArm;          // joint position and velocity of arm
+    Quaternion _quatG;                 // quaternion of GRIPER reletive to GLOBAL
+    Vector3d _posG, _velG, _angVelG; // position, velocity and angular velocity of GRIPER, expressed in WORLD frame
     RotMat _rotG;                // rotation matrix of GRIPER reletive to WORLD
 
     // control

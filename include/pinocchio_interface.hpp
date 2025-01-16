@@ -32,7 +32,7 @@ public:
     Vector3d calcFootVelocity(int foot_id);
 
     void calcGripperState(Vector3d &pos_gripper, Vector3d &vel_gripper,
-                          Quat &quat_gripper, Vector3d &angvel_gripper);
+                          Quaternion &quat_gripper, Vector3d &angvel_gripper);
 
     int nq() { return nq_; }
     int nv() { return nv_; }
