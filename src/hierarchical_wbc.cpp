@@ -42,6 +42,10 @@ void HierarchicalWbc::calTau(const RobotState &robot_state, const Vector4i conta
     const auto &angvel_body = robot_state.body.angvel;
     const auto &pos_com = robot_state.pos_com;
     const auto &vel_com = robot_state.vel_com;
+    const auto &pos_feet = robot_state.foot.pos;
+    const auto &vel_feet = robot_state.foot.vel;
+    const auto &pos_arm = robot_state.joint.pos_arm;
+    const auto &vel_arm = robot_state.joint.vel_arm;
 
     const auto &pos_body_ref = _highCmd->posB;
     const auto &vel_body_ref = _highCmd->velB;
@@ -49,6 +53,10 @@ void HierarchicalWbc::calTau(const RobotState &robot_state, const Vector4i conta
     const auto &angvel_body_ref = _highCmd->angVelB;
     const auto &pos_com_ref = _highCmd->posCoM;
     const auto &vel_com_ref = _highCmd->velCoM;
+    const auto &pos_feet_ref = _highCmd->posF;
+    const auto &vel_feet_ref = _highCmd->velF;
+    const auto &pos_arm_ref = _highCmd->qAJ;
+    const auto &vel_arm_ref = _highCmd->dqAJ;
 
     _dimDecisionVars = _nv + 3 * contact.sum();
 
@@ -62,8 +70,8 @@ void HierarchicalWbc::calTau(const RobotState &robot_state, const Vector4i conta
 
     task1 = buildComLinearTask(pos_com, vel_com, pos_com_ref, vel_com_ref) * _wBlinear;
     task1 = task1 + buildBodyAngularTask(quat_body, angvel_body, quat_body_ref, angvel_body_ref) * _wBangle;
-    task1 = task1 + buildSwingLegTask() * _wSw;
-    task1 = task1 + buildArmJointTrackingTask() * _wArmJ;
+    task1 = task1 + buildSwingLegTask(pos_feet, vel_feet, pos_feet_ref, vel_feet_ref) * _wSw;
+    task1 = task1 + buildArmJointTask(pos_arm, vel_arm, pos_arm_ref, vel_arm_ref) * _wArmJ;
 
     HoQp hoQp(task1, std::make_shared<HoQp>(task0));
     _solFinal = hoQp.getSolutions();
@@ -189,14 +197,21 @@ Task HierarchicalWbc::buildBodyAngularTask(const Quaternion &quat_body, const Ve
     return {A, b, MatX(), VecX()};
 }
 
-Task HierarchicalWbc::buildSwingLegTask()
+Task HierarchicalWbc::buildSwingLegTask(const Matrix34d &pos_feet, const Matrix34d &vel_feet,
+                                        const Matrix34d &pos_feet_ref, const Matrix34d &vel_feet_ref)
 {
     MatX A = MatX::Zero(3 * _nSw, _dimDecisionVars);
     VecX b = VecX(3 * _nSw);
 
     A.leftCols(_nv) = _Jsw;
+    // for (int i = 0; i < _nSw; i++)
+    //     b.segment(3 * i, 3) = _KpSw * (_highCmd->posF.col(_idSw(i)) - _est->getPosF().col(_idSw(i))) + _KdSw * (_highCmd->velF.col(_idSw(i)) - _est->getVelF().col(_idSw(i))) - _dJdqsw.segment(3 * i, 3);
+
     for (int i = 0; i < _nSw; i++)
-        b.segment(3 * i, 3) = _KpSw * (_highCmd->posF.col(_idSw(i)) - _est->getPosF().col(_idSw(i))) + _KdSw * (_highCmd->velF.col(_idSw(i)) - _est->getVelF().col(_idSw(i))) - _dJdqsw.segment(3 * i, 3);
+    {
+        b.segment(3 * i, 3) = _KpSw * (pos_feet_ref.col(_idSw(i)) - pos_feet.col(_idSw(i))) +
+                              _KdSw * (vel_feet_ref.col(_idSw(i)) - vel_feet.col(_idSw(i))) - _dJdqsw.segment(3 * i, 3);
+    }
 
     return {A, b, MatX(), VecX()};
 }
@@ -223,13 +238,15 @@ Task HierarchicalWbc::buildSwingLegTask()
 //     return {A, b, MatX(), VecX()};
 // }
 
-Task HierarchicalWbc::buildArmJointTrackingTask()
+Task HierarchicalWbc::buildArmJointTask(const Vector6d &pos_arm, const Vector6d &vel_arm,
+                                        const Vector6d &pos_arm_ref, const Vector6d &vel_arm_ref)
 {
     MatX A = MatX::Zero(6, _dimDecisionVars);
     VecX b = VecX(6);
 
     A.block(0, _nv - 6, 6, 6) = Eigen::MatrixXd::Identity(6, 6);
-    b = _KpArmJ * (_highCmd->qAJ - _est->getQArm()) + _KdArmJ * (_highCmd->dqAJ - _est->getDqArm());
+    // b = _KpArmJ * (_highCmd->qAJ - _est->getQArm()) + _KdArmJ * (_highCmd->dqAJ - _est->getDqArm());
+    b = _KpArmJ * (pos_arm_ref - pos_arm) + _KdArmJ * (vel_arm_ref - vel_arm);
 
     return {A, b, MatX(), VecX()};
 }

@@ -47,7 +47,7 @@ void Planner::setDesiredTraj(const RobotState &robot_state, const GaitState &gai
     gripperPlan();
     armJointPlan();
 
-    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, robot_state.foot, _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
     _lastWorkMode = _est->getWorkMode();
 }
 
@@ -110,7 +110,7 @@ void Planner::showDemo(const RobotState &robot_state, const GaitState &gait_stat
 
     // com plan
     comPlan();
-    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, robot_state.foot, _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 void Planner::showFrontMaxJointVelDemo(const RobotState &robot_state, const GaitState &gait_state)
@@ -142,7 +142,7 @@ void Planner::showFrontMaxJointVelDemo(const RobotState &robot_state, const Gait
 
     // com plan
     comPlan();
-    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, robot_state.foot, _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 void Planner::showPickingDemo(const RobotState &robot_state, const GaitState &gait_state)
@@ -215,7 +215,7 @@ void Planner::showPickingDemo(const RobotState &robot_state, const GaitState &ga
 
     // com plan
     comPlan();
-    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, robot_state.foot, _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 void Planner::bodyPlan()
@@ -276,7 +276,7 @@ void Planner::showSideMaxJointVelDemo(const RobotState &robot_state, const GaitS
 
     // com plan
     comPlan();
-    _gaitGen->update(robot_state.body, gait_state, _est->getPosF(), _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
+    _gaitGen->update(robot_state.body, gait_state, robot_state.foot, _highCmd->velB, _highCmd->angVelB, _highCmd->posF, _highCmd->velF); // foot trajectory
 }
 
 void Planner::comPlan()
@@ -327,23 +327,23 @@ void Planner::gripperPlan()
 
 void Planner::armJointPlan()
 {
-    if (_isModeChange)
-        _highCmd->qAJ = _est->getQArm();
+    // if (_isModeChange)
+    //     _highCmd->qAJ = _est->getQArm();
 
-    if (_est->getWorkMode() == WorkMode::ARM_JOINT) // Control the arm joint
-    {
-        _highCmd->dqAJ(0) = invNormalize(_lowState->userValue.ly, _dqAJMin(0), _dqAJMax(0)); // joint 1
-        _highCmd->dqAJ(1) = invNormalize(_lowState->userValue.lx, _dqAJMin(1), _dqAJMax(1)); // joint 2
-        _highCmd->dqAJ(2) = invNormalize(-_lowState->userValue.z, _dqAJMin(2), _dqAJMax(2)); // joint 3
-        _highCmd->dqAJ(3) = invNormalize(_lowState->userValue.rx, _dqAJMin(3), _dqAJMax(3)); // joint 4
-        _highCmd->dqAJ(4) = 0;                                                               // joint 5
-        _highCmd->dqAJ(5) = invNormalize(_lowState->userValue.ry, _dqAJMin(4), _dqAJMax(4)); // joint 6                                                                    // joint 6
+    // if (_est->getWorkMode() == WorkMode::ARM_JOINT) // Control the arm joint
+    // {
+    //     _highCmd->dqAJ(0) = invNormalize(_lowState->userValue.ly, _dqAJMin(0), _dqAJMax(0)); // joint 1
+    //     _highCmd->dqAJ(1) = invNormalize(_lowState->userValue.lx, _dqAJMin(1), _dqAJMax(1)); // joint 2
+    //     _highCmd->dqAJ(2) = invNormalize(-_lowState->userValue.z, _dqAJMin(2), _dqAJMax(2)); // joint 3
+    //     _highCmd->dqAJ(3) = invNormalize(_lowState->userValue.rx, _dqAJMin(3), _dqAJMax(3)); // joint 4
+    //     _highCmd->dqAJ(4) = 0;                                                               // joint 5
+    //     _highCmd->dqAJ(5) = invNormalize(_lowState->userValue.ry, _dqAJMin(4), _dqAJMax(4)); // joint 6                                                                    // joint 6
 
-        _highCmd->qAJ += _highCmd->dqAJ * _dt;
+    //     _highCmd->qAJ += _highCmd->dqAJ * _dt;
 
-        for (int i = 0; i < 6; i++)
-            _highCmd->qAJ(i) = saturation(_highCmd->qAJ(i), _qAJMin(i), _qAJMax(i));
-    }
+    //     for (int i = 0; i < 6; i++)
+    //         _highCmd->qAJ(i) = saturation(_highCmd->qAJ(i), _qAJMin(i), _qAJMax(i));
+    // }
 }
 
 void Planner::printDesiredTraj()

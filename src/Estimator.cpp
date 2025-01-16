@@ -7,10 +7,11 @@ Estimator::Estimator(LowState *lowState, PinocchioInterface *pin_interface)
 void Estimator::update(RobotState &robot_state)
 {
     // joint
-    _qLeg = _lowState->getQLeg();
-    _dqLeg = _lowState->getDqLeg();
-    _qArm = _lowState->getQArm();
-    _dqArm = _lowState->getDqArm();
+    auto &joint_state = robot_state.joint;
+    joint_state.pos_leg = _lowState->getQLeg();
+    joint_state.vel_leg = _lowState->getDqLeg();
+    joint_state.pos_arm = _lowState->getQArm();
+    joint_state.vel_arm = _lowState->getDqArm();
 
     // body
     auto &body_state = robot_state.body;
@@ -26,20 +27,20 @@ void Estimator::update(RobotState &robot_state)
     auto &vel_gen = robot_state.vel_gen;
     auto &pos_com = robot_state.pos_com;
     auto &vel_com = robot_state.vel_com;
-
-    pos_gen << body_state.pos, body_state.quat, vec34ToVec12(_qLeg), _qArm;
-    vel_gen << R_T * body_state.vel, R_T * body_state.angvel, vec34ToVec12(_dqLeg), _dqArm;
+    pos_gen << body_state.pos, body_state.quat, vec34ToVec12(joint_state.pos_leg), joint_state.pos_arm;
+    vel_gen << R_T * body_state.vel, R_T * body_state.angvel, vec34ToVec12(joint_state.vel_leg), joint_state.vel_arm;
     pin_interface_->calcComState(pos_gen, vel_gen, pos_com, vel_com);
 
     // foot
+    auto &foot_state = robot_state.foot;
     pin_interface_->updateKinematics(pos_gen, vel_gen);
     const auto &feet_id = pin_interface_->feet_id();
     for (size_t i = 0; i < feet_id.size(); i++)
     {
-        _posF.col(i) = pin_interface_->calcFootPosition(feet_id[i]);
-        _velF.col(i) = pin_interface_->calcFootVelocity(feet_id[i]);
-        _posF2B.col(i) = _posF.col(i) - body_state.pos;
-        _velF2B.col(i) = _velF.col(i) - body_state.vel;
+        foot_state.pos.col(i) = pin_interface_->calcFootPosition(feet_id[i]);
+        foot_state.vel.col(i) = pin_interface_->calcFootVelocity(feet_id[i]);
+        foot_state.pos_rel_body.col(i) = foot_state.pos.col(i) - body_state.pos;
+        foot_state.vel_rel_body.col(i) = foot_state.vel.col(i) - body_state.vel;
     }
 
     // arm

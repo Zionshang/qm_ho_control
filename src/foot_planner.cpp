@@ -22,10 +22,12 @@ FootPlanner::FootPlanner()
 }
 
 
-void FootPlanner::update(const BodyState &body_state, const GaitState &gait_state, const Matrix34d &pos_feet,
+void FootPlanner::update(const BodyState &body_state, const GaitState &gait_state, const FootState &feet_state,
                          const Vector3d &vel_body_ref, const Vector3d &angvel_body_ref,
                          Vec34 &pos_feet_ref, Vec34 &vel_feet_ref)
 {
+    const auto & pos_feet = feet_state.pos;
+     
     phase_ =  gait_state.phase;
     period_swing_ = gait_state.period_swing;
     period_stance_ = gait_state.period_stance;

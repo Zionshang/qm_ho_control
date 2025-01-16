@@ -13,16 +13,18 @@ struct BodyState
 
 struct FootState
 {
-    Matrix34d pos; // position of foot, expressed in world frame
-    Matrix34d vel; // velocity of foot, expressed in world frame
+    Matrix34d pos;          // position of foot, expressed in world frame
+    Matrix34d vel;          // velocity of foot, expressed in world frame
+    Matrix34d pos_rel_body; // position of foot relative to body, expressed in world frame
+    Matrix34d vel_rel_body; // velocity of foot, expressed in world frame
 };
 
 struct JointState
 {
-    VectorXd pos_leg; // leg joint position
-    VectorXd vel_leg; // leg joint velocity
-    VectorXd pos_arm; // arm joint position
-    VectorXd vel_arm; // arm joint velocity
+    Matrix34d pos_leg; // leg joint position
+    Matrix34d vel_leg; // leg joint velocity
+    Vector6d pos_arm; // arm joint position
+    Vector6d vel_arm; // arm joint velocity
 };
 
 struct RobotState
