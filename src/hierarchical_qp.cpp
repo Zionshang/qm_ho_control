@@ -1,4 +1,4 @@
-#include "HoQp.h"
+#include "hierarchical_qp.hpp"
 
 HoQp::HoQp(Task task, HoQp::HoQpPtr higherProblem) : _task(std::move(task)), _higherProblem(std::move(higherProblem))
 {

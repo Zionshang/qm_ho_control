@@ -5,7 +5,7 @@
 #include "common/HighCmd.h"
 #include "common/projectPath.h"
 #include "model/WholeBodyDynamics.h"
-#include "HoQp.h"
+#include "hierarchical_qp.hpp"
 #include "Estimator.h"
 #include "yaml-cpp/yaml.h"
 #include "Task.h"
