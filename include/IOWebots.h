@@ -21,10 +21,6 @@ public:
     void recvState();
     void sendCmd();
     bool isRunning();
-    
-#ifdef DESIREDTRAJ
-    void drawDesiredTraj(HighCmd *_highCmd);
-#endif
 
 private:
     void initRecv();
@@ -68,15 +64,5 @@ private:
                                           "joint4_sensor", "joint5_sensor", "joint6_sensor"};
     std::string _jointArmName[6] = {"joint1", "joint2", "joint3",
                                     "joint4", "joint5", "joint6"};
-
-
-#ifdef DESIREDTRAJ
-    webots::Node *_bodyNode, *_armJointNode[6];
-    webots::Field *_bodyTransField;
-
-    std::string _bodyNodeName = "DesiredBody";
-    std::string _armJointNodeName[6] = {"DesiredJoint1", "DesiredJoint2", "DesiredJoint3",
-                                        "DesiredJoint4", "DesiredJoint5", "DesiredJoint6"};
-#endif
 };
 

@@ -64,10 +64,6 @@ int main()
                 iowebots->sendCmd();
                 log->loadData(est, highCmd);
 
-#ifdef DESIREDTRAJ
-                iowebots->drawDesiredTraj(highCmd);
-#endif
-
                 if (est->getCurrentTime() > 25)
                         break;
         }

@@ -13,20 +13,6 @@ IOWebots::IOWebots(LowState *lowState, LowCmd *lowCmd)
         0.67, 0.67, 0.67, 0.67,
         -1.3, -1.3, -1.3, -1.3;
     _lastqArm << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-
-#ifdef DESIREDTRAJ
-    _bodyNode = _supervisor->getFromDef(_bodyNodeName);
-    for (int i = 0; i < 6; i++)
-        _armJointNode[i] = _supervisor->getFromDef(_armJointNodeName[i]);
-
-    if (_bodyNode == NULL || _armJointNode[0] == NULL || _armJointNode[1] == NULL || _armJointNode[2] == NULL || _armJointNode[3] == NULL || _armJointNode[4] == NULL || _armJointNode[5] == NULL)
-    {
-        printf("error supervisor in DESIREDTRAJ");
-        exit(1);
-    }
-
-    _bodyTransField = _bodyNode->getField("translation");
-#endif
 }
 
 IOWebots::~IOWebots()
@@ -126,15 +112,6 @@ bool IOWebots::isRunning()
     else
         return false;
 }
-
-#ifdef DESIREDTRAJ
-void IOWebots::drawDesiredTraj(HighCmd *_highCmd)
-{
-    _bodyTransField->setSFVec3f(_highCmd->posB.data());
-    for (int i = 0; i < 6; i++)
-        _armJointNode[i]->setJointPosition(_highCmd->qAJ(i));
-}
-#endif
 
 void IOWebots::initRecv()
 {

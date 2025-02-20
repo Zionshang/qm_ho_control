@@ -2,14 +2,6 @@ cmake_minimum_required(VERSION 3.0.0)
 get_filename_component(PROJECT ${CMAKE_SOURCE_DIR} NAME)
 project(${PROJECT})
 
-# ROBOT CONFIGURATION
-set(DESIREDTRAJ YES)
-
-if(${DESIREDTRAJ} STREQUAL "YES")
-    add_compile_definitions(DESIREDTRAJ)
-endif()
-
-
 # Link with the Webots controller library.
 set(WEBOTS_HOME "/usr/local/webots")
 link_directories(${WEBOTS_HOME}/lib/controller)
