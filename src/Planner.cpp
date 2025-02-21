@@ -1,38 +1,15 @@
 #include "Planner.h"
 
-Planner::Planner(Estimator *est, LowState *lowState, WholeBodyDynamics *wbDyn)
-    : _est(est), _lowState(lowState), _wbDyn(wbDyn)
+Planner::Planner( PinocchioInterface *pin_interface)
+    : pin_interface_(pin_interface)
 {
-    _gaitGen = new FootPlanner();
-
-    dt_ = _est->getTimeStep();
-    _velBMax << 0.5, 0.5, 0.3;    // x,y,z direction
-    _angVelBMax << 0.5, 0.5, 0.5; // x,y,z direction
-    _velBMin = -_velBMax;
-    _angVelBMin = -_angVelBMax;
-    _velBCmd.setZero();
-    _angVelBCmd.setZero();
-
-    _velGMax << 0.5, 0.5, 0.5;    // x,y,z direction
-    _angVelGMax << 0.5, 0.5, 0.5; // x,y,z direction
-    _velGMin = -_velGMax;
-    _angVelGMin = -_angVelGMax;
-    _velGCmd.setZero();
-    _angVelGCmd.setZero();
-
-    // clang-format off
-    _qAJMin  << -2.61,    0, -2.87, -1.51, -1.34, -2.79;
-    _qAJMax  <<  2.61, 2.96,     0,  1.51,  1.34,  2.79;
-    _dqAJMax <<   0.5,  0.5,   0.5,   0.5,   0.5,   0.5;
-    // clang-format on
-    _dqAJMax = 3 * _dqAJMax.eval();
-    _dqAJMin = -_dqAJMax;
-    _dqAJCmd.setZero();
+    dt_ = 0.001;
+    foot_planner_ = new FootPlanner();
 }
 
 Planner::~Planner()
 {
-    delete _gaitGen;
+    delete foot_planner_;
 };
 
 void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,
@@ -42,7 +19,7 @@ void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,
     bodyPlan(user_cmd, robot_state_ref.body);
     armJointPlan(robot_state_ref.joint);
     comPlan(robot_state_ref, robot_state_ref.pos_com, robot_state_ref.vel_com);
-    _gaitGen->update(gait_state, robot_state.body, robot_state.foot, robot_state_ref.body, robot_state_ref.foot); // foot trajectory
+    foot_planner_->update(gait_state, robot_state.body, robot_state.foot, robot_state_ref.body, robot_state_ref.foot); // foot trajectory
 
     // std::cout << "===== Robot State Reference =====" << std::endl;
 
@@ -102,7 +79,7 @@ void Planner::comPlan(RobotState &robot_state_ref, Vector3d &pos_com_ref, Vector
         VectorXd::Zero(12, 1),
         robot_state_ref.joint.vel_arm;
 
-    _wbDyn->setCoMPosVel(robot_state_ref.pos_gen, robot_state_ref.vel_gen, pos_com_ref, vel_com_ref);
+    pin_interface_->calcComState(robot_state_ref.pos_gen, robot_state_ref.vel_gen, pos_com_ref, vel_com_ref);
 }
 
 void Planner::armJointPlan(JointState &joint_state_ref)

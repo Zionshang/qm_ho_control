@@ -20,7 +20,7 @@ int main()
         IOWebots *iowebots = new IOWebots(lowState, lowCmd);
         GaitSchedule *gait_sche = new GaitSchedule();
         Estimator *est = new Estimator(lowState, pin_interface);
-        Planner *plan = new Planner(est, lowState, wbDyn);
+        Planner *plan = new Planner(pin_interface);
         Controller *ctlr = new Controller(est, lowCmd, wbDyn);
         DataLog *log = new DataLog();
         KalmanFilterEstimator *kfe = new KalmanFilterEstimator(lowState, pin_interface, lowState->timeStep);
