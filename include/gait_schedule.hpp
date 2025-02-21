@@ -1,10 +1,11 @@
 #pragma once
 
 #include "common/mathTypes.h"
-#include "common/enumClass.h"
 #include "common/LowState.h"
+#include "common/enum_class.hpp"
 #include <iostream>
 #include <vector>
+
 
 struct Gait
 {

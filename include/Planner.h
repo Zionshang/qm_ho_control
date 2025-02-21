@@ -1,37 +1,28 @@
 #pragma once
 
-#include "common/HighCmd.h"
 #include "common/LowState.h"
 #include "foot_planner.hpp"
 
 class Planner
 {
 public:
-    Planner(HighCmd *highCmd, Estimator *est, LowState *lowState, WholeBodyDynamics *wbDyn);
+    Planner(Estimator *est, LowState *lowState, WholeBodyDynamics *wbDyn);
     ~Planner();
-    void setDesiredTraj(const RobotState &robot_state, const GaitState &gait_state);
-    void showDemo(const RobotState &robot_state, const GaitState &gait_state);
-    void printDesiredTraj();
-    void showFrontMaxJointVelDemo(const RobotState &robot_state, const GaitState &gait_state);
-    void showSideMaxJointVelDemo(const RobotState &robot_state, const GaitState &gait_state);
-    void showPickingDemo(const RobotState &robot_state, const GaitState &gait_state);
-    
-private:
-    void bodyPlan();
-    void gripperPlan();
-    void armJointPlan();
-    void comPlan();
+    void update(const UserCommand &user_cmd, const RobotState &robot_state,
+                const GaitState &gait_state, RobotState &robot_state_ref);
 
-    HighCmd *_highCmd;
+private:
+    void bodyPlan(const UserCommand &user_cmd, BodyState &body_state_ref);
+    void armJointPlan(JointState &joint_state_ref);
+    void comPlan(RobotState &robot_state_ref, Vector3d &pos_com_ref, Vector3d &vel_com_ref);
+
     FootPlanner *_gaitGen;
     Estimator *_est;
     LowState *_lowState;
     WholeBodyDynamics *_wbDyn;
 
-    double _dt;
-    RotMat _rotB_d;     // desired rotation matrix of BODY reletive to GLOBAL
-    bool _isModeChange; // Mode change:1  Mode not change: 0
-    WorkMode _lastWorkMode;
+    double dt_;
+    RotMat _rotB_d; // desired rotation matrix of BODY reletive to GLOBAL
 
     // body
     Vector3d _velBMax, _angVelBMax; // the maximum of body linear velocity and body angular velocity

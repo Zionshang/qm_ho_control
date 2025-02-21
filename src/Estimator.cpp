@@ -46,23 +46,6 @@ void Estimator::update(RobotState &robot_state)
     // arm
     pin_interface_->calcGripperState(_posG, _velG, _quatG, _angVelG);
 
-    // // control
-    _workMode = WorkMode::ARM_JOINT;
-    // switch (_lowState->getUserCmd())
-    // {
-    // case UserCommand::A:
-    //     _workMode = WorkMode::ARM_CARTESIAN_BODY;
-    //     break;
-    // case UserCommand::B:
-    //     _workMode = WorkMode::ARM_JOINT;
-    //     break;
-    // case UserCommand::X:
-    //     _workMode = WorkMode::ARM_FIXED_BODY;
-    //     break;
-    // case UserCommand::Y:
-    //     _workMode = WorkMode::ARM_FIXED_WORLD;
-    //     break;
-    // }
 }
 
 void Estimator::printState()

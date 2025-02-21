@@ -1,7 +1,7 @@
 #include "hierarchical_wbc.hpp"
 
-HierarchicalWbc::HierarchicalWbc(HighCmd *highCmd, WholeBodyDynamics *wbDyn)
-    : _highCmd(highCmd), _wbDyn(wbDyn)
+HierarchicalWbc::HierarchicalWbc(WholeBodyDynamics *wbDyn)
+    : _wbDyn(wbDyn)
 {
     nv_ = _wbDyn->getNv();
     fric_coef_ = 0.7;
@@ -36,7 +36,8 @@ HierarchicalWbc::~HierarchicalWbc()
     delete _wbDyn;
 }
 
-void HierarchicalWbc::calTau(const RobotState &robot_state, const Vector4i contact, VectorXd &tau)
+void HierarchicalWbc::calTau(const RobotState &robot_state, const RobotState &robot_state_ref,
+                             const Vector4i contact, VectorXd &tau)
 {
     // struct timeval t1, t2;
     // gettimeofday(&t1, NULL);
@@ -56,16 +57,16 @@ void HierarchicalWbc::calTau(const RobotState &robot_state, const Vector4i conta
     const auto &pos_arm = robot_state.joint.pos_arm;
     const auto &vel_arm = robot_state.joint.vel_arm;
 
-    const auto &pos_body_ref = _highCmd->posB;
-    const auto &vel_body_ref = _highCmd->velB;
-    const auto &quat_body_ref = _highCmd->quatB;
-    const auto &angvel_body_ref = _highCmd->angVelB;
-    const auto &pos_com_ref = _highCmd->posCoM;
-    const auto &vel_com_ref = _highCmd->velCoM;
-    const auto &pos_feet_ref = _highCmd->posF;
-    const auto &vel_feet_ref = _highCmd->velF;
-    const auto &pos_arm_ref = _highCmd->qAJ;
-    const auto &vel_arm_ref = _highCmd->dqAJ;
+    const auto &pos_body_ref = robot_state_ref.body.pos;
+    const auto &vel_body_ref = robot_state_ref.body.vel;
+    const auto &quat_body_ref = robot_state_ref.body.quat;
+    const auto &angvel_body_ref = robot_state_ref.body.angvel;
+    const auto &pos_com_ref = robot_state_ref.pos_com;
+    const auto &vel_com_ref = robot_state_ref.vel_com;
+    const auto &pos_feet_ref = robot_state_ref.foot.pos;
+    const auto &vel_feet_ref =  robot_state_ref.foot.vel;
+    const auto &pos_arm_ref = robot_state_ref.joint.pos_arm;
+    const auto &vel_arm_ref = robot_state_ref.joint.vel_arm;
 
     dim_decision_vars_ = nv_ + 3 * contact.sum();
 

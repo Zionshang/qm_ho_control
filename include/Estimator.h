@@ -43,7 +43,6 @@ public:
     Quaternion getQuatG() const { return _quatG; };     // get quaternion of GRIPPER relative to WORLD frame
     RotMat getRotG() const { return _rotG; }      // get rotation matrix of GRIPPER relative to WORLD frame
 
-    WorkMode getWorkMode() const { return _workMode; }
     double getTimeStep() const { return _lowState->getTimeStep(); }
     double getCurrentTime() const { return _lowState->getCurrentTime(); }
     void printState();
@@ -73,7 +72,4 @@ private:
     Quaternion _quatG;                 // quaternion of GRIPER reletive to GLOBAL
     Vector3d _posG, _velG, _angVelG; // position, velocity and angular velocity of GRIPER, expressed in WORLD frame
     RotMat _rotG;                // rotation matrix of GRIPER reletive to WORLD
-
-    // control
-    WorkMode _workMode;
 };

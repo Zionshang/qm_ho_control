@@ -2,7 +2,6 @@
 
 #include "common/mathTypes.h"
 #include "common/mathTools.h"
-#include "common/enumClass.h"
 
 struct MotorState
 {
@@ -86,14 +85,12 @@ struct LowState
     Supervisor supervisor;
     MotorState motorLeg[12];
     UserValue userValue;
-    UserCommand userCmd;
     double timeStep;
     double currentTime;
     MotorState motorArm[6];
 
     LowState()
     {
-        userCmd = UserCommand::B;
         timeStep = 0.0;
         currentTime = 0.0;
     }
@@ -143,5 +140,4 @@ struct LowState
     Vector3d getAccelerometer() { return imu.getAccelerometer(); }
     double getCurrentTime() { return currentTime; }
     double getTimeStep() { return timeStep; }
-    UserCommand getUserCmd() { return userCmd; }
 };

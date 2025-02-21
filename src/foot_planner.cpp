@@ -23,12 +23,13 @@ FootPlanner::FootPlanner()
 }
 
 
-void FootPlanner::update(const BodyState &body_state, const GaitState &gait_state, const FootState &feet_state,
-                         const Vector3d &vel_body_ref, const Vector3d &angvel_body_ref,
-                         Matrix34d &pos_feet_ref, Matrix34d &vel_feet_ref)
+void FootPlanner::update(const GaitState &gait_state, const BodyState &body_state, const FootState &feet_state,
+    const BodyState &body_state_ref, FootState &feet_state_ref)
 {
     const auto & pos_feet = feet_state.pos;
-     
+    auto & pos_feet_ref = feet_state_ref.pos;
+    auto & vel_feet_ref = feet_state_ref.vel;
+    
     phase_ =  gait_state.phase;
     period_swing_ = gait_state.period_swing;
     period_stance_ = gait_state.period_stance;
@@ -49,7 +50,7 @@ void FootPlanner::update(const BodyState &body_state, const GaitState &gait_stat
         }
         else
         {
-            pos_end_.col(i) = calcFootholdPosition(body_state, vel_body_ref, angvel_body_ref, i);
+            pos_end_.col(i) = calcFootholdPosition(body_state, body_state_ref.vel, body_state_ref.angvel, i);
             pos_feet_ref.col(i) = calcReferenceFootPosition(i);
             vel_feet_ref.col(i) = calcReferenceFootVelocity(i);
         }

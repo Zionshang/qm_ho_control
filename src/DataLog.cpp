@@ -11,7 +11,7 @@ DataLog::DataLog()
  * @param est State Estimator
  * @param highCmd high command
  */
-void DataLog::loadData(Estimator *est, HighCmd *highCmd)
+void DataLog::loadData(Estimator *est)
 {
     // appendVar(est->getCurrentTime()); // 0
 

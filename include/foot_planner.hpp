@@ -7,9 +7,8 @@ class FootPlanner
 public:
     FootPlanner();
     // TODO: 更简洁的参数传递
-    void update(const BodyState &body_state, const GaitState &gait_state, const FootState &feet_state,
-                const Vector3d &vel_body_ref, const Vector3d &angvel_body_ref,
-                Matrix34d &pos_feet_ref, Matrix34d &vel_feet_ref);
+    void update(const GaitState &gait_state, const BodyState &body_state, const FootState &feet_state,
+                const BodyState &body_state_ref, FootState &feet_state_ref);
 
 private:
     Vector3d calcFootholdPosition(const BodyState &body_state, const Vector3d &vel_body_ref,

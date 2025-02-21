@@ -40,8 +40,8 @@ private:
     const Matrix3d kIdentity3_ = Matrix3d::Identity();
     const Vector4d kFeetHeight_ = Vector4d::Zero();
 
-    LowState *low_state_;
-    PinocchioInterface *pin_interface_;
+    LowState *low_state_;               // TODO: 改成智能指针
+    PinocchioInterface *pin_interface_; // TODO: 改成智能指针
 
     Vector3d pos_body_;      // position body, expressed in world frame
     Vector3d vel_body_;      // velocity body, expressed in world frame

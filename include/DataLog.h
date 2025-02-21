@@ -2,7 +2,6 @@
 #include <queue>
 #include <fstream>
 #include "Estimator.h"
-#include "HighCmd.h"
 #include "Eigen/Dense"
 #include "ctrl_component.hpp"
 
@@ -10,7 +9,7 @@ class DataLog
 {
 public:
     DataLog();
-    void loadData(Estimator *est, HighCmd *highCmd);
+    void loadData(Estimator *est);
     void saveData();
 
 private:

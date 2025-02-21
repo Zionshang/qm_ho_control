@@ -8,9 +8,10 @@
 class Controller
 {
 public:
-    Controller(Estimator *est, HighCmd *highCmd, LowCmd *lowCmd, WholeBodyDynamics *wbDyn);
+    Controller(Estimator *est, LowCmd *lowCmd, WholeBodyDynamics *wbDyn);
     ~Controller();
-    void run(const RobotState &robot_state, const Vector4i &contact);
+    void run(const RobotState &robot_state, const RobotState &robot_state_ref,
+             const Vector4i &contact);
 
 private:
     LowState *_lowstate;

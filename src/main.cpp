@@ -1,6 +1,5 @@
 #include "common/LowState.h"
 #include "common/LowCmd.h"
-#include "common/HighCmd.h"
 #include "model/WholeBodyDynamics.h"
 #include "IOWebots.h"
 #include "Estimator.h"
@@ -16,62 +15,35 @@ int main()
 {
         LowState *lowState = new LowState();
         LowCmd *lowCmd = new LowCmd();
-        HighCmd *highCmd = new HighCmd();
         WholeBodyDynamics *wbDyn = new WholeBodyDynamics();
         PinocchioInterface *pin_interface = new PinocchioInterface();
         IOWebots *iowebots = new IOWebots(lowState, lowCmd);
         GaitSchedule *gait_sche = new GaitSchedule();
         Estimator *est = new Estimator(lowState, pin_interface);
-        Planner *plan = new Planner(highCmd, est, lowState, wbDyn);
-        Controller *ctlr = new Controller(est, highCmd, lowCmd, wbDyn);
+        Planner *plan = new Planner(est, lowState, wbDyn);
+        Controller *ctlr = new Controller(est, lowCmd, wbDyn);
         DataLog *log = new DataLog();
         KalmanFilterEstimator *kfe = new KalmanFilterEstimator(lowState, pin_interface, lowState->timeStep);
         CtrlComponent *ctrl_comp = new CtrlComponent(pin_interface);
-
-        GaitName target_gait_name = GaitName::TROT;
         while (iowebots->isRunning())
         {
                 iowebots->recvState();
-
-                gait_sche->update(lowState->currentTime, target_gait_name);
-
-                // // control
-                // switch (lowState->getUserCmd())
-                // {
-                // case UserCommand::A:
-                //     target_gait_name = GaitName::TROT;
-                //     break;
-                // case UserCommand::B:
-                //     target_gait_name = GaitName::STANCE;
-                //     break;
-                // case UserCommand::X:
-                //     target_gait_name = GaitName::RUNNING_TROT;
-                //     break;
-                // case UserCommand::Y:
-                //     target_gait_name = GaitName::WALK;
-                //     break;
-                // }
+                iowebots->recvUserCmd(ctrl_comp->mutable_user_cmd());
+                gait_sche->update(lowState->currentTime, ctrl_comp->user_cmd().gait_name);
                 est->update(ctrl_comp->mutable_robot_state());
                 // est->printState();
-                // plan->setDesiredTraj();
+                plan->update(ctrl_comp->user_cmd(), ctrl_comp->robot_state(),
+                                     gait_sche->gait_state(), ctrl_comp->mutable_target_robot_state());
                 // kfe->update(gait_sche->getContact());
-                // plan->showDemo();
-                // plan->showFrontMaxJointVelDemo();
-                plan->showPickingDemo(ctrl_comp->robot_state(), gait_sche->gait_state());
-                // plan->showSideMaxJointVelDemo();
-                // plan->printDesiredTraj();
-                ctlr->run(ctrl_comp->robot_state(), gait_sche->contact());
-                iowebots->sendCmd();
-                log->loadData(est, highCmd);
 
-                if (est->getCurrentTime() > 25)
-                        break;
+                ctlr->run(ctrl_comp->robot_state(), ctrl_comp->target_robot_state(), gait_sche->contact());
+                iowebots->sendCmd();
+                log->loadData(est);
         }
         log->saveData();
 
         delete lowState;
         delete lowCmd;
-        delete highCmd;
         delete iowebots;
         delete est;
         delete plan;

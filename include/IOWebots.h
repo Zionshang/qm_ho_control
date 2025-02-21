@@ -2,16 +2,17 @@
 
 #include "common/LowCmd.h"
 #include "common/LowState.h"
-#include "common/HighCmd.h"
+#include "ctrl_component.hpp"
 #include <iostream>
 #include <string>
 #include <webots/Motor.hpp>
 #include <webots/PositionSensor.hpp>
 #include <webots/InertialUnit.hpp>
 #include <webots/Gyro.hpp>
-#include <webots/Joystick.hpp>
+// #include <webots/Joystick.hpp>
 #include <webots/Supervisor.hpp>
 #include <webots/Accelerometer.hpp>
+#include <webots/Keyboard.hpp>
 
 class IOWebots
 {
@@ -19,6 +20,7 @@ public:
     IOWebots(LowState *lowState, LowCmd *lowCmd);
     ~IOWebots();
     void recvState();
+    void recvUserCmd(UserCommand &user_cmd);
     void sendCmd();
     bool isRunning();
 
@@ -39,8 +41,9 @@ private:
     webots::PositionSensor *_jointSensorLeg[12];
     webots::InertialUnit *_imu;
     webots::Gyro *_gyro;
-    webots::Joystick *_joystick;
+    // webots::Joystick *_joystick;
     webots::Accelerometer *_accelerometer;
+    webots::Keyboard *keyboard_;
 
     std::string _supervisorName = "AliengoZ1";
     std::string _imuName = "trunk_imu inertial";
@@ -64,5 +67,6 @@ private:
                                           "joint4_sensor", "joint5_sensor", "joint6_sensor"};
     std::string _jointArmName[6] = {"joint1", "joint2", "joint3",
                                     "joint4", "joint5", "joint6"};
-};
 
+    int key_, last_key;
+};

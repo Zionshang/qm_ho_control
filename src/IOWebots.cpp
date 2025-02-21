@@ -55,41 +55,62 @@ void IOWebots::recvState()
         _lowState->motorArm[i].dq = (_lowState->motorArm[i].q - _lastqArm(i)) / double(_timeStep) * 1000;
         _lastqArm(i) = _lowState->motorArm[i].q;
     }
+}
 
-    // joystick cmd
-    switch (_joystick->getPressedButton())
+void IOWebots::recvUserCmd(UserCommand &user_cmd)
+{
+    key_ = keyboard_->getKey();
+    if (key_ != last_key)
     {
-    case 0:
-        _lowState->userCmd = UserCommand::A;
-        std::cout << "You pressed A\n";
-        break;
-    case 1:
-        _lowState->userCmd = UserCommand::B;
-        std::cout << "You pressed B\n";
-        break;
-    case 3:
-        _lowState->userCmd = UserCommand::X;
-        std::cout << "You pressed X\n";
-        break;
-    case 4:
-        _lowState->userCmd = UserCommand::Y;
-        std::cout << "You pressed Y\n";
-        break;
-    case 8:
-        _lowState->userValue.z = 1.0;
-        break;
-    case 9:
-        _lowState->userValue.z = -1.0;
-        break;
-    default:
-        _lowState->userValue.z = 0;
-        break;
+        switch (key_)
+        {
+        case 'w':
+        case 'W':
+            user_cmd.vel_body_B(0) += 0.5;
+            break;
+        case 'b':
+        case 'B':
+            user_cmd.vel_body_B(0) += -0.5;
+            break;
+        case 'a':
+        case 'A':
+            user_cmd.vel_body_B(1) += 0.5;
+            break;
+        case 'd':
+        case 'D':
+            user_cmd.vel_body_B(1) += -0.5;
+            break;
+        case 'j':
+        case 'J':
+            user_cmd.angvel_body_B(2) += 0.5;
+            break;
+        case 'l':
+        case 'L':
+            user_cmd.angvel_body_B(2) += -0.5;
+            break;
+        case 's':
+        case 'S':
+            user_cmd.vel_body_B.setZero();
+            user_cmd.angvel_body_B.setZero();
+            break;
+        case '1':
+            user_cmd.gait_name = GaitName::STANCE;
+            break;
+        case '2':
+            user_cmd.gait_name = GaitName::TROT;
+            break;
+        case '3':
+            user_cmd.gait_name = GaitName::WALKING_TROT;
+            break;
+        case '4':
+            user_cmd.gait_name = GaitName::RUNNING_TROT;
+            break;
+        case '5':
+            user_cmd.gait_name = GaitName::WALK;
+            break;
+        }
     }
-
-    _lowState->userValue.ly = -killSmallOffset(double(_joystick->getAxisValue(0)) / 32767, 0.25);
-    _lowState->userValue.lx = -killSmallOffset(double(_joystick->getAxisValue(1)) / 32767, 0.25);
-    _lowState->userValue.ry = -killSmallOffset(double(_joystick->getAxisValue(2)) / 32767, 0.25);
-    _lowState->userValue.rx = -killSmallOffset(double(_joystick->getAxisValue(3)) / 32767, 0.25);
+    last_key = key_;
 }
 
 void IOWebots::sendCmd()
@@ -123,9 +144,13 @@ void IOWebots::initRecv()
         exit(1);
     }
 
-    // joystick init
-    _joystick = _supervisor->getJoystick();
-    _joystick->enable(_timeStep);
+    // // joystick init
+    // _joystick = _supervisor->getJoystick();
+    // _joystick->enable(_timeStep);
+
+    // keyboard init
+    keyboard_ = _supervisor->getKeyboard();
+    keyboard_->enable(_timeStep);
 
     // sensor init
     _imu = _supervisor->getInertialUnit(_imuName);

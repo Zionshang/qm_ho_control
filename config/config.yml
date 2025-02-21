@@ -1,3 +1,12 @@
+min_arm_joint_pos: [-2.61,    0, -2.87, -1.51, -1.34, -2.79]
+max_arm_joint_pos: [ 2.61, 2.96,     0,  1.51,  1.34,  2.79]
+
+min_arm_joint_vel: [-1.0, -1.0, -1.0, -1.0, -1.0, -1.0]
+max_arm_joint_vel: [ 1.0,  1.0,  1.0,  1.0,  1.0,  1.0]
+
+min_body_vel: [-0.5, -0.5, -0.5]
+max_body_vel: [ 0.5,  0.5,  0.5]
+
 # PD of Body
 kpPos: [200, 200, 500]     # PD parameter of body position 
 kdPos: [50, 70, 50]      

@@ -2,7 +2,6 @@
 #include <vector>
 #include <sys/time.h>
 #include "common/mathTools.h"
-#include "common/HighCmd.h"
 #include "common/projectPath.h"
 #include "model/WholeBodyDynamics.h"
 #include "hierarchical_qp.hpp"
@@ -14,10 +13,11 @@ class HierarchicalWbc
 {
 
 public:
-    HierarchicalWbc(HighCmd *highCmd, WholeBodyDynamics *wbDyn);
+    HierarchicalWbc(WholeBodyDynamics *wbDyn);
     ~HierarchicalWbc();
 
-    void calTau(const RobotState &robot_state, const Vector4i contact, VectorXd &tau);
+    void calTau(const RobotState &robot_state, const RobotState &robot_state_ref,
+                const Vector4i contact, VectorXd &tau);
 
 private:
     void paramInit(std::string fileName);
@@ -40,7 +40,6 @@ private:
     // Task buildGripperAngularTask();
 
     WholeBodyDynamics *_wbDyn;
-    HighCmd *_highCmd;
 
     // friction cone
     double fz_min_, fz_max_;               // limitation of contact force in z direction
