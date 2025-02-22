@@ -7,7 +7,6 @@ struct BodyState
 {
     Vector3d pos;    // position of body, expressed in world frame
     Quaterniond quat; // quaternion of body relative to world frame
-    RotMat rotmat;   // rotation matrix of body relative to world frame
     Vector3d vel;    // velocity of body, expressed in world frame
     Vector3d angvel; // angluar velocity of body, expressed in world frame
 
@@ -15,7 +14,6 @@ struct BodyState
     {
         pos.setZero();
         quat.setIdentity();
-        rotmat.setIdentity();
         vel.setZero();
         angvel.setZero();
     }

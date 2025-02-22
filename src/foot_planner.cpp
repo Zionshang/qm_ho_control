@@ -62,7 +62,6 @@ Vector3d FootPlanner::calcFootholdPosition(const BodyState &body_state, const Ve
 {
     const Vector3d pos_body = body_state.pos;
     const Vector3d vel_body = body_state.vel;
-    const RotMat rotmat_body = body_state.rotmat;
     const Vector3d angvel_body = body_state.angvel;
 
     // TODO: 是否需要改成相对于body系下
@@ -72,7 +71,7 @@ Vector3d FootPlanner::calcFootholdPosition(const BodyState &body_state, const Ve
     next_step_(2) = 0; 
 
     // rotation about z axis
-    yaw_ = rotMat2RPY(rotmat_body)(2);
+    yaw_ = rotMat2RPY(body_state.quat.toRotationMatrix())(2);
     next_yaw_ = angvel_body(2) * (1 - phase_(leg_id)) * period_swing_ + angvel_body(2) * period_stance_ / 2 + kyaw_ * (angvel_body_ref_(2) - angvel_body(2));
     next_step_(0) += feet_radius_(leg_id) * cos(yaw_ + feet_init_angle(leg_id) + next_yaw_);
     next_step_(1) += feet_radius_(leg_id) * sin(yaw_ + feet_init_angle(leg_id) + next_yaw_);

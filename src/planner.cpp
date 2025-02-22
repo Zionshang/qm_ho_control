@@ -1,6 +1,6 @@
 #include "planner.hpp"
 
-Planner::Planner( PinocchioInterface *pin_interface)
+Planner::Planner(PinocchioInterface *pin_interface)
     : pin_interface_(pin_interface)
 {
     dt_ = 0.001;
@@ -54,11 +54,11 @@ void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,
 
 void Planner::bodyPlan(const UserCommand &user_cmd, BodyState &body_state_ref)
 {
-    body_state_ref.rotmat = body_state_ref.quat.toRotationMatrix();
+    RotMat R_body = body_state_ref.quat.toRotationMatrix();
 
     // velocity transformation from BODY to WORLD
-    body_state_ref.vel = body_state_ref.rotmat * user_cmd.vel_body_B;
-    body_state_ref.angvel = body_state_ref.rotmat * user_cmd.angvel_body_B;
+    body_state_ref.vel = R_body * user_cmd.vel_body_B;
+    body_state_ref.angvel = R_body * user_cmd.angvel_body_B;
 
     // position integration
     body_state_ref.pos += body_state_ref.vel * dt_;
@@ -68,13 +68,15 @@ void Planner::bodyPlan(const UserCommand &user_cmd, BodyState &body_state_ref)
 // todo: 是否有存在的必要？
 void Planner::comPlan(RobotState &robot_state_ref, Vector3d &pos_com_ref, Vector3d &vel_com_ref)
 {
+    RotMat R_body_T = robot_state_ref.body.quat.toRotationMatrix().transpose();
+
     robot_state_ref.pos_gen << robot_state_ref.body.pos,
         robot_state_ref.body.quat.coeffs(),
         VectorXd::Zero(12),
         robot_state_ref.joint.pos_arm;
 
-    robot_state_ref.vel_gen << robot_state_ref.body.rotmat.transpose() * robot_state_ref.body.vel,
-        robot_state_ref.body.rotmat.transpose() * robot_state_ref.body.angvel,
+    robot_state_ref.vel_gen << R_body_T * robot_state_ref.body.vel,
+        R_body_T * robot_state_ref.body.angvel,
         VectorXd::Zero(12, 1),
         robot_state_ref.joint.vel_arm;
 

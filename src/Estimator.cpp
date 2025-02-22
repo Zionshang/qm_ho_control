@@ -18,9 +18,9 @@ void Estimator::update(RobotState &robot_state)
     body_state.pos << _lowState->supervisor.robotPos[0], _lowState->supervisor.robotPos[1], _lowState->supervisor.robotPos[2];
     body_state.vel << _lowState->supervisor.robotVel[0], _lowState->supervisor.robotVel[1], _lowState->supervisor.robotVel[2];
     body_state.quat = _lowState->getQuaternion();
-    body_state.rotmat = body_state.quat.toRotationMatrix();
-    body_state.angvel << body_state.rotmat * _lowState->getGyro();
-    RotMat R_T = body_state.rotmat.transpose();
+    RotMat R_body = body_state.quat.toRotationMatrix();
+    body_state.angvel << R_body * _lowState->getGyro();
+    RotMat R_T = R_body.transpose();
 
     // CoM
     auto &pos_gen = robot_state.pos_gen;
