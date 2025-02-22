@@ -43,33 +43,33 @@ void Estimator::update(RobotState &robot_state)
         foot_state.vel_rel_body.col(i) = foot_state.vel.col(i) - body_state.vel;
     }
 
-    std::cout << "===== Robot State =====" << std::endl;
+    // std::cout << "===== Robot State =====" << std::endl;
 
-    // // Body state
-    std::cout << "Body Position: " << robot_state.body.pos.transpose() << std::endl;
-    std::cout << "Body Quaternion: " << robot_state.body.quat.coeffs().transpose() << std::endl;
-    std::cout << "Body Velocity: " << robot_state.body.vel.transpose() << std::endl;
-    std::cout << "Body Angular Velocity: " << robot_state.body.angvel.transpose() << std::endl;
-    std::cout << "Body Rotation Matrix:" << std::endl
-              << robot_state.body.rotmat << std::endl;
+    // // // Body state
+    // std::cout << "Body Position: " << robot_state.body.pos.transpose() << std::endl;
+    // std::cout << "Body Quaternion: " << robot_state.body.quat.coeffs().transpose() << std::endl;
+    // std::cout << "Body Velocity: " << robot_state.body.vel.transpose() << std::endl;
+    // std::cout << "Body Angular Velocity: " << robot_state.body.angvel.transpose() << std::endl;
+    // std::cout << "Body Rotation Matrix:" << std::endl
+    //           << robot_state.body.rotmat << std::endl;
 
-    // Foot state
-    std::cout << "Foot Position: " << robot_state.foot.pos.transpose() << std::endl;
-    std::cout << "Foot Velocity: " << robot_state.foot.vel.transpose() << std::endl;
+    // // Foot state
+    // std::cout << "Foot Position: " << robot_state.foot.pos.transpose() << std::endl;
+    // std::cout << "Foot Velocity: " << robot_state.foot.vel.transpose() << std::endl;
 
-    // Joint state
-    std::cout << "Leg Joint Position: " << robot_state.joint.pos_leg << std::endl;
-    std::cout << "Leg Joint Velocity: " << robot_state.joint.vel_leg << std::endl;
-    std::cout << "Arm Joint Velocity: " << robot_state.joint.vel_arm.transpose() << std::endl;
-    std::cout << "Arm Joint Velocity: " << robot_state.joint.vel_arm.transpose() << std::endl;
+    // // Joint state
+    // std::cout << "Leg Joint Position: " << robot_state.joint.pos_leg << std::endl;
+    // std::cout << "Leg Joint Velocity: " << robot_state.joint.vel_leg << std::endl;
+    // std::cout << "Arm Joint Velocity: " << robot_state.joint.vel_arm.transpose() << std::endl;
+    // std::cout << "Arm Joint Velocity: " << robot_state.joint.vel_arm.transpose() << std::endl;
 
-    // Generalized State
-    std::cout << "Generalized Position: " << robot_state.pos_gen.transpose() << std::endl;
-    std::cout << "Generalized Velocity: " << robot_state.vel_gen.transpose() << std::endl;
+    // // Generalized State
+    // std::cout << "Generalized Position: " << robot_state.pos_gen.transpose() << std::endl;
+    // std::cout << "Generalized Velocity: " << robot_state.vel_gen.transpose() << std::endl;
 
-    // Center of Mass references
-    std::cout << "CoM Position Ref: " << robot_state.pos_com.transpose() << std::endl;
-    std::cout << "CoM Velocity Ref: " << robot_state.vel_com.transpose() << std::endl;
+    // // Center of Mass references
+    // std::cout << "CoM Position Ref: " << robot_state.pos_com.transpose() << std::endl;
+    // std::cout << "CoM Velocity Ref: " << robot_state.vel_com.transpose() << std::endl;
 }
 
 void Estimator::printState()

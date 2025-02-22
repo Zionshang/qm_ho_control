@@ -1,6 +1,8 @@
 #pragma once
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+#include <pinocchio/multibody/liegroup/special-orthogonal.hpp>
+
 #define ROBOTNQ 25
 #define ROBOTNV 24
 
@@ -16,6 +18,8 @@ using Eigen::Quaterniond;
 using Vector12d = typename Eigen::Matrix<double, 12, 1>;
 using Vector6d = typename Eigen::Matrix<double, 6, 1>;
 using Matrix34d = typename Eigen::Matrix<double, 3, 4>;
+
+using SO3Group = pinocchio::SpecialOrthogonalOperationTpl<3, double>;
 
 // 2x1 Vector
 using Vec2 = typename Eigen::Matrix<double, 2, 1>;

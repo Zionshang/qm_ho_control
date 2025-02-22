@@ -64,7 +64,7 @@ void HierarchicalWbc::calTau(const RobotState &robot_state, const RobotState &ro
     const auto &pos_com_ref = robot_state_ref.pos_com;
     const auto &vel_com_ref = robot_state_ref.vel_com;
     const auto &pos_feet_ref = robot_state_ref.foot.pos;
-    const auto &vel_feet_ref =  robot_state_ref.foot.vel;
+    const auto &vel_feet_ref = robot_state_ref.foot.vel;
     const auto &pos_arm_ref = robot_state_ref.joint.pos_arm;
     const auto &vel_arm_ref = robot_state_ref.joint.vel_arm;
 
@@ -202,8 +202,12 @@ Task HierarchicalWbc::buildBodyAngularTask(const Quaterniond &quat_body, const V
     VectorXd b = VectorXd(3);
 
     A.leftCols(nv_) = J_body_.bottomRows(3);
-    b = kp_ang_ * quatErr(quat_body_ref.coeffs(), quat_body.coeffs()) + kd_ang_ * (angvel_body_ref - angvel_body) - dJdq_body_.tail(3);
-    std::cout << "quat_err: " << quatErr(quat_body_ref.coeffs(), quat_body.coeffs()).transpose() << std::endl;
+
+    // todo: 到底用哪个？
+    // Vector3d quat_err = SO3Group().difference(quat_body.coeffs(), quat_body_ref.coeffs());
+    Vector3d quat_err = pinocchio::quaternion::log3(quat_body_ref * quat_body.inverse());
+
+    b = kp_ang_ * quat_err + kd_ang_ * (angvel_body_ref - angvel_body) - dJdq_body_.tail(3);
     return {A, b, MatrixXd(), VectorXd()};
 }
 
