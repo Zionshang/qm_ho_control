@@ -6,7 +6,7 @@
 struct BodyState
 {
     Vector3d pos;    // position of body, expressed in world frame
-    Quaternion quat; // quaternion of body relative to world frame
+    Quaterniond quat; // quaternion of body relative to world frame
     RotMat rotmat;   // rotation matrix of body relative to world frame
     Vector3d vel;    // velocity of body, expressed in world frame
     Vector3d angvel; // angluar velocity of body, expressed in world frame
@@ -14,7 +14,7 @@ struct BodyState
     BodyState()
     {
         pos.setZero();
-        quat << 0, 0, 0, 1;
+        quat.setIdentity();
         rotmat.setIdentity();
         vel.setZero();
         angvel.setZero();
@@ -94,8 +94,6 @@ public:
           target_robot_state_(pin_interface->nq(), pin_interface->nv())
     {
         target_robot_state_.body.pos << 0.0, 0.0, 0.42;
-        target_robot_state_.body.quat << 0.0, 0.0, 0.0, 1.0;
-
         target_robot_state_.pos_com << 0.0317053, 0.00152422, 0.440351;
     }
 

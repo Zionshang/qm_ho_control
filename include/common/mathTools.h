@@ -76,14 +76,14 @@ inline T saturation(const T a, const T &min, const T &max)
         return a;
 }
 
-/***************************************Quaternion***********************************************/
+/***************************************Vector4d***********************************************/
 /**
  * @brief: convert quaternion to rotation matrix
- * @param {Quaternion} &q: quaternion [x,y,z,w]
+ * @param {Vector4d} &q: quaternion [x,y,z,w]
  * @return {RotMat} rotation matrix
  * @note quaternion must be unit ( ||q|| = 1 )
  */
-inline RotMat quat2RotMat(const Quaternion &q)
+inline RotMat quat2RotMat(const Vector4d &q)
 {
     double e0 = q(0); // x
     double e1 = q(1); // y
@@ -99,11 +99,11 @@ inline RotMat quat2RotMat(const Quaternion &q)
 
 /**
  * @brief convert quaternion to ZYX Euler angle
- * @param {Quaternion} &q: quaternion [x,y,z,w]
+ * @param {Vector4d} &q: quaternion [x,y,z,w]
  * @return {Vector3d} ZYX Euler angle
  * @warning quaternion must be unit ( ||q|| = 1 )
  */
-inline Vector3d quat2RPY(const Quaternion &q)
+inline Vector3d quat2RPY(const Vector4d &q)
 {
     double qx = q(0); // x
     double qy = q(1); // y
@@ -132,7 +132,7 @@ inline Vector3d quat2RPY(const Quaternion &q)
     return RPY;
 }
 
-inline Quaternion rpy2Quat(const Vector3d &RPY)
+inline Vector4d rpy2Quat(const Vector3d &RPY)
 {
     Eigen::AngleAxisd rotationZ(RPY(2), Eigen::Vector3d::UnitZ());
     Eigen::AngleAxisd rotationY(RPY(1), Eigen::Vector3d::UnitY());
@@ -145,42 +145,42 @@ inline Quaternion rpy2Quat(const Vector3d &RPY)
 /**
  * @brief: get the quaternion obtained by rotation about the X-axis
  * @param {double} theta: rotation angle
- * @return {Quaternion} quaternion
+ * @return {Vector4d} quaternion
  */
-inline Quaternion quatX(double theta)
+inline Vector4d quatX(double theta)
 {
-    return Quaternion(std::sin(theta / 2), 0, 0, std::cos(theta / 2));
+    return Vector4d(std::sin(theta / 2), 0, 0, std::cos(theta / 2));
 }
 
 /**
  * @brief: get the quaternion obtained by rotation about the Y-axis
  * @param {double} theta: rotation angle
- * @return {Quaternion} quaternion
+ * @return {Vector4d} quaternion
  */
-inline Quaternion quatY(double theta)
+inline Vector4d quatY(double theta)
 {
-    return Quaternion(0, std::sin(theta / 2), 0, std::cos(theta / 2));
+    return Vector4d(0, std::sin(theta / 2), 0, std::cos(theta / 2));
 }
 
 /**
  * @brief: get the quaternion obtained by rotation about the Z-axis
  * @param {double} theta: rotation angle
- * @return {Quaternion} quaternion
+ * @return {Vector4d} quaternion
  */
-inline Quaternion quatZ(double theta)
+inline Vector4d quatZ(double theta)
 {
-    return Quaternion(0, 0, std::sin(theta / 2), std::cos(theta / 2));
+    return Vector4d(0, 0, std::sin(theta / 2), std::cos(theta / 2));
 }
 
 /**
  * @brief: Multiplication between two quaternion
- * @param {Quaternion} &q1
- * @param {Quaternion} &q2
- * @return {Quaternion} q1 * q2
+ * @param {Vector4d} &q1
+ * @param {Vector4d} &q2
+ * @return {Vector4d} q1 * q2
  */
-inline Quaternion quatTimes(const Quaternion &q1, const Quaternion &q2)
+inline Vector4d quatTimes(const Vector4d &q1, const Vector4d &q2)
 {
-    Quaternion out = Quaternion(q1(3) * q2(0) + q1(0) * q2(3) + q1(1) * q2(2) - q1(2) * q2(1),
+    Vector4d out = Vector4d(q1(3) * q2(0) + q1(0) * q2(3) + q1(1) * q2(2) - q1(2) * q2(1),
                     q1(3) * q2(1) - q1(0) * q2(2) + q1(1) * q2(3) + q1(2) * q2(0),
                     q1(3) * q2(2) + q1(0) * q2(1) - q1(1) * q2(0) + q1(2) * q2(3),
                     q1(3) * q2(3) - q1(0) * q2(0) - q1(1) * q2(1) - q1(2) * q2(2));
@@ -189,23 +189,23 @@ inline Quaternion quatTimes(const Quaternion &q1, const Quaternion &q2)
 
 /**
  * @brief: Conjugation of quaternions
- * @param {Quaternion} &q
- * @return {Quaternion} q* (Conjugation of quaternions)
+ * @param {Vector4d} &q
+ * @return {Vector4d} q* (Conjugation of quaternions)
  */
-inline Quaternion quatConj(const Quaternion &q)
+inline Vector4d quatConj(const Vector4d &q)
 {
-    return Quaternion(-q(0), -q(1), -q(2), q(3));
+    return Vector4d(-q(0), -q(1), -q(2), q(3));
 }
 
 /**
  * @brief: caculate the 3D rotation error from quaternion
- * @param {Quaternion} qd: desired quaternion
- * @param {Quaternion} q: current quaternion
+ * @param {Vector4d} qd: desired quaternion
+ * @param {Vector4d} q: current quaternion
  * @return {Vector3d} 3D rotation err. err = qd - q
  */
-inline Vector3d quatErr(const Quaternion &qd, const Quaternion &q)
+inline Vector3d quatErr(const Vector4d &qd, const Vector4d &q)
 {
-    Quaternion qDiff = quatTimes(qd, quatConj(q));
+    Vector4d qDiff = quatTimes(qd, quatConj(q));
     if (qDiff(3) < 0)
         qDiff = -qDiff;
 
@@ -214,11 +214,11 @@ inline Vector3d quatErr(const Quaternion &qd, const Quaternion &q)
 
 /**
  * @brief: caculate the derivative of quaternion
- * @param {Quaternion} &q: a unit quaternion representing the orientation of B relative to A
+ * @param {Vector4d} &q: a unit quaternion representing the orientation of B relative to A
  * @param {Vector3d} w: angular velocity, expressed in frame B
- * @return {Quaternion} derivative of quaternion
+ * @return {Vector4d} derivative of quaternion
  */
-inline Quaternion quatDeriv(const Quaternion &q, const Vector3d &w)
+inline Vector4d quatDeriv(const Vector4d &q, const Vector3d &w)
 {
     Eigen::Matrix<double, 4, 3> Q;
     Q << q(3), -q(2), q(1),

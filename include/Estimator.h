@@ -34,15 +34,6 @@ public:
     // Matrix34d getPosF() const { return _posF; }            // get position of four feet, expressed in WORLD frame
     // Matrix34d getVelF() const { return _velF; }            // get velocity of four feet, expressed in WORLD frame
 
-    // // gripper
-    // Vector6d getQArm() const { return _qArm; }        // get joint position of arm
-    // Vector6d getDqArm() const { return _dqArm; }      // get joint velocity of arm
-    Vector3d getPosG() const { return _posG; }        // get position of GRIPPER, expressed in WORLD frame
-    Vector3d getVelG() const { return _velG; };       // get velocity of GRIPPER, expressed in WORLD frame
-    Vector3d getAngVelG() const { return _angVelG; }; // get angular velocity of GRIPPER, expressed in WORLD frame
-    Quaternion getQuatG() const { return _quatG; };     // get quaternion of GRIPPER relative to WORLD frame
-    RotMat getRotG() const { return _rotG; }      // get rotation matrix of GRIPPER relative to WORLD frame
-
     double getTimeStep() const { return _lowState->getTimeStep(); }
     double getCurrentTime() const { return _lowState->getCurrentTime(); }
     void printState();
@@ -67,9 +58,4 @@ private:
     double T_sw_;
     double T_st_;
 
-    // arm & gripper
-    // Vector6d _qArm, _dqArm;          // joint position and velocity of arm
-    Quaternion _quatG;                 // quaternion of GRIPER reletive to GLOBAL
-    Vector3d _posG, _velG, _angVelG; // position, velocity and angular velocity of GRIPER, expressed in WORLD frame
-    RotMat _rotG;                // rotation matrix of GRIPER reletive to WORLD
 };

@@ -28,16 +28,14 @@ private:
     Task buildFrictionConeTask();
     Task buildBodyLinearTask(const Vector3d &pos_body, const Vector3d &vel_body,
                              const Vector3d &pos_body_ref, const Vector3d &vel_body_ref);
-    Task buildBodyAngularTask(const Quaternion &quat_body, const Vector3d &angvel_body,
-                              const Quaternion &quat_body_ref, const Vector3d &angvel_body_ref);
+    Task buildBodyAngularTask(const Quaterniond &quat_body, const Vector3d &angvel_body,
+                              const Quaterniond &quat_body_ref, const Vector3d &angvel_body_ref);
     Task buildComLinearTask(const Vector3d &pos_com, const Vector3d &vel_com,
                             const Vector3d &pos_com_ref, const Vector3d &vel_com_ref);
     Task buildSwingLegTask(const Matrix34d &pos_feet, const Matrix34d &vel_feet,
                            const Matrix34d &pos_feet_ref, const Matrix34d &vel_feet_ref);
     Task buildArmJointTask(const Vector6d &pos_arm, const Vector6d &vel_arm,
                            const Vector6d &pos_arm_ref, const Vector6d &vel_arm_ref);
-    // Task buildGripperLinearTask();
-    // Task buildGripperAngularTask();
 
     WholeBodyDynamics *_wbDyn;
 

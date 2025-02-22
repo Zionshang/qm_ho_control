@@ -195,14 +195,15 @@ Task HierarchicalWbc::buildComLinearTask(const Vector3d &pos_com, const Vector3d
     return {A, b, MatrixXd(), VectorXd()};
 }
 
-Task HierarchicalWbc::buildBodyAngularTask(const Quaternion &quat_body, const Vector3d &angvel_body,
-                                           const Quaternion &quat_body_ref, const Vector3d &angvel_body_ref)
+Task HierarchicalWbc::buildBodyAngularTask(const Quaterniond &quat_body, const Vector3d &angvel_body,
+                                           const Quaterniond &quat_body_ref, const Vector3d &angvel_body_ref)
 {
     MatrixXd A = MatrixXd::Zero(3, dim_decision_vars_);
     VectorXd b = VectorXd(3);
 
     A.leftCols(nv_) = J_body_.bottomRows(3);
-    b = kp_ang_ * quatErr(quat_body_ref, quat_body) + kd_ang_ * (angvel_body_ref - angvel_body) - dJdq_body_.tail(3);
+    b = kp_ang_ * quatErr(quat_body_ref.coeffs(), quat_body.coeffs()) + kd_ang_ * (angvel_body_ref - angvel_body) - dJdq_body_.tail(3);
+    std::cout << "quat_err: " << quatErr(quat_body_ref.coeffs(), quat_body.coeffs()).transpose() << std::endl;
     return {A, b, MatrixXd(), VectorXd()};
 }
 
@@ -222,28 +223,6 @@ Task HierarchicalWbc::buildSwingLegTask(const Matrix34d &pos_feet, const Matrix3
 
     return {A, b, MatrixXd(), VectorXd()};
 }
-
-// Task HierarchicalWbc::buildGripperLinearTask()
-// {
-//     MatrixXd A = MatrixXd::Zero(3, dim_decision_vars_);
-//     VectorXd b = VectorXd(3);
-
-//     A.leftCols(nv_) = J_grip_.topRows(3);
-//     b = _KpEePos * (_highCmd->posG - _est->getPosG()) + _KdEePos * (_highCmd->velG - _est->getVelG()) - dJdq_grip_.head(3);
-
-//     return {A, b, MatrixXd(), VectorXd()};
-// }
-
-// Task HierarchicalWbc::buildGripperAngularTask()
-// {
-//     MatrixXd A = MatrixXd::Zero(3, dim_decision_vars_);
-//     VectorXd b = VectorXd(3);
-
-//     A.leftCols(nv_) = weight_gripper_ang_ * J_grip_.bottomRows(3);
-//     b = _KpEeAng * quatErr(_highCmd->quatG, _est->getQuatG()) + _KdEeAng * (_highCmd->angVelG - _est->getAngVelG()) - dJdq_grip_.tail(3);
-
-//     return {A, b, MatrixXd(), VectorXd()};
-// }
 
 Task HierarchicalWbc::buildArmJointTask(const Vector6d &pos_arm, const Vector6d &vel_arm,
                                         const Vector6d &pos_arm_ref, const Vector6d &vel_arm_ref)

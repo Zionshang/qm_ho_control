@@ -1,6 +1,6 @@
 #pragma once
 #include <Eigen/Dense>
-
+#include <Eigen/Geometry>
 #define ROBOTNQ 25
 #define ROBOTNV 24
 
@@ -11,10 +11,11 @@ using Eigen::Vector3d;
 using Eigen::Vector4d;
 using Eigen::Vector4i;
 using Eigen::VectorXd;
+using Eigen::Quaterniond;
+
 using Vector12d = typename Eigen::Matrix<double, 12, 1>;
 using Vector6d = typename Eigen::Matrix<double, 6, 1>;
 using Matrix34d = typename Eigen::Matrix<double, 3, 4>;
-using Quaternion = typename Eigen::Matrix<double, 4, 1>;
 
 // 2x1 Vector
 using Vec2 = typename Eigen::Matrix<double, 2, 1>;

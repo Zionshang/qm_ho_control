@@ -51,7 +51,7 @@ void KalmanFilterEstimator::update(const Vector4i &contact_flag)
     vel_body_ = x_hat_.segment<3>(3);
 
     quat_body_ = low_state_->getQuaternion();
-    rotmat_body_ = quat2RotMat(quat_body_);
+    rotmat_body_ = quat_body_.toRotationMatrix();
     angvel_body_B_ = low_state_->getGyro();
 
     pos_leg_ = low_state_->getQLeg();

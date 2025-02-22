@@ -41,15 +41,3 @@ Vector3d PinocchioInterface::calcFootVelocity(int foot_id)
     pin::Motion motion = pin::getFrameVelocity(model_, data_, foot_id, pinocchio::LOCAL_WORLD_ALIGNED);
     return motion.linear();
 }
-
-void PinocchioInterface::calcGripperState(Vector3d &pos_gripper, Vector3d &vel_gripper,
-                                          Quaternion &quat_gripper, Vector3d &angvel_gripper)
-{
-    pos_gripper = data_.oMf[gripper_id_].translation();
-    pinocchio::SE3::Quaternion quat(data_.oMf[gripper_id_].rotation());
-    quat_gripper = quat.coeffs();
-
-    pin::Motion motion = pin::getFrameVelocity(model_, data_, gripper_id_, pinocchio::LOCAL_WORLD_ALIGNED);
-    vel_gripper = motion.linear();
-    angvel_gripper = motion.angular();
-}

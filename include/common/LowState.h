@@ -47,9 +47,9 @@ struct IMU
         quaternion[3] = 1;
     }
 
-    Quaternion getQuaternion()
+    Quaterniond getQuaternion()
     {
-        return Quaternion(quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+        return Quaterniond(quaternion[3], quaternion[0], quaternion[1], quaternion[2]);
     }
     Vector3d getGyro()
     {
@@ -135,7 +135,7 @@ struct LowState
         return dqArm;
     }
 
-    Quaternion getQuaternion() { return imu.getQuaternion(); }
+    Quaterniond getQuaternion() { return imu.getQuaternion(); }
     Vector3d getGyro() { return imu.getGyro(); }
     Vector3d getAccelerometer() { return imu.getAccelerometer(); }
     double getCurrentTime() { return currentTime; }

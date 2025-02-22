@@ -31,9 +31,6 @@ public:
     Vector3d calcFootPosition(int foot_id);
     Vector3d calcFootVelocity(int foot_id);
 
-    void calcGripperState(Vector3d &pos_gripper, Vector3d &vel_gripper,
-                          Quaternion &quat_gripper, Vector3d &angvel_gripper);
-
     int nq() { return nq_; }
     int nv() { return nv_; }
     int body_id() const { return body_id_; }

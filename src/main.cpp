@@ -3,7 +3,7 @@
 #include "model/WholeBodyDynamics.h"
 #include "IOWebots.h"
 #include "Estimator.h"
-#include "Planner.h"
+#include "planner.hpp"
 #include "Controller.h"
 #include "DataLog.h"
 #include "pinocchio_interface.hpp"

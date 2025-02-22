@@ -12,7 +12,7 @@ public:
 
     const Vector3d &pos_body() const { return pos_body_; }      // position body, expressed in world frame
     const Vector3d &vel_body() const { return vel_body_; }      // velocity body, expressed in world frame
-    const Quaternion &getQuatB() const { return quat_body_; }   // quaternion of body frame relative to world frame
+    const Quaterniond &getQuatB() const { return quat_body_; }   // quaternion of body frame relative to world frame
     const RotMat &getRotB() const { return rotmat_body_; }      // rotation matrix of body frame relative to world frame
     const Vector3d &getAngVelB() const { return angvel_body_; } // angular velocity of body, expressed in world frame
 
@@ -46,7 +46,7 @@ private:
     Vector3d pos_body_;      // position body, expressed in world frame
     Vector3d vel_body_;      // velocity body, expressed in world frame
     RotMat rotmat_body_;     // rotation matrix of body frame relative to world frame
-    Quaternion quat_body_;   // quaternion of body frame relative to world frame
+    Quaterniond quat_body_;   // quaternion of body frame relative to world frame
     Vector3d angvel_body_;   // angular velocity of body, expressed in world frame
     Vector3d angvel_body_B_; // angular velocity of body, expressed in world frame
 
