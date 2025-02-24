@@ -27,8 +27,8 @@ void Estimator::update(RobotState &robot_state)
     auto &vel_gen = robot_state.vel_gen;
     auto &pos_com = robot_state.pos_com;
     auto &vel_com = robot_state.vel_com;
-    pos_gen << body_state.pos, body_state.quat.coeffs(), vec34ToVec12(joint_state.pos_leg), joint_state.pos_arm;
-    vel_gen << R_T * body_state.vel, R_T * body_state.angvel, vec34ToVec12(joint_state.vel_leg), joint_state.vel_arm;
+    pos_gen << body_state.pos, body_state.quat.coeffs(), mat34ToVec12(joint_state.pos_leg), joint_state.pos_arm;
+    vel_gen << R_T * body_state.vel, R_T * body_state.angvel, mat34ToVec12(joint_state.vel_leg), joint_state.vel_arm;
     pin_interface_->calcComState(pos_gen, vel_gen, pos_com, vel_com);
 
     // foot

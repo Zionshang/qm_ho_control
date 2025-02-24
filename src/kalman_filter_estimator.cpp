@@ -63,8 +63,8 @@ void KalmanFilterEstimator::update(const Vector4i &contact_flag)
     updateCovarianceMatrix(contact_flag);
 
     // update measurement
-    pos_gen_ << pos_body_, quat_body_, vec34ToVec12(pos_leg_), pos_arm_;
-    vel_gen_ << rotmat_body_.transpose() * vel_body_, angvel_body_B_, vec34ToVec12(vel_leg_), vel_arm_;
+    pos_gen_ << pos_body_, quat_body_, mat34ToVec12(pos_leg_), pos_arm_;
+    vel_gen_ << rotmat_body_.transpose() * vel_body_, angvel_body_B_, mat34ToVec12(vel_leg_), vel_arm_;
     updateMeasurement();
 
     // update state transition

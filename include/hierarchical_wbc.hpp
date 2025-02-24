@@ -51,12 +51,12 @@ private:
 
     int num_st_, num_sw_; // number of stance and swing leg
     MatrixXd M_;          // Matrix M in M*ddq + C = tau
-    VectorXd C_;             // Matrix C in M*ddq + C = tau
+    VectorXd C_;          // Matrix C in M*ddq + C = tau
 
     // TODO: 是否需要使用std::Vector
     std::vector<Matrix6xd> J_feet_ = std::vector<Matrix6xd>(4);  // jacobian of all feet
     std::vector<Vector6d> dJdq_feet_ = std::vector<Vector6d>(4); // jacobian's derviative times v of all feet
-    Eigen::Matrix<double, -1, ROBOTNV> J_st_, J_sw_;             // jacobian of stacked swing and stance feet
+    MatrixXd J_st_, J_sw_;                                       // jacobian of stacked swing and stance feet
     VectorXd dJdq_st_;                                           // jacobian's derviative times v of stacked stance feet
     VectorXd dJdq_sw_;                                           // jacobian's derviative times v of stacked swing feet
     Matrix6xd J_body_;                                           // jacobian of body

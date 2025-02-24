@@ -207,3 +207,25 @@ inline void cubicSpline(const VectorXd &pos0, const VectorXd &posf, const Vector
         velNow = a1 + 2 * a2 * (tnow - t0) + 3 * a3 * pow(tnow - t0, 2);
     }
 }
+
+
+/************************ Function ***************************/
+// convert Matrix34d to Vector12d
+inline Vector12d mat34ToVec12(const Matrix34d &vec34)
+{
+    Vector12d vec12;
+    for (int i = 0; i < 4; i++)
+        vec12.segment(3 * i, 3) = vec34.col(i);
+    return vec12;
+}
+
+// convert Matrix34d to Vector12d
+inline Matrix34d vec12ToMat34(const Vector12d &vec12)
+{
+    Matrix34d vec34;
+    for (int i = 0; i < 4; i++)
+    {
+        vec34.col(i) = vec12.segment(3 * i, 3);
+    }
+    return vec34;
+}

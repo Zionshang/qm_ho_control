@@ -97,11 +97,11 @@ void HierarchicalWbc::updateJacobian(const VectorXd &pos_gen, const VectorXd &ve
     id_sw_.resize(num_sw_);
 
     int indexSt = 0;
-    J_st_.setZero(3 * num_st_, ROBOTNV);
+    J_st_.setZero(3 * num_st_, nv_);
     dJdq_st_.setZero(3 * num_st_);
 
     int indexSw = 0;
-    J_sw_.setZero(3 * num_sw_, ROBOTNV);
+    J_sw_.setZero(3 * num_sw_, nv_);
     dJdq_sw_.setZero(3 * num_sw_);
 
     for (int i = 0; i < 4; i++)

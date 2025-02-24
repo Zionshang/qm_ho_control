@@ -12,7 +12,7 @@ FootPlanner::FootPlanner()
     kyaw_ = 0.005;
 
     // TODO: 使用pinocchio计算
-    Vec24 posStill;                               // XY position when stance in still
+    Eigen::Matrix<double, 2, 4> posStill;                               // XY position when stance in still
     posStill << 0.2407, -0.2407, 0.2407, -0.2407, // clang-format off
                 -0.138,  -0.138,  0.138,   0.138;  // clang-foramt on
     for (int i = 0; i < 4; ++i)
