@@ -117,12 +117,12 @@ void IOWebots::sendCmd()
 {
     for (int i = 0; i < 12; i++)
     {
-        _jointLeg[i]->setTorque(_lowCmd->motorLegCmd[i].tau);
+        _jointLeg[i]->setTorque(_lowCmd->motor_cmd_leg[i].tau);
     }
 
     for (int i = 0; i < 6; i++)
     {
-        _jointArm[i]->setTorque(_lowCmd->motorArmCmd[i].tau);
+        _jointArm[i]->setTorque(_lowCmd->motor_cmd_arm[i].tau);
     }
 }
 
