@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/mathTypes.h"
+#include "common/math_types.hpp"
 #include <iostream>
 /**
  * @brief: convert rotation matrix to ZYX Euler angle

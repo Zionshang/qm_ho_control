@@ -1,5 +1,5 @@
 #pragma once
-#include "common/mathTypes.h"
+#include "common/math_types.hpp"
 #include "common/low_state.hpp"
 #include "pinocchio_interface.hpp"
 #include "ctrl_component.hpp"

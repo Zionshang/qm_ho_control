@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "common/mathTypes.h"
+#include "common/math_types.hpp"
 
 class Task
 {

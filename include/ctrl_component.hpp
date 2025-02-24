@@ -1,5 +1,5 @@
 #pragma once
-#include "common/mathTypes.h"
+#include "common/math_types.hpp"
 #include "common/enum_class.hpp"
 #include "pinocchio_interface.hpp"
 
