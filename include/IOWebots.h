@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/LowCmd.h"
-#include "common/LowState.h"
+#include "common/low_cmd.hpp"
+#include "common/low_state.hpp"
 #include "ctrl_component.hpp"
 #include <iostream>
 #include <string>
@@ -23,6 +23,9 @@ public:
     void recvUserCmd(UserCommand &user_cmd);
     void sendCmd();
     bool isRunning();
+    
+    // get current time in seconds
+    double current_time() { return _supervisor->getTime(); }
 
 private:
     void initRecv();

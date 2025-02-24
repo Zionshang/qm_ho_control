@@ -1,6 +1,6 @@
 #pragma once
 #include "common/mathTypes.h"
-#include "common/LowState.h"
+#include "common/low_state.hpp"
 #include "pinocchio_interface.hpp"
 #include "ctrl_component.hpp"
 
@@ -33,8 +33,6 @@ public:
     // Matrix34d getPosF() const { return _posF; }            // get position of four feet, expressed in WORLD frame
     // Matrix34d getVelF() const { return _velF; }            // get velocity of four feet, expressed in WORLD frame
 
-    double getTimeStep() const { return _lowState->getTimeStep(); }
-    double getCurrentTime() const { return _lowState->getCurrentTime(); }
     void printState();
 
 private:

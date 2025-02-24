@@ -8,15 +8,15 @@ void Estimator::update(RobotState &robot_state)
 {
     // joint
     auto &joint_state = robot_state.joint;
-    joint_state.pos_leg = _lowState->getQLeg();
-    joint_state.vel_leg = _lowState->getDqLeg();
-    joint_state.pos_arm = _lowState->getQArm();
-    joint_state.vel_arm = _lowState->getDqArm();
+    joint_state.pos_leg = _lowState->getLegJointPosition();
+    joint_state.vel_leg = _lowState->getLegJointVelocity();
+    joint_state.pos_arm = _lowState->getArmJointPosition();
+    joint_state.vel_arm = _lowState->getArmJointVelocity();
 
     // body
     auto &body_state = robot_state.body;
-    body_state.pos << _lowState->supervisor.robotPos[0], _lowState->supervisor.robotPos[1], _lowState->supervisor.robotPos[2];
-    body_state.vel << _lowState->supervisor.robotVel[0], _lowState->supervisor.robotVel[1], _lowState->supervisor.robotVel[2];
+    body_state.pos << _lowState->supervisor.robot_pos[0], _lowState->supervisor.robot_pos[1], _lowState->supervisor.robot_pos[2];
+    body_state.vel << _lowState->supervisor.robot_vel[0], _lowState->supervisor.robot_vel[1], _lowState->supervisor.robot_vel[2];
     body_state.quat = _lowState->getQuaternion();
     RotMat R_body = body_state.quat.toRotationMatrix();
     body_state.angvel << R_body * _lowState->getGyro();

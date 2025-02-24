@@ -1,5 +1,5 @@
-#include "common/LowState.h"
-#include "common/LowCmd.h"
+#include "common/low_state.hpp"
+#include "common/low_cmd.hpp"
 #include "IOWebots.h"
 #include "Estimator.h"
 #include "planner.hpp"
@@ -12,6 +12,7 @@
 
 int main()
 {
+        double timestep = 0.001; // in seconds
         LowState *lowState = new LowState();
         LowCmd *lowCmd = new LowCmd();
         PinocchioInterface *pin_interface = new PinocchioInterface();
@@ -21,13 +22,13 @@ int main()
         Planner *plan = new Planner(pin_interface);
         Controller *ctlr = new Controller(est, lowCmd, pin_interface);
         DataLog *log = new DataLog();
-        KalmanFilterEstimator *kfe = new KalmanFilterEstimator(lowState, pin_interface, lowState->timeStep);
+        KalmanFilterEstimator *kfe = new KalmanFilterEstimator(lowState, pin_interface, timestep);
         CtrlComponent *ctrl_comp = new CtrlComponent(pin_interface);
         while (iowebots->isRunning())
         {
                 iowebots->recvState();
                 iowebots->recvUserCmd(ctrl_comp->mutable_user_cmd());
-                gait_sche->update(lowState->currentTime, ctrl_comp->user_cmd().gait_name);
+                gait_sche->update(iowebots->current_time(), ctrl_comp->user_cmd().gait_name);
                 est->update(ctrl_comp->mutable_robot_state());
                 // est->printState();
                 plan->update(ctrl_comp->user_cmd(), ctrl_comp->robot_state(),

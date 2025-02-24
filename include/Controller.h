@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/LowCmd.h"
+#include "common/low_cmd.hpp"
 #include "Estimator.h"
 #include "hierarchical_wbc.hpp"
 #include "ctrl_component.hpp"

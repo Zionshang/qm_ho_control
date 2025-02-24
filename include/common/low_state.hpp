@@ -17,15 +17,15 @@ struct MotorState
 
 struct Supervisor
 {
-    double robotPos[3]; // position of robot node in webots
-    double robotVel[3]; // velocity of robot node in webots
+    double robot_pos[3]; // position of robot node in webots
+    double robot_vel[3]; // velocity of robot node in webots
 
     Supervisor()
     {
         for (int i = 0; i < 3; i++)
         {
-            robotPos[i] = 0;
-            robotVel[i] = 0;
+            robot_pos[i] = 0;
+            robot_vel[i] = 0;
         }
     }
 };
@@ -61,83 +61,55 @@ struct IMU
     }
 };
 
-struct UserValue
-{
-    double lx;
-    double ly;
-    double rx;
-    double ry;
-    double z;
-    UserValue() { setZero(); }
-    void setZero()
-    {
-        lx = 0;
-        ly = 0;
-        rx = 0;
-        ry = 0;
-        z = 0;
-    }
-};
-
 struct LowState
 {
     IMU imu;
     Supervisor supervisor;
-    MotorState motorLeg[12];
-    UserValue userValue;
-    double timeStep;
-    double currentTime;
-    MotorState motorArm[6];
+    MotorState motor_state_leg[12];
+    MotorState motor_state_arm[6];
 
-    LowState()
+    // todo: 是否需要换成12列
+    Matrix34d getLegJointPosition()
     {
-        timeStep = 0.0;
-        currentTime = 0.0;
-    }
-
-    Matrix34d getQLeg()
-    {
-        Matrix34d qLegs;
+        Matrix34d q_leg;
         for (int i = 0; i < 4; i++)
         {
-            qLegs.col(i)(0) = motorLeg[3 * i].q;
-            qLegs.col(i)(1) = motorLeg[3 * i + 1].q;
-            qLegs.col(i)(2) = motorLeg[3 * i + 2].q;
+            q_leg.col(i)(0) = motor_state_leg[3 * i].q;
+            q_leg.col(i)(1) = motor_state_leg[3 * i + 1].q;
+            q_leg.col(i)(2) = motor_state_leg[3 * i + 2].q;
         }
-        return qLegs;
+        return q_leg;
     }
 
-    Matrix34d getDqLeg()
+    Matrix34d getLegJointVelocity()
     {
-        Matrix34d qdLegs;
+        Matrix34d dq_leg;
         for (int i = 0; i < 4; i++)
         {
-            qdLegs.col(i)(0) = motorLeg[3 * i].dq;
-            qdLegs.col(i)(1) = motorLeg[3 * i + 1].dq;
-            qdLegs.col(i)(2) = motorLeg[3 * i + 2].dq;
+            dq_leg.col(i)(0) = motor_state_leg[3 * i].dq;
+            dq_leg.col(i)(1) = motor_state_leg[3 * i + 1].dq;
+            dq_leg.col(i)(2) = motor_state_leg[3 * i + 2].dq;
         }
-        return qdLegs;
+        return dq_leg;
     }
 
-    Vector6d getQArm()
+    Vector6d getArmJointPosition()
     {
-        Vector6d qArm;
+        Vector6d q_arm;
         for (int i = 0; i < 6; i++)
-            qArm(i) = motorArm[i].q;
-        return qArm;
+            q_arm(i) = motor_state_arm[i].q;
+        return q_arm;
     }
 
-    Vector6d getDqArm()
+    Vector6d getArmJointVelocity()
     {
-        Vector6d dqArm;
+        Vector6d dq_arm;
         for (int i = 0; i < 6; i++)
-            dqArm(i) = motorArm[i].dq;
-        return dqArm;
+            dq_arm(i) = motor_state_arm[i].dq;
+        return dq_arm;
     }
 
     Quaterniond getQuaternion() { return imu.getQuaternion(); }
     Vector3d getGyro() { return imu.getGyro(); }
     Vector3d getAccelerometer() { return imu.getAccelerometer(); }
-    double getCurrentTime() { return currentTime; }
-    double getTimeStep() { return timeStep; }
 };

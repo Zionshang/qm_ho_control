@@ -1,6 +1,6 @@
 #pragma once
 #include "common/mathTypes.h"
-#include "common/LowState.h"
+#include "common/low_state.hpp"
 #include "pinocchio_interface.hpp"
 #include <iostream>
 
@@ -23,8 +23,6 @@ public:
     const Matrix34d &vel_leg() const { return vel_leg_; }   // joint velocity of leg
     const Matrix34d &pos_feet() const { return pos_feet_; } // position of four feet, expressed in world frame
     const Matrix34d &vel_feet() const { return vel_feet_; } // velocity of four feet, expressed in world frame
-
-    double getCurrentTime() const { return low_state_->getCurrentTime(); }
 
 private:
     void updateCovarianceMatrix(const Vector4i &contact_flag);

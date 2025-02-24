@@ -22,9 +22,6 @@ IOWebots::~IOWebots()
 
 void IOWebots::recvState()
 {
-    // time
-    _lowState->currentTime = _supervisor->getTime(); // second
-
     // sensor
     const double *imuData = _imu->getQuaternion(); // x,y,z,w
     const double *gyroData = _gyro->getValues();
@@ -37,23 +34,23 @@ void IOWebots::recvState()
         _lowState->imu.quaternion[i] = static_cast<double>(imuData[i]);
         _lowState->imu.gyro[i] = static_cast<double>(gyroData[i]);
         _lowState->imu.accelerometer[i] = static_cast<double>(accelerometerData[i]);
-        _lowState->supervisor.robotPos[i] = static_cast<double>(robotPosData[i]);
-        _lowState->supervisor.robotVel[i] = static_cast<double>(robotVelData[i]);
+        _lowState->supervisor.robot_pos[i] = static_cast<double>(robotPosData[i]);
+        _lowState->supervisor.robot_vel[i] = static_cast<double>(robotVelData[i]);
     }
     _lowState->imu.quaternion[3] = static_cast<double>(imuData[3]);
 
     for (int i = 0; i < 12; i++)
     {
-        _lowState->motorLeg[i].q = _jointSensorLeg[i]->getValue();
-        _lowState->motorLeg[i].dq = (_lowState->motorLeg[i].q - _lastqLeg(i)) / double(_timeStep) * 1000;
-        _lastqLeg(i) = _lowState->motorLeg[i].q;
+        _lowState->motor_state_leg[i].q = _jointSensorLeg[i]->getValue();
+        _lowState->motor_state_leg[i].dq = (_lowState->motor_state_leg[i].q - _lastqLeg(i)) / double(_timeStep) * 1000;
+        _lastqLeg(i) = _lowState->motor_state_leg[i].q;
     }
 
     for (int i = 0; i < 6; i++)
     {
-        _lowState->motorArm[i].q = _jointSensorArm[i]->getValue();
-        _lowState->motorArm[i].dq = (_lowState->motorArm[i].q - _lastqArm(i)) / double(_timeStep) * 1000;
-        _lastqArm(i) = _lowState->motorArm[i].q;
+        _lowState->motor_state_arm[i].q = _jointSensorArm[i]->getValue();
+        _lowState->motor_state_arm[i].dq = (_lowState->motor_state_arm[i].q - _lastqArm(i)) / double(_timeStep) * 1000;
+        _lastqArm(i) = _lowState->motor_state_arm[i].q;
     }
 }
 
@@ -171,9 +168,6 @@ void IOWebots::initRecv()
         _jointSensorArm[i] = _supervisor->getPositionSensor(_jointSensorArmName[i]);
         _jointSensorArm[i]->enable(_timeStep);
     }
-
-    // time step
-    _lowState->timeStep = double(_timeStep) / 1000;
 }
 
 void IOWebots::initSend()

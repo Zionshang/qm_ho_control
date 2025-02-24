@@ -54,10 +54,10 @@ void KalmanFilterEstimator::update(const Vector4i &contact_flag)
     rotmat_body_ = quat_body_.toRotationMatrix();
     angvel_body_B_ = low_state_->getGyro();
 
-    pos_leg_ = low_state_->getQLeg();
-    vel_leg_ = low_state_->getDqLeg();
-    pos_arm_ = low_state_->getQArm();
-    vel_arm_ = low_state_->getDqArm();
+    pos_leg_ = low_state_->getLegJointPosition();
+    vel_leg_ = low_state_->getLegJointVelocity();
+    pos_arm_ = low_state_->getArmJointPosition();
+    vel_arm_ = low_state_->getArmJointVelocity();
 
     // update covariance matix because of swing leg
     updateCovarianceMatrix(contact_flag);
