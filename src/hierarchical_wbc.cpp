@@ -1,9 +1,9 @@
 #include "hierarchical_wbc.hpp"
 
-HierarchicalWbc::HierarchicalWbc(WholeBodyDynamics *wbDyn)
-    : _wbDyn(wbDyn)
+HierarchicalWbc::HierarchicalWbc(PinocchioInterface *pin_interface)
+    : pin_interface_(pin_interface)
 {
-    nv_ = _wbDyn->getNv();
+    nv_ = pin_interface->nv();
     fric_coef_ = 0.7;
 
     // friction cone constraint    fric_mat_ * [Fx Fy Fz]^T <= fric_vec_
@@ -29,11 +29,7 @@ HierarchicalWbc::HierarchicalWbc(WholeBodyDynamics *wbDyn)
     J_body_.setZero(6, nv_);
     J_com_.setZero(3, nv_);
     M_.setZero(nv_, nv_);
-}
-
-HierarchicalWbc::~HierarchicalWbc()
-{
-    delete _wbDyn;
+    C_.setZero(nv_);
 }
 
 void HierarchicalWbc::calTau(const RobotState &robot_state, const RobotState &robot_state_ref,
@@ -70,7 +66,7 @@ void HierarchicalWbc::calTau(const RobotState &robot_state, const RobotState &ro
 
     dim_decision_vars_ = nv_ + 3 * contact.sum();
 
-    _wbDyn->setMandC(q_gen, v_gen, M_, C_);
+    pin_interface_->calcDynamicsMatrix(q_gen, v_gen, M_, C_);
     updateJacobian(q_gen, v_gen, contact);
 
     Task task0, task1, task2;
@@ -93,7 +89,7 @@ void HierarchicalWbc::updateJacobian(const VectorXd &pos_gen, const VectorXd &ve
 {
     // Set up zero-acceleration kinematics, used for calculate dJdq.
     // Because a = J * ddq + dJ * dq. When ddq = 0, a = dJ * dq
-    _wbDyn->calcZeroAccKinematics(pos_gen, vel_gen);
+    pin_interface_->calcZeroAccKinematics(pos_gen, vel_gen);
 
     // feet Jacobian
     num_st_ = contact.sum();
@@ -110,8 +106,8 @@ void HierarchicalWbc::updateJacobian(const VectorXd &pos_gen, const VectorXd &ve
 
     for (int i = 0; i < 4; i++)
     {
-        _wbDyn->setFootJacob(pos_gen, i, J_feet_[i]);
-        _wbDyn->setFootdJdq(pos_gen, vel_gen, i, dJdq_feet_[i]);
+        pin_interface_->calcFootJacobian(pos_gen, i, J_feet_[i]);
+        pin_interface_->calcFootJacobianTimesVelocity(pos_gen, vel_gen, i, dJdq_feet_[i]);
 
         if (contact(i) == 1)
         {
@@ -128,16 +124,12 @@ void HierarchicalWbc::updateJacobian(const VectorXd &pos_gen, const VectorXd &ve
         }
     }
     // body Jacobian
-    _wbDyn->setBodyJacob(pos_gen, J_body_);
-    _wbDyn->setBodydJdq(pos_gen, vel_gen, dJdq_body_);
+    pin_interface_->calcBodyJacobian(pos_gen, J_body_);
+    pin_interface_->calcBodyJacobianTimesVelocity(pos_gen, vel_gen, dJdq_body_);
 
     // CoM Jacobian
-    _wbDyn->setCoMJacob(pos_gen, J_com_);
-    _wbDyn->setCoMdJdq(pos_gen, vel_gen, dJdq_com_);
-
-    // // gripper Jacobian
-    // _wbDyn->setGripperJacob(pos_gen, J_grip_);
-    // _wbDyn->setGripperdJdq(pos_gen, vel_gen, dJdq_grip_);
+    pin_interface_->calcComJacobian(pos_gen, J_com_);
+    pin_interface_->calcComJacobianTimesVelocity(pos_gen, vel_gen, dJdq_com_);
 }
 
 Task HierarchicalWbc::buildFloatingBaseEomTask()

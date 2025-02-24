@@ -1,7 +1,6 @@
 #pragma once
 #include "common/mathTypes.h"
 #include "common/LowState.h"
-#include "model/WholeBodyDynamics.h"
 #include "pinocchio_interface.hpp"
 #include "ctrl_component.hpp"
 

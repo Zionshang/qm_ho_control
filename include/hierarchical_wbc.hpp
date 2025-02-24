@@ -3,18 +3,17 @@
 #include <sys/time.h>
 #include "common/mathTools.h"
 #include "common/projectPath.h"
-#include "model/WholeBodyDynamics.h"
 #include "hierarchical_qp.hpp"
 #include "Estimator.h"
 #include "yaml-cpp/yaml.h"
 #include "Task.h"
+#include "pinocchio_interface.hpp"
 
 class HierarchicalWbc
 {
 
 public:
-    HierarchicalWbc(WholeBodyDynamics *wbDyn);
-    ~HierarchicalWbc();
+    HierarchicalWbc(PinocchioInterface *pin_interface);
 
     void calTau(const RobotState &robot_state, const RobotState &robot_state_ref,
                 const Vector4i contact, VectorXd &tau);
@@ -37,7 +36,7 @@ private:
     Task buildArmJointTask(const Vector6d &pos_arm, const Vector6d &vel_arm,
                            const Vector6d &pos_arm_ref, const Vector6d &vel_arm_ref);
 
-    WholeBodyDynamics *_wbDyn;
+    PinocchioInterface *pin_interface_;
 
     // friction cone
     double fz_min_, fz_max_;               // limitation of contact force in z direction
@@ -52,7 +51,7 @@ private:
 
     int num_st_, num_sw_; // number of stance and swing leg
     MatrixXd M_;          // Matrix M in M*ddq + C = tau
-    VecNv C_;             // Matrix C in M*ddq + C = tau
+    VectorXd C_;             // Matrix C in M*ddq + C = tau
 
     // TODO: 是否需要使用std::Vector
     std::vector<Matrix6xd> J_feet_ = std::vector<Matrix6xd>(4);  // jacobian of all feet
@@ -73,10 +72,4 @@ private:
     double weight_pos_body_, weight_pos_ang_; // weight of body task
     double weight_swing_;                     // weight of swing leg task
     double weight_arm_;                       // weight of arm joint task
-
-    // Matrix6xd J_grip_; // jacobian of gripper
-    // Vector6d dJdq_grip_;   // jacobian's derviative times v of gripper
-    // double weight_gripper_pos_, weight_gripper_ang_; // weight of gripper task
-    // Diagonal3d _KpEePos, _KdEePos; // PD parameter of EE position control
-    // Diagonal3d _KpEeAng, _KdEeAng; // PD parameter of EE angular control
 };

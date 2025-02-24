@@ -1,9 +1,9 @@
 #include "Controller.h"
 
-Controller::Controller(Estimator *est, LowCmd *lowCmd, WholeBodyDynamics *wbDyn)
+Controller::Controller(Estimator *est, LowCmd *lowCmd, PinocchioInterface *pin_interface)
     : _est(est), _lowCmd(lowCmd)
 {
-    _hieraOpt = new HierarchicalWbc(wbDyn);
+    _hieraOpt = new HierarchicalWbc(pin_interface);
     _tau.setZero(18);
 }
 

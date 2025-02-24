@@ -17,7 +17,6 @@ private:
     void comPlan(RobotState &robot_state_ref, Vector3d &pos_com_ref, Vector3d &vel_com_ref);
 
     FootPlanner *foot_planner_;
-    WholeBodyDynamics *_wbDyn;
     PinocchioInterface *pin_interface_;
     double dt_;
 };

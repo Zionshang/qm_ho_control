@@ -120,11 +120,10 @@ void KalmanFilterEstimator::updateCovarianceMatrix(const Vector4i &contact_flag)
 void KalmanFilterEstimator::updateMeasurement()
 {
     pin_interface_->updateKinematics(pos_gen_, vel_gen_);
-    const auto &feet_id = pin_interface_->feet_id();
-    for (size_t i = 0; i < feet_id.size(); i++)
+    for (size_t i = 0; i < 4; i++)
     {
-        pos_feet_.col(i) = pin_interface_->calcFootPosition(feet_id[i]);
-        vel_feet_.col(i) = pin_interface_->calcFootVelocity(feet_id[i]);
+        pos_feet_.col(i) = pin_interface_->getFootPosition(i);
+        vel_feet_.col(i) = pin_interface_->getFootVelocity(i);
         pos_feet_rel_body.col(i) = pos_feet_.col(i) - pos_body_;
         vel_feet_rel_body.col(i) = vel_feet_.col(i) - vel_body_;
     }

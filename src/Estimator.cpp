@@ -34,11 +34,10 @@ void Estimator::update(RobotState &robot_state)
     // foot
     auto &foot_state = robot_state.foot;
     pin_interface_->updateKinematics(pos_gen, vel_gen);
-    const auto &feet_id = pin_interface_->feet_id();
-    for (size_t i = 0; i < feet_id.size(); i++)
+    for (size_t i = 0; i < 4; i++)
     {
-        foot_state.pos.col(i) = pin_interface_->calcFootPosition(feet_id[i]);
-        foot_state.vel.col(i) = pin_interface_->calcFootVelocity(feet_id[i]);
+        foot_state.pos.col(i) = pin_interface_->getFootPosition(i);
+        foot_state.vel.col(i) = pin_interface_->getFootVelocity(i);
         foot_state.pos_rel_body.col(i) = foot_state.pos.col(i) - body_state.pos;
         foot_state.vel_rel_body.col(i) = foot_state.vel.col(i) - body_state.vel;
     }
