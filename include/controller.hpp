@@ -9,16 +9,13 @@
 class Controller
 {
 public:
-    Controller(Estimator *est, LowCmd *lowCmd, PinocchioInterface *pin_interface);
+    Controller(Estimator *est, PinocchioInterface *pin_interface);
     ~Controller();
     void run(const RobotState &robot_state, const RobotState &robot_state_ref,
-             const Vector4i &contact);
+             const Vector4i &contact, LowCmd &low_cmd);
 
 private:
-    LowState *_lowstate;
-    Estimator *_est;
-    LowCmd *_lowCmd;
-    HierarchicalWbc *_hieraOpt;
-
-    VectorXd _tau;
+    Estimator *est_;
+    HierarchicalWbc *wbc_;
+    VectorXd tau_;
 };

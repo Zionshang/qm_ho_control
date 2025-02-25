@@ -1,7 +1,7 @@
     // 初始化过程噪声协方差矩阵
     Q_init_.setIdentity();
-    Q_init_.block<3, 3>(0, 0) = (dt_ / 20.) * I3 * noise_process_imu_position_;
-    Q_init_.block<3, 3>(3, 3) = (dt_ * 9.81 / 20.) * I3 * noise_process_imu_velocity_;
+    Q_init_.block<3, 3>(0, 0) = (dt_ / 20.) * I3 * noise_processimu__position_;
+    Q_init_.block<3, 3>(3, 3) = (dt_ * 9.81 / 20.) * I3 * noise_processimu__velocity_;
     Q_init_.block<kFeetDim, kFeetDim>(6, 6) = dt_ * MatrixXd::Identity(kFeetDim, kFeetDim) * noise_process_foot_position_;
     Q_ = Q_init_;
     Q_(2, 2) = 1000000;

@@ -29,8 +29,8 @@ KalmanFilterEstimator::KalmanFilterEstimator(LowState *lowState, PinocchioInterf
 
     // 初始化过程噪声协方差矩阵
     Q_init_.setIdentity();
-    Q_init_.block<3, 3>(0, 0) = (dt / 20.) * kIdentity3_ * noise_process_imu_position_;
-    Q_init_.block<3, 3>(3, 3) = (dt * 9.81 / 20.) * kIdentity3_ * noise_process_imu_velocity_;
+    Q_init_.block<3, 3>(0, 0) = (dt / 20.) * kIdentity3_ * noise_processimu__position_;
+    Q_init_.block<3, 3>(3, 3) = (dt * 9.81 / 20.) * kIdentity3_ * noise_processimu__velocity_;
     Q_init_.block<kFeetDim, kFeetDim>(6, 6) = dt * MatrixXd::Identity(kFeetDim, kFeetDim) * noise_process_foot_position_;
     Q_ = Q_init_;
     Q_(2, 2) = kLargeVariance_;
