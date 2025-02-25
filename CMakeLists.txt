@@ -34,6 +34,6 @@ target_link_libraries(${PROJECT} yaml-cpp::yaml-cpp)
 
 # Resolve for the package path at compile time.
 configure_file (
-  "${PROJECT_SOURCE_DIR}/include/common/projectPath.h.in"
-  "${PROJECT_SOURCE_DIR}/include/common/projectPath.h" @ONLY
+  "${PROJECT_SOURCE_DIR}/include/utils/project_path.hpp.in"
+  "${PROJECT_SOURCE_DIR}/include/utils/project_path.hpp" @ONLY
 )

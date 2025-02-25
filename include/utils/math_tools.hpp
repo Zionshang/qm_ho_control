@@ -2,6 +2,7 @@
 
 #include "common/math_types.hpp"
 #include <iostream>
+// todo: 定义为 inline 是否合适
 /**
  * @brief: convert rotation matrix to ZYX Euler angle
  * @param {Matrix3d} &R: rotation matrix
@@ -141,71 +142,6 @@ inline Vector4d rpy2Quat(const Vector3d &RPY)
     Eigen::Quaterniond q = rotationZ * rotationY * rotationX;
 
     return q.coeffs(); // [x, y, z, w]
-}
-
-/**
- * @brief Cubic polynomial interpolation
- */
-inline void cubicSpline(const double &pos0, const double &posf, const double &vel0, const double &velf,
-                        const double &t0, const double &tf, const double &tnow,
-                        double &posNow, double &velNow)
-{
-    if (tnow < t0)
-    {
-        posNow = pos0;
-        velNow = 0;
-    }
-    else if (tnow > tf)
-    {
-        posNow = posf;
-        velNow = 0;
-    }
-    else
-    {
-        double a0, a1, a2, a3; // pos = a0 + a1*(tnow-t0) + a2*(tnow-t0)^2 + a3*(tnow-t0)^3
-        double h = posf - pos0;
-        double T = tf - t0;
-        a0 = pos0;
-        a1 = vel0;
-        a2 = (3 * h - (2 * vel0 + velf) * T) / (T * T);
-        a3 = (-2 * h + (vel0 + velf) * T) / (T * T * T);
-
-        posNow = a0 + a1 * (tnow - t0) + a2 * pow(tnow - t0, 2) + a3 * pow(tnow - t0, 3);
-        velNow = a1 + 2 * a2 * (tnow - t0) + 3 * a3 * pow(tnow - t0, 2);
-    }
-}
-
-/**
- * @brief Cubic polynomial interpolation
- */
-template <typename T>
-inline void cubicSpline(const VectorXd &pos0, const VectorXd &posf, const VectorXd &vel0, const VectorXd &velf,
-                        const double &t0, const double &tf, const double &tnow,
-                        Eigen::DenseBase<T> &posNow, Eigen::DenseBase<T> &velNow)
-{
-    if (tnow < t0)
-    {
-        posNow = pos0;
-        velNow.setZero();
-    }
-    else if (tnow > tf)
-    {
-        posNow = posf;
-        velNow.setZero();
-    }
-    else
-    {
-        VectorXd a0, a1, a2, a3; // pos = a0 + a1*(tnow-t0) + a2*(tnow-t0)^2 + a3*(tnow-t0)^3
-        VectorXd h = posf - pos0;
-        double T0f = tf - t0;
-        a0 = pos0;
-        a1 = vel0;
-        a2 = (3 * h - (2 * vel0 + velf) * T0f) / (T0f * T0f);
-        a3 = (-2 * h + (vel0 + velf) * T0f) / (T0f * T0f * T0f);
-
-        posNow = a0 + a1 * (tnow - t0) + a2 * pow(tnow - t0, 2) + a3 * pow(tnow - t0, 3);
-        velNow = a1 + 2 * a2 * (tnow - t0) + 3 * a3 * pow(tnow - t0, 2);
-    }
 }
 
 

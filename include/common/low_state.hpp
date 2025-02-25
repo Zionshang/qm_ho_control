@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/math_types.hpp"
-#include "common/mathTools.h"
+#include "utils/math_tools.hpp"
 
 struct MotorState
 {

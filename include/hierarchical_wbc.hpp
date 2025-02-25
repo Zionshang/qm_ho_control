@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 #include <sys/time.h>
-#include "common/mathTools.h"
-#include "common/projectPath.h"
+#include "utils/math_tools.hpp"
+#include "utils/project_path.hpp"
 #include "hierarchical_qp.hpp"
 #include "Estimator.h"
 #include "yaml-cpp/yaml.h"
