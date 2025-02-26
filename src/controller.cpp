@@ -1,7 +1,6 @@
 #include "controller.hpp"
 
-Controller::Controller(Estimator *est, PinocchioInterface *pin_interface)
-    : est_(est)
+Controller::Controller(PinocchioInterface *pin_interface)
 {
     wbc_ = new HierarchicalWbc(pin_interface);
     tau_.setZero(pin_interface->nv() - 6);

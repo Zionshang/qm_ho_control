@@ -2,13 +2,14 @@
 #include "common/math_types.hpp"
 #include "common/low_state.hpp"
 #include "pinocchio_interface.hpp"
+#include "ctrl_component.hpp"
 #include <iostream>
 
 class KalmanFilterEstimator
 {
 public:
     KalmanFilterEstimator(LowState *lowState, PinocchioInterface *pin_interface, double dt);
-    void update(const Vector4i &contact_flag);
+    void update(const Vector4i &contact_flag, RobotState &robot_state);
 
     const Vector3d &pos_body() const { return pos_body_; }      // position body, expressed in world frame
     const Vector3d &vel_body() const { return vel_body_; }      // velocity body, expressed in world frame
