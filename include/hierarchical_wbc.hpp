@@ -4,10 +4,10 @@
 #include "utils/math_tools.hpp"
 #include "utils/project_path.hpp"
 #include "hierarchical_qp.hpp"
-#include "Estimator.h"
 #include "yaml-cpp/yaml.h"
-#include "Task.h"
+#include "task.hpp"
 #include "pinocchio_interface.hpp"
+#include "ctrl_component.hpp"
 
 class HierarchicalWbc
 {

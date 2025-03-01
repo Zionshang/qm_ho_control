@@ -1,7 +1,6 @@
 // Ref: https://github.com/bernhardpg/quadruped_locomotion
 #pragma once
 
-
 #include "common/math_types.hpp"
 
 class Task
@@ -15,26 +14,28 @@ public:
 
     Task() = default;
     Task(MatrixXd A, VectorXd b, MatrixXd D, VectorXd f)
-        : _A(std::move(A)), _b(std::move(b)), _D(std::move(D)), _f(std::move(f)) {}
-    explicit Task(size_t dimDecisionVars)
-        : Task(MatrixXd::Zero(0, dimDecisionVars), VectorXd::Zero(0), MatrixXd::Zero(0, dimDecisionVars), VectorXd::Zero(0)){};
+        : A_(std::move(A)), b_(std::move(b)), D_(std::move(D)), f_(std::move(f)) {}
+    explicit Task(size_t dim_decision_vars)
+        : Task(MatrixXd::Zero(0, dim_decision_vars), VectorXd::Zero(0), MatrixXd::Zero(0, dim_decision_vars), VectorXd::Zero(0)) {};
+
+    const MatrixXd &A() const { return A_; }
+    const VectorXd &b() const { return b_; }
+    const MatrixXd &D() const { return D_; }
+    const VectorXd &f() const { return f_; }
 
     Task operator+(const Task &rhs) const
     {
-        return {concatenateMat(_A, rhs._A), concatenateVec(_b, rhs._b), concatenateMat(_D, rhs._D), concatenateVec(_f, rhs._f)};
+        return {concatenateMat(A_, rhs.A_), concatenateVec(b_, rhs.b_), concatenateMat(D_, rhs.D_), concatenateVec(f_, rhs.f_)};
     }
 
     Task operator*(double rhs) const
     {
         return {
-            _A.rows() > 0 ? rhs * _A : _A,
-            _b.rows() > 0 ? rhs * _b : _b,
-            _D.rows() > 0 ? rhs * _D : _D,
-            _f.rows() > 0 ? rhs * _f : _f};
+            A_.rows() > 0 ? rhs * A_ : A_,
+            b_.rows() > 0 ? rhs * b_ : b_,
+            D_.rows() > 0 ? rhs * D_ : D_,
+            f_.rows() > 0 ? rhs * f_ : f_};
     }
-
-    MatrixXd _A, _D;
-    VectorXd _b, _f;
 
     static MatrixXd concatenateMat(const MatrixXd &m1, const MatrixXd &m2)
     {
@@ -59,4 +60,8 @@ public:
         res << v1, v2;
         return res;
     }
+
+private:
+    MatrixXd A_, D_;
+    VectorXd b_, f_;
 };

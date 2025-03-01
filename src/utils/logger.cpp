@@ -1,9 +1,43 @@
-#include "DataLog.h"
+#include "utils/logger.hpp"
 
-DataLog::DataLog()
+Logger::Logger()
 {
-    varCount = 0;
-    runTimes = 0;
+    var_count = 0;
+    run_times = 0;
+}
+
+/**
+ * @brief 添加矩阵数据
+ * @param mat 添加的矩阵数据
+ */
+template <typename Scalar>
+void Logger::appendMat(const Eigen::DenseBase<Scalar> &mat)
+{
+    for (int i = 0; i < mat.rows(); i++)
+        for (int j = 0; j < mat.cols(); j++)
+        {
+            logger_buffer[var_count].push_back(mat(i, j));
+
+            if (run_times > MAX_ROW)
+                logger_buffer[var_count].pop_front();
+
+            var_count++;
+        }
+}
+
+/**
+ * @brief 添加单个变量
+ * @param var 添加的单个变量
+ */
+template <typename Scalar>
+void Logger::appendVar(const Scalar &var)
+{
+    logger_buffer[var_count].push_back(var);
+
+    if (run_times > MAX_ROW)
+        logger_buffer[var_count].pop_front();
+
+    var_count++;
 }
 
 /**
@@ -11,7 +45,7 @@ DataLog::DataLog()
  * @param est State Estimator
  * @param highCmd high command
  */
-void DataLog::loadData(Estimator *est)
+void Logger::loadData()
 {
     // appendVar(est->getCurrentTime()); // 0
 
@@ -28,17 +62,16 @@ void DataLog::loadData(Estimator *est)
     // appendMat(est->getQArm().head(3)); // 25,26,27
     // appendMat(highCmd->qAJ.head(3));  // 28,29,30
 
-
     // appendMat(est->getQArm().tail(3)); // 31,32,33
     // appendMat(highCmd->qAJ.tail(3));  // 34,35,36
-    // varCount = 0;
-    // runTimes++;
+    // var_count = 0;
+    // run_times++;
 }
 
 /**
  * @brief save data after running
  */
-void DataLog::saveData()
+void Logger::saveData()
 {
     std::string fileName = "../log/";
     std::ofstream fout;
@@ -46,15 +79,15 @@ void DataLog::saveData()
     fileName += ".csv";
     fout.open(fileName, std::ios::out);
 
-    if (runTimes > MAX_ROW)
-        runTimes = MAX_ROW;
+    if (run_times > MAX_ROW)
+        run_times = MAX_ROW;
 
-    for (int i = 0; i < runTimes; i++)
+    for (int i = 0; i < run_times; i++)
     {
         for (int j = 0; j < MAX_COL; j++)
         {
-            if (!LogDataBuff[j].empty())
-                fout << LogDataBuff[j].at(i) << ","; // 从数据缓存中输出数据到csv文件
+            if (!logger_buffer[j].empty())
+                fout << logger_buffer[j].at(i) << ","; // 从数据缓存中输出数据到csv文件
         }
         fout << std::endl;
     }
@@ -66,7 +99,7 @@ void DataLog::saveData()
 /**
  * @brief get current system time, used as file name
  */
-std::string DataLog::getTime()
+std::string Logger::getTime()
 {
     time_t timep;
     time(&timep);

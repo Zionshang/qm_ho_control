@@ -1,10 +1,9 @@
 #include "common/low_state.hpp"
 #include "common/low_cmd.hpp"
 #include "webots_interface.hpp"
-#include "Estimator.h"
 #include "planner.hpp"
 #include "controller.hpp"
-#include "DataLog.h"
+#include "utils/logger.hpp"
 #include "pinocchio_interface.hpp"
 #include "kalman_filter_estimator.hpp"
 #include "gait_schedule.hpp"
@@ -20,7 +19,7 @@ int main()
         GaitSchedule *gait_sche = new GaitSchedule();
         Planner *plan = new Planner(pin_interface);
         Controller *ctlr = new Controller(pin_interface);
-        // DataLog *log = new DataLog();
+        // Logger *log = new Logger();
         KalmanFilterEstimator *kfe = new KalmanFilterEstimator(low_state, pin_interface, timestep);
         CtrlComponent *ctrl_comp = new CtrlComponent(pin_interface);
         while (webots_interface->isRunning())

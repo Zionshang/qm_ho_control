@@ -1,7 +1,6 @@
 #pragma once
 #include "gait_schedule.hpp"
-#include "Estimator.h"
-
+#include "ctrl_component.hpp"
 class FootPlanner
 {
 public:

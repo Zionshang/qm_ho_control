@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common/low_cmd.hpp"
-#include "Estimator.h"
 #include "hierarchical_wbc.hpp"
 #include "ctrl_component.hpp"
 #include "pinocchio_interface.hpp"
@@ -15,7 +14,6 @@ public:
              const Vector4i &contact, LowCmd &low_cmd);
 
 private:
-    Estimator *est_;
     HierarchicalWbc *wbc_;
     VectorXd tau_;
 };
