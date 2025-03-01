@@ -31,19 +31,6 @@ struct IMU
         }
         quaternion[3] = 1;
     }
-
-    Quaterniond getQuaternion()
-    {
-        return Quaterniond(quaternion[3], quaternion[0], quaternion[1], quaternion[2]);
-    }
-    Vector3d getGyro()
-    {
-        return Vector3d(gyro[0], gyro[1], gyro[2]);
-    }
-    Vector3d getAccelerometer()
-    {
-        return Vector3d(accelerometer[0], accelerometer[1], accelerometer[2]);
-    }
 };
 
 struct LowState
@@ -53,7 +40,7 @@ struct LowState
     MotorState motor_state_arm[6];
 
     // todo: 是否需要换成12列
-    Matrix34d getLegJointPosition()
+    const Matrix34d getLegJointPosition() const
     {
         Matrix34d q_leg;
         for (int i = 0; i < 4; i++)
@@ -65,7 +52,7 @@ struct LowState
         return q_leg;
     }
 
-    Matrix34d getLegJointVelocity()
+    const Matrix34d getLegJointVelocity() const
     {
         Matrix34d dq_leg;
         for (int i = 0; i < 4; i++)
@@ -77,7 +64,7 @@ struct LowState
         return dq_leg;
     }
 
-    Vector6d getArmJointPosition()
+    const Vector6d getArmJointPosition() const
     {
         Vector6d q_arm;
         for (int i = 0; i < 6; i++)
@@ -85,7 +72,7 @@ struct LowState
         return q_arm;
     }
 
-    Vector6d getArmJointVelocity()
+    const Vector6d getArmJointVelocity() const
     {
         Vector6d dq_arm;
         for (int i = 0; i < 6; i++)
@@ -93,7 +80,19 @@ struct LowState
         return dq_arm;
     }
 
-    Quaterniond getQuaternion() { return imu.getQuaternion(); }
-    Vector3d getGyro() { return imu.getGyro(); }
-    Vector3d getAccelerometer() { return imu.getAccelerometer(); }
+    const Quaterniond getQuaternion() const
+    {
+        const auto &quaternion = imu.quaternion;
+        return Quaterniond(quaternion[3], quaternion[0], quaternion[1], quaternion[2]);
+    }
+    const Vector3d getGyro() const
+    {
+        const auto &gyro = imu.gyro;
+        return Vector3d(gyro[0], gyro[1], gyro[2]);
+    }
+    const Vector3d getAccelerometer() const
+    {
+        const auto &accelerometer = imu.accelerometer;
+        return Vector3d(accelerometer[0], accelerometer[1], accelerometer[2]);
+    }
 };

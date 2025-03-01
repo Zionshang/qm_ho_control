@@ -1,6 +1,8 @@
 #pragma once
 #include "common/types.hpp"
 #include "common/enum_class.hpp"
+#include "common/low_state.hpp"
+#include "common/low_cmd.hpp"
 #include "pinocchio_interface.hpp"
 
 struct BodyState
@@ -89,7 +91,10 @@ struct CtrlComponent
     RobotState robot_state;
     UserCommand user_cmd;
     RobotState target_robot_state;
-
+    
+    LowState low_state;
+    LowCmd low_cmd;
+    
     CtrlComponent(shared_ptr<PinocchioInterface> pin_interface)
         : robot_state(pin_interface->nq(), pin_interface->nv()),
           target_robot_state(pin_interface->nq(), pin_interface->nv())

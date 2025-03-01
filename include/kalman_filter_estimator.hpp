@@ -8,12 +8,12 @@
 class KalmanFilterEstimator
 {
 public:
-    KalmanFilterEstimator(LowState *lowState,  shared_ptr<PinocchioInterface> pin_interface, double dt);
-    void update(const Vector4i &contact_flag, RobotState &robot_state);
+    KalmanFilterEstimator(shared_ptr<PinocchioInterface> pin_interface, double dt);
+    void update(const LowState &low_state, const Vector4i &contact_flag, RobotState &robot_state);
 
     const Vector3d &pos_body() const { return pos_body_; }      // position body, expressed in world frame
     const Vector3d &vel_body() const { return vel_body_; }      // velocity body, expressed in world frame
-    const Quaterniond &getQuatB() const { return quat_body_; }   // quaternion of body frame relative to world frame
+    const Quaterniond &getQuatB() const { return quat_body_; }  // quaternion of body frame relative to world frame
     const RotMat &getRotB() const { return rotmat_body_; }      // rotation matrix of body frame relative to world frame
     const Vector3d &getAngVelB() const { return angvel_body_; } // angular velocity of body, expressed in world frame
 
@@ -39,13 +39,12 @@ private:
     const Matrix3d kIdentity3_ = Matrix3d::Identity();
     const Vector4d kFeetHeight_ = Vector4d::Zero();
 
-    LowState *low_state_;               // TODO: 改成智能指针
-    shared_ptr<PinocchioInterface> pin_interface_; // TODO: 改成智能指针
+    shared_ptr<PinocchioInterface> pin_interface_;
 
     Vector3d pos_body_;      // position body, expressed in world frame
     Vector3d vel_body_;      // velocity body, expressed in world frame
     RotMat rotmat_body_;     // rotation matrix of body frame relative to world frame
-    Quaterniond quat_body_;   // quaternion of body frame relative to world frame
+    Quaterniond quat_body_;  // quaternion of body frame relative to world frame
     Vector3d angvel_body_;   // angular velocity of body, expressed in world frame
     Vector3d angvel_body_B_; // angular velocity of body, expressed in world frame
 

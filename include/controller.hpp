@@ -9,11 +9,10 @@ class Controller
 {
 public:
     Controller(shared_ptr<PinocchioInterface> pin_interface);
-    ~Controller();
     void run(const RobotState &robot_state, const RobotState &robot_state_ref,
              const Vector4i &contact, LowCmd &low_cmd);
 
 private:
-    HierarchicalWbc *wbc_;
+    shared_ptr<HierarchicalWbc> wbc_;
     VectorXd tau_;
 };

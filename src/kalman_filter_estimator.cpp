@@ -1,7 +1,7 @@
 #include "kalman_filter_estimator.hpp"
 
-KalmanFilterEstimator::KalmanFilterEstimator(LowState *lowState, shared_ptr<PinocchioInterface> pin_interface, double dt)
-    : low_state_(lowState), pin_interface_(pin_interface)
+KalmanFilterEstimator::KalmanFilterEstimator(shared_ptr<PinocchioInterface> pin_interface, double dt)
+    : pin_interface_(pin_interface)
 {
     // 初始化广义向量
     pos_gen_.setZero(pin_interface_->nq());
@@ -45,19 +45,19 @@ KalmanFilterEstimator::KalmanFilterEstimator(LowState *lowState, shared_ptr<Pino
     // 初始化预测误差
     P_ = 100. * Q_init_;
 }
-void KalmanFilterEstimator::update(const Vector4i &contact_flag, RobotState &robot_state)
+void KalmanFilterEstimator::update(const LowState &low_state, const Vector4i &contact_flag, RobotState &robot_state)
 {
     pos_body_ = x_hat_.segment<3>(0);
     vel_body_ = x_hat_.segment<3>(3);
 
-    quat_body_ = low_state_->getQuaternion();
+    quat_body_ = low_state.getQuaternion();
     rotmat_body_ = quat_body_.toRotationMatrix();
-    angvel_body_B_ = low_state_->getGyro();
+    angvel_body_B_ = low_state.getGyro();
 
-    pos_leg_ = low_state_->getLegJointPosition();
-    vel_leg_ = low_state_->getLegJointVelocity();
-    pos_arm_ = low_state_->getArmJointPosition();
-    vel_arm_ = low_state_->getArmJointVelocity();
+    pos_leg_ = low_state.getLegJointPosition();
+    vel_leg_ = low_state.getLegJointVelocity();
+    pos_arm_ = low_state.getArmJointPosition();
+    vel_arm_ = low_state.getArmJointVelocity();
 
     // update covariance matix because of swing leg
     updateCovarianceMatrix(contact_flag);
@@ -68,7 +68,7 @@ void KalmanFilterEstimator::update(const Vector4i &contact_flag, RobotState &rob
     updateMeasurement();
 
     // update state transition
-    Vector3d acc_body = rotmat_body_ * low_state_->getAccelerometer() + kGravity_;
+    Vector3d acc_body = rotmat_body_ * low_state.getAccelerometer() + kGravity_;
     x_hat_ = A_ * x_hat_ + B_ * acc_body;
 
     // update priori prediction covariance
