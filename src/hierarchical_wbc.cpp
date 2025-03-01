@@ -1,6 +1,6 @@
 #include "hierarchical_wbc.hpp"
 
-HierarchicalWbc::HierarchicalWbc(PinocchioInterface *pin_interface)
+HierarchicalWbc::HierarchicalWbc(shared_ptr<PinocchioInterface> pin_interface)
     : pin_interface_(pin_interface)
 {
     nv_ = pin_interface->nv();

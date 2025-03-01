@@ -1,14 +1,14 @@
 #pragma once
-#include "common/math_types.hpp"
+#include "common/types.hpp"
 #include "common/enum_class.hpp"
 #include "pinocchio_interface.hpp"
 
 struct BodyState
 {
-    Vector3d pos;    // position of body, expressed in world frame
+    Vector3d pos;     // position of body, expressed in world frame
     Quaterniond quat; // quaternion of body relative to world frame
-    Vector3d vel;    // velocity of body, expressed in world frame
-    Vector3d angvel; // angluar velocity of body, expressed in world frame
+    Vector3d vel;     // velocity of body, expressed in world frame
+    Vector3d angvel;  // angluar velocity of body, expressed in world frame
 
     BodyState()
     {
@@ -87,7 +87,7 @@ struct UserCommand
 class CtrlComponent
 {
 public:
-    CtrlComponent(PinocchioInterface *pin_interface)
+    CtrlComponent(shared_ptr<PinocchioInterface> pin_interface)
         : robot_state_(pin_interface->nq(), pin_interface->nv()),
           target_robot_state_(pin_interface->nq(), pin_interface->nv())
     {

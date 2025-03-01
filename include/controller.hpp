@@ -8,7 +8,7 @@
 class Controller
 {
 public:
-    Controller(PinocchioInterface *pin_interface);
+    Controller(shared_ptr<PinocchioInterface> pin_interface);
     ~Controller();
     void run(const RobotState &robot_state, const RobotState &robot_state_ref,
              const Vector4i &contact, LowCmd &low_cmd);

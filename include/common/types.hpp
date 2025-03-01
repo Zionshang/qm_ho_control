@@ -2,6 +2,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 #include <pinocchio/multibody/liegroup/special-orthogonal.hpp>
+#include <memory>
 
 /************************ Vector ***************************/
 using Eigen::Vector3d;
@@ -27,3 +28,5 @@ using Diagonal6d = typename Eigen::DiagonalMatrix<double, 6>;
 using Eigen::Quaterniond;
 using SO3Group = pinocchio::SpecialOrthogonalOperationTpl<3, double>;
 using RotMat = typename Eigen::Matrix<double, 3, 3>;
+
+using std::shared_ptr;

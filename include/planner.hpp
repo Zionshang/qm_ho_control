@@ -6,8 +6,7 @@
 class Planner
 {
 public:
-    Planner(PinocchioInterface *pin_interface);
-    ~Planner();
+    Planner(shared_ptr<PinocchioInterface> pin_interface, double timestep);
     void update(const UserCommand &user_cmd, const RobotState &robot_state,
                 const GaitState &gait_state, RobotState &robot_state_ref);
 
@@ -16,7 +15,7 @@ private:
     void armJointPlan(JointState &joint_state_ref);
     void comPlan(RobotState &robot_state_ref, Vector3d &pos_com_ref, Vector3d &vel_com_ref);
 
-    FootPlanner *foot_planner_;
-    PinocchioInterface *pin_interface_;
+    shared_ptr<FootPlanner>  foot_planner_;
+    shared_ptr<PinocchioInterface> pin_interface_;
     double dt_;
 };

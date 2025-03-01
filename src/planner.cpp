@@ -1,16 +1,10 @@
 #include "planner.hpp"
 
-Planner::Planner(PinocchioInterface *pin_interface)
-    : pin_interface_(pin_interface)
+Planner::Planner(shared_ptr<PinocchioInterface> pin_interface, double timestep)
+    : pin_interface_(pin_interface), dt_(timestep)
 {
-    dt_ = 0.001;
-    foot_planner_ = new FootPlanner();
+    foot_planner_ = std::make_shared<FootPlanner>();
 }
-
-Planner::~Planner()
-{
-    delete foot_planner_;
-};
 
 void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,
                      const GaitState &gait_state, RobotState &robot_state_ref)
@@ -19,7 +13,8 @@ void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,
     bodyPlan(user_cmd, robot_state_ref.body);
     armJointPlan(robot_state_ref.joint);
     comPlan(robot_state_ref, robot_state_ref.pos_com, robot_state_ref.vel_com);
-    foot_planner_->update(gait_state, robot_state.body, robot_state.foot, robot_state_ref.body, robot_state_ref.foot); // foot trajectory
+    foot_planner_->update(gait_state, robot_state.body, robot_state.foot,
+                          robot_state_ref.body, robot_state_ref.foot);
 
     // std::cout << "===== Robot State Reference =====" << std::endl;
 

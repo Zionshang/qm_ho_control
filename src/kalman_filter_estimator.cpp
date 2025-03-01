@@ -1,6 +1,6 @@
 #include "kalman_filter_estimator.hpp"
 
-KalmanFilterEstimator::KalmanFilterEstimator(LowState *lowState, PinocchioInterface *pin_interface, double dt)
+KalmanFilterEstimator::KalmanFilterEstimator(LowState *lowState, shared_ptr<PinocchioInterface> pin_interface, double dt)
     : low_state_(lowState), pin_interface_(pin_interface)
 {
     // 初始化广义向量
@@ -117,7 +117,6 @@ void KalmanFilterEstimator::update(const Vector4i &contact_flag, RobotState &rob
     foot_state.pos_rel_body = pos_feet_rel_body;
     foot_state.vel_rel_body = vel_feet_rel_body;
 
-
     // std::cout << "===== Robot State2 =====" << std::endl;
 
     // // // Body state
@@ -125,7 +124,6 @@ void KalmanFilterEstimator::update(const Vector4i &contact_flag, RobotState &rob
     // std::cout << "Body Quaternion: " << robot_state.body.quat.coeffs().transpose() << std::endl;
     // std::cout << "Body Velocity: " << robot_state.body.vel.transpose() << std::endl;
     // std::cout << "Body Angular Velocity: " << robot_state.body.angvel.transpose() << std::endl;
-    
 
     // // Generalized State
     // std::cout << "Generalized Position: " << robot_state.pos_gen.transpose() << std::endl;

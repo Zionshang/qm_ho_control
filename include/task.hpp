@@ -1,7 +1,7 @@
 // Ref: https://github.com/bernhardpg/quadruped_locomotion
 #pragma once
 
-#include "common/math_types.hpp"
+#include "common/types.hpp"
 
 class Task
 {

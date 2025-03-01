@@ -13,7 +13,7 @@ class HierarchicalWbc
 {
 
 public:
-    HierarchicalWbc(PinocchioInterface *pin_interface);
+    HierarchicalWbc(shared_ptr<PinocchioInterface> pin_interface);
 
     void calTau(const RobotState &robot_state, const RobotState &robot_state_ref,
                 const Vector4i contact, VectorXd &tau);
@@ -36,7 +36,7 @@ private:
     Task buildArmJointTask(const Vector6d &pos_arm, const Vector6d &vel_arm,
                            const Vector6d &pos_arm_ref, const Vector6d &vel_arm_ref);
 
-    PinocchioInterface *pin_interface_;
+    shared_ptr<PinocchioInterface> pin_interface_;
 
     // friction cone
     double fz_min_, fz_max_;               // limitation of contact force in z direction

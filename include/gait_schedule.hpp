@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/math_types.hpp"
+#include "common/types.hpp"
 #include "common/low_state.hpp"
 #include "common/enum_class.hpp"
 #include <iostream>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/math_types.hpp"
+#include "common/types.hpp"
 #include "utils/math_tools.hpp"
 
 struct MotorState

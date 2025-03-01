@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/math_types.hpp"
+#include "common/types.hpp"
 #include <iostream>
 // todo: 定义为 inline 是否合适
 /**

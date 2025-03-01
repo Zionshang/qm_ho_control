@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utils/project_path.hpp"
-#include "common/math_types.hpp"
+#include "common/types.hpp"
 #include <pinocchio/parsers/urdf.hpp>
 #include <pinocchio/multibody/data.hpp>
 #include <pinocchio/algorithm/center-of-mass.hpp>

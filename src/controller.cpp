@@ -1,6 +1,6 @@
 #include "controller.hpp"
 
-Controller::Controller(PinocchioInterface *pin_interface)
+Controller::Controller(shared_ptr<PinocchioInterface> pin_interface)
 {
     wbc_ = new HierarchicalWbc(pin_interface);
     tau_.setZero(pin_interface->nv() - 6);

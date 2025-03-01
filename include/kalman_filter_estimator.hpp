@@ -1,5 +1,5 @@
 #pragma once
-#include "common/math_types.hpp"
+#include "common/types.hpp"
 #include "common/low_state.hpp"
 #include "pinocchio_interface.hpp"
 #include "ctrl_component.hpp"
@@ -8,7 +8,7 @@
 class KalmanFilterEstimator
 {
 public:
-    KalmanFilterEstimator(LowState *lowState, PinocchioInterface *pin_interface, double dt);
+    KalmanFilterEstimator(LowState *lowState,  shared_ptr<PinocchioInterface> pin_interface, double dt);
     void update(const Vector4i &contact_flag, RobotState &robot_state);
 
     const Vector3d &pos_body() const { return pos_body_; }      // position body, expressed in world frame
@@ -40,7 +40,7 @@ private:
     const Vector4d kFeetHeight_ = Vector4d::Zero();
 
     LowState *low_state_;               // TODO: 改成智能指针
-    PinocchioInterface *pin_interface_; // TODO: 改成智能指针
+    shared_ptr<PinocchioInterface> pin_interface_; // TODO: 改成智能指针
 
     Vector3d pos_body_;      // position body, expressed in world frame
     Vector3d vel_body_;      // velocity body, expressed in world frame
