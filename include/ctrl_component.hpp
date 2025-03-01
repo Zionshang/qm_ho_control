@@ -84,28 +84,17 @@ struct UserCommand
     }
 };
 
-class CtrlComponent
+struct CtrlComponent
 {
-public:
+    RobotState robot_state;
+    UserCommand user_cmd;
+    RobotState target_robot_state;
+
     CtrlComponent(shared_ptr<PinocchioInterface> pin_interface)
-        : robot_state_(pin_interface->nq(), pin_interface->nv()),
-          target_robot_state_(pin_interface->nq(), pin_interface->nv())
+        : robot_state(pin_interface->nq(), pin_interface->nv()),
+          target_robot_state(pin_interface->nq(), pin_interface->nv())
     {
-        target_robot_state_.body.pos << 0.0, 0.0, 0.42;
-        target_robot_state_.pos_com << 0.0317053, 0.00152422, 0.440351;
+        target_robot_state.body.pos << 0.0, 0.0, 0.42; // todo: 是否必要存在？
+        target_robot_state.pos_com << 0.0317053, 0.00152422, 0.440351;
     }
-
-    const RobotState &robot_state() const { return robot_state_; }
-    RobotState &mutable_robot_state() { return robot_state_; }
-
-    const UserCommand &user_cmd() const { return user_cmd_; }
-    UserCommand &mutable_user_cmd() { return user_cmd_; }
-
-    const RobotState &target_robot_state() const { return target_robot_state_; }
-    RobotState &mutable_target_robot_state() { return target_robot_state_; }
-
-private:
-    RobotState robot_state_;
-    UserCommand user_cmd_;
-    RobotState target_robot_state_;
 };
