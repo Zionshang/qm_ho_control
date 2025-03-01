@@ -25,16 +25,12 @@ void WebotsInterface::recvState(LowState& low_state)
     const double *imuData = imu_->getQuaternion(); // x,y,z,w
     const double *gyroData = gyro_->getValues();
     const double *accelerometerData = accelerometer_->getValues();
-    const double *robotPosData = robot_node_->getPosition();
-    const double *robotVelData = robot_node_->getVelocity();
 
     for (int i = 0; i < 3; i++)
     {
         low_state.imu.quaternion[i] = static_cast<double>(imuData[i]);
         low_state.imu.gyro[i] = static_cast<double>(gyroData[i]);
         low_state.imu.accelerometer[i] = static_cast<double>(accelerometerData[i]);
-        low_state.supervisor.robot_pos[i] = static_cast<double>(robotPosData[i]);
-        low_state.supervisor.robot_vel[i] = static_cast<double>(robotVelData[i]);
     }
     low_state.imu.quaternion[3] = static_cast<double>(imuData[3]);
 
@@ -132,14 +128,6 @@ bool WebotsInterface::isRunning()
 
 void WebotsInterface::initRecv()
 {
-    // supervisor init
-    robot_node_ = supervisor_->getFromDef(supervisor_name_);
-    if (robot_node_ == NULL)
-    {
-        printf("error supervisor");
-        exit(1);
-    }
-
     // // joystick init
     // _joystick = supervisor_->getJoystick();
     // _joystick->enable(time_step_);

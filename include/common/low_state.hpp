@@ -15,21 +15,6 @@ struct MotorState
     }
 };
 
-struct Supervisor
-{
-    double robot_pos[3]; // position of robot node in webots
-    double robot_vel[3]; // velocity of robot node in webots
-
-    Supervisor()
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            robot_pos[i] = 0;
-            robot_vel[i] = 0;
-        }
-    }
-};
-
 struct IMU
 {
     double quaternion[4]; // x,y,z,w
@@ -64,7 +49,6 @@ struct IMU
 struct LowState
 {
     IMU imu;
-    Supervisor supervisor;
     MotorState motor_state_leg[12];
     MotorState motor_state_arm[6];
 

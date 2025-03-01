@@ -37,7 +37,6 @@ private:
 
     // webots interface
     webots::Supervisor *supervisor_;
-    webots::Node *robot_node_;
     webots::Motor *motor_leg_[12];
     webots::PositionSensor *joint_sensor_leg_[12];
     webots::InertialUnit *imu_;
