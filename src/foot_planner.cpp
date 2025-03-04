@@ -1,6 +1,6 @@
 #include "foot_planner.hpp"
 
-FootPlanner::FootPlanner()
+FootPlanner::FootPlanner(shared_ptr<PinocchioInterface> pin_interface)
 {
     height_swing = 0.04;
     offset_foot_ = 0.026;
@@ -11,26 +11,31 @@ FootPlanner::FootPlanner()
     ky_ = 0.005;
     kyaw_ = 0.005;
 
-    // TODO: 使用pinocchio计算
-    Eigen::Matrix<double, 2, 4> posStill;                               // XY position when stance in still
-    posStill << 0.2407, -0.2407, 0.2407, -0.2407, // clang-format off
-                -0.138,  -0.138,  0.138,   0.138;  // clang-foramt on
-    for (int i = 0; i < 4; ++i)
+    VectorXd default_q = pinocchio::neutral(pin_interface->model());
+    VectorXd default_v = VectorXd::Zero(pin_interface->nv());
+    pin_interface->updateKinematics(default_q, default_v);
+
+    // todo: 是shoulder的位置还是foot的位置？
+    Matrix34d pos_shoulder; // position of shoulder
+    std::vector<std::string> shoulder_names = {"leg1_thigh_joint", "leg2_thigh_joint", "leg3_thigh_joint", "leg4_thigh_joint"};
+    for (int i = 0; i < 4; i++)
     {
-        feet_radius_(i) = sqrt(pow(posStill(0, i), 2) + pow(posStill(1, i), 2));
-        feet_init_angle(i) = atan2(posStill(1, i), posStill(0, i));
+        int joint_id = pin_interface->model().getJointId(shoulder_names[i]);
+        pos_shoulder.col(i) = pin_interface->data().oMi[joint_id].translation();
+
+        feet_radius_(i) = sqrt(pow(pos_shoulder(0, i), 2) + pow(pos_shoulder(1, i), 2));
+        feet_init_angle(i) = atan2(pos_shoulder(1, i), pos_shoulder(0, i));
     }
 }
 
-
 void FootPlanner::update(const GaitState &gait_state, const BodyState &body_state, const FootState &feet_state,
-    const BodyState &body_state_ref, FootState &feet_state_ref)
+                         const BodyState &body_state_ref, FootState &feet_state_ref)
 {
-    const auto & pos_feet = feet_state.pos;
-    auto & pos_feet_ref = feet_state_ref.pos;
-    auto & vel_feet_ref = feet_state_ref.vel;
-    
-    phase_ =  gait_state.phase;
+    const auto &pos_feet = feet_state.pos;
+    auto &pos_feet_ref = feet_state_ref.pos;
+    auto &vel_feet_ref = feet_state_ref.vel;
+
+    phase_ = gait_state.phase;
     period_swing_ = gait_state.period_swing;
     period_stance_ = gait_state.period_stance;
 
@@ -58,7 +63,7 @@ void FootPlanner::update(const GaitState &gait_state, const BodyState &body_stat
 }
 
 Vector3d FootPlanner::calcFootholdPosition(const BodyState &body_state, const Vector3d &vel_body_ref,
-                                       const Vector3d &angvel_body_ref, int leg_id)
+                                           const Vector3d &angvel_body_ref, int leg_id)
 {
     const Vector3d pos_body = body_state.pos;
     const Vector3d vel_body = body_state.vel;
@@ -68,7 +73,7 @@ Vector3d FootPlanner::calcFootholdPosition(const BodyState &body_state, const Ve
     // Translation in x,y axis
     next_step_(0) = vel_body(0) * (1 - phase_(leg_id)) * period_swing_ + vel_body(0) * period_stance_ / 2 + kx_ * (vel_body(0) - vel_body_ref_(0));
     next_step_(1) = vel_body(1) * (1 - phase_(leg_id)) * period_swing_ + vel_body(1) * period_stance_ / 2 + ky_ * (vel_body(1) - vel_body_ref_(1));
-    next_step_(2) = 0; 
+    next_step_(2) = 0;
 
     // rotation about z axis
     yaw_ = rotMat2RPY(body_state.quat.toRotationMatrix())(2);

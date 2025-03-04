@@ -1,10 +1,11 @@
 #pragma once
 #include "gait_schedule.hpp"
 #include "ctrl_component.hpp"
+#include "pinocchio_interface.hpp"
 class FootPlanner
 {
 public:
-    FootPlanner();
+    FootPlanner(shared_ptr<PinocchioInterface> pin_interface);
     // TODO: 更简洁的参数传递
     void update(const GaitState &gait_state, const BodyState &body_state, const FootState &feet_state,
                 const BodyState &body_state_ref, FootState &feet_state_ref);

@@ -3,7 +3,7 @@
 Planner::Planner(shared_ptr<PinocchioInterface> pin_interface, double timestep)
     : pin_interface_(pin_interface), dt_(timestep)
 {
-    foot_planner_ = std::make_shared<FootPlanner>();
+    foot_planner_ = std::make_shared<FootPlanner>(pin_interface);
 }
 
 void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,

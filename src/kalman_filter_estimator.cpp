@@ -3,10 +3,6 @@
 KalmanFilterEstimator::KalmanFilterEstimator(shared_ptr<PinocchioInterface> pin_interface, double dt)
     : pin_interface_(pin_interface)
 {
-    // // 初始化广义向量
-    // pos_gen_.setZero(pin_interface_->nq());
-    // vel_gen_.setZero(pin_interface_->nv());
-
     // 初始化状态向量
     x_hat_.setZero(kStateDim);
     x_hat_(2) = 0.42;

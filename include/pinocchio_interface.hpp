@@ -6,9 +6,9 @@
 #include <pinocchio/multibody/data.hpp>
 #include <pinocchio/algorithm/center-of-mass.hpp>
 #include <pinocchio/algorithm/frames.hpp>
-#include "pinocchio/algorithm/crba.hpp"
-#include "pinocchio/algorithm/rnea.hpp"
-
+#include <pinocchio/algorithm/crba.hpp>
+#include <pinocchio/algorithm/rnea.hpp>
+#include <pinocchio/algorithm/joint-configuration.hpp>
 namespace pin = pinocchio;
 
 class PinocchioInterface
