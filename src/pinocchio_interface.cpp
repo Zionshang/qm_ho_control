@@ -2,19 +2,19 @@
 
 PinocchioInterface::PinocchioInterface()
 {
-    std::string urdf_filename = getProjectPath() + "/urdf/aliengoZ1_newGrip.urdf";
+    std::string urdf_filename = getProjectPath() + "/urdf/galileo_mini_x5.urdf";
 
     pin::urdf::buildModel(urdf_filename, model_);
     data_ = pinocchio::Data(model_);
     nq_ = model_.nq;
     nv_ = model_.nv;
 
-    feet_id_.push_back(model_.getFrameId("leg1_foot", pinocchio::BODY));
-    feet_id_.push_back(model_.getFrameId("leg2_foot", pinocchio::BODY));
-    feet_id_.push_back(model_.getFrameId("leg3_foot", pinocchio::BODY));
-    feet_id_.push_back(model_.getFrameId("leg4_foot", pinocchio::BODY));
+    feet_id_.push_back(model_.getFrameId("FL_foot_link", pinocchio::BODY));
+    feet_id_.push_back(model_.getFrameId("FR_foot_link", pinocchio::BODY));
+    feet_id_.push_back(model_.getFrameId("HL_foot_link", pinocchio::BODY));
+    feet_id_.push_back(model_.getFrameId("HR_foot_link", pinocchio::BODY));
 
-    body_id_ = model_.getFrameId("trunk", pinocchio::BODY);
+    body_id_ = model_.getFrameId("base_link", pinocchio::BODY);
 }
 
 void PinocchioInterface::calcComState(const VectorXd &q, const VectorXd &v, Vector3d &pos_com, Vector3d &vel_com)

@@ -44,9 +44,9 @@ private:
     Eigen::Matrix<double, kMeasDim, kStateDim> S_H_;                      // S_H = _S.inv() * H
     Eigen::PartialPivLU<Eigen::Matrix<double, kMeasDim, kMeasDim>> S_lu_; // S.lu()
 
-    double foot_radius_ = 0.02;
-    double noise_processimu__position_ = 0.02;
-    double noise_processimu__velocity_ = 0.02;
+    double foot_radius_ = 0.03;
+    double noise_processimu_position_ = 0.02;
+    double noise_processimu_velocity_ = 0.02;
     double noise_process_foot_position_ = 0.002;
     double noise_meas_joint_position_ = 0.005;
     double noise_meas_joint_velocity_ = 0.1;

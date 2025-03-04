@@ -25,8 +25,8 @@ KalmanFilterEstimator::KalmanFilterEstimator(shared_ptr<PinocchioInterface> pin_
 
     // 初始化过程噪声协方差矩阵
     Q_init_.setIdentity();
-    Q_init_.block<3, 3>(0, 0) = (dt / 20.) * kIdentity3_ * noise_processimu__position_;
-    Q_init_.block<3, 3>(3, 3) = (dt * 9.81 / 20.) * kIdentity3_ * noise_processimu__velocity_;
+    Q_init_.block<3, 3>(0, 0) = (dt / 20.) * kIdentity3_ * noise_processimu_position_;
+    Q_init_.block<3, 3>(3, 3) = (dt * 9.81 / 20.) * kIdentity3_ * noise_processimu_velocity_;
     Q_init_.block<kFeetDim, kFeetDim>(6, 6) = dt * MatrixXd::Identity(kFeetDim, kFeetDim) * noise_process_foot_position_;
     Q_ = Q_init_;
     Q_(2, 2) = kLargeVariance_;
@@ -98,7 +98,7 @@ void KalmanFilterEstimator::update(const LowState &low_state, const Vector4i &co
     // std::cout << "===== Robot State2 =====" << std::endl;
 
     // // // Body state
-    // std::cout << "Body Position: " << robot_state.body.pos.transpose() << std::endl;
+    std::cout << "Body Position: " << robot_state.body.pos.transpose() << std::endl;
     // std::cout << "Body Quaternion: " << robot_state.body.quat.coeffs().transpose() << std::endl;
     // std::cout << "Body Velocity: " << robot_state.body.vel.transpose() << std::endl;
     // std::cout << "Body Angular Velocity: " << robot_state.body.angvel.transpose() << std::endl;

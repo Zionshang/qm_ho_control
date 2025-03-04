@@ -45,18 +45,18 @@ private:
     webots::Accelerometer *accelerometer_;
     webots::Keyboard *keyboard_;
 
-    std::string supervisor_name_ = "AliengoZ1";
-    std::string imu_name_ = "trunk_imu inertial";
-    std::string gyro_name_ = "trunk_imu gyro";
-    std::string accelerometer_name_ = "trunk_imu accelerometer";
-    std::string joint_sensor_leg_name_[12] = {"leg1_hip_joint_sensor", "leg1_thigh_joint_sensor", "leg1_calf_joint_sensor",
-                                              "leg2_hip_joint_sensor", "leg2_thigh_joint_sensor", "leg2_calf_joint_sensor",
-                                              "leg3_hip_joint_sensor", "leg3_thigh_joint_sensor", "leg3_calf_joint_sensor",
-                                              "leg4_hip_joint_sensor", "leg4_thigh_joint_sensor", "leg4_calf_joint_sensor"};
-    std::string motor_leg_name_[12] = {"leg1_hip_joint", "leg1_thigh_joint", "leg1_calf_joint",
-                                      "leg2_hip_joint", "leg2_thigh_joint", "leg2_calf_joint",
-                                      "leg3_hip_joint", "leg3_thigh_joint", "leg3_calf_joint",
-                                      "leg4_hip_joint", "leg4_thigh_joint", "leg4_calf_joint"};
+    std::string supervisor_name_ = "galileo_mini_x5";
+    std::string imu_name_ = "imu_link_imu";
+    std::string gyro_name_ = "imu_link_gyro";
+    std::string accelerometer_name_ = "imu_link_accelerometer";
+    std::string joint_sensor_leg_name_[12] = {"FL_abd_joint_sensor", "FL_hip_joint_sensor", "FL_knee_joint_sensor",
+                                              "FR_abd_joint_sensor", "FR_hip_joint_sensor", "FR_knee_joint_sensor",
+                                              "HL_abd_joint_sensor", "HL_hip_joint_sensor", "HL_knee_joint_sensor",
+                                              "HR_abd_joint_sensor", "HR_hip_joint_sensor", "HR_knee_joint_sensor"};
+    std::string motor_leg_name_[12] = {"FL_abd_joint", "FL_hip_joint", "FL_knee_joint",
+                                       "FR_abd_joint", "FR_hip_joint", "FR_knee_joint",
+                                       "HL_abd_joint", "HL_hip_joint", "HL_knee_joint",
+                                       "HR_abd_joint", "HR_hip_joint", "HR_knee_joint"};
 
     webots::Motor *motor_arm_[6];
     webots::PositionSensor *joint_sensor_arm_[6];

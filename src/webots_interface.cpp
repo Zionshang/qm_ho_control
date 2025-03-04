@@ -8,9 +8,10 @@ WebotsInterface::WebotsInterface()
     initRecv();
     initSend();
 
+    // TODO: 使用参数传递
     last_leg_joint_position_ << 0.0, 0.0, 0.0, 0.0,
-        0.67, 0.67, 0.67, 0.67,
-        -1.3, -1.3, -1.3, -1.3;
+        0.72, 0.72, 0.72, 0.72,
+        -1.44, -1.44, -1.44, -1.44;
     last_arm_joint_position_ << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
 }
 
