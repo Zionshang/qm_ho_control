@@ -11,23 +11,9 @@ public:
     KalmanFilterEstimator(shared_ptr<PinocchioInterface> pin_interface, double dt);
     void update(const LowState &low_state, const Vector4i &contact_flag, RobotState &robot_state);
 
-    const Vector3d &pos_body() const { return pos_body_; }      // position body, expressed in world frame
-    const Vector3d &vel_body() const { return vel_body_; }      // velocity body, expressed in world frame
-    const Quaterniond &getQuatB() const { return quat_body_; }  // quaternion of body frame relative to world frame
-    const RotMat &getRotB() const { return rotmat_body_; }      // rotation matrix of body frame relative to world frame
-    const Vector3d &getAngVelB() const { return angvel_body_; } // angular velocity of body, expressed in world frame
-
-    const Vector3d &pos_com() const { return pos_com_; } // get position of CoM, expressed in world frame
-    const Vector3d &vel_com() const { return vel_com_; } // get velocity of CoM, expressed in world frame
-
-    const Matrix34d &pos_leg() const { return pos_leg_; }   // joint position of leg
-    const Matrix34d &vel_leg() const { return vel_leg_; }   // joint velocity of leg
-    const Matrix34d &pos_feet() const { return pos_feet_; } // position of four feet, expressed in world frame
-    const Matrix34d &vel_feet() const { return vel_feet_; } // velocity of four feet, expressed in world frame
-
 private:
     void updateCovarianceMatrix(const Vector4i &contact_flag);
-    void updateMeasurement();
+    void updateMeasurement(RobotState &robot_state);
 
     static constexpr int kFeetNum = 4;   // number of feet
     static constexpr int kFeetDim = 12;  // 3 * feet number
@@ -40,28 +26,6 @@ private:
     const Vector4d kFeetHeight_ = Vector4d::Zero();
 
     shared_ptr<PinocchioInterface> pin_interface_;
-
-    Vector3d pos_body_;      // position body, expressed in world frame
-    Vector3d vel_body_;      // velocity body, expressed in world frame
-    RotMat rotmat_body_;     // rotation matrix of body frame relative to world frame
-    Quaterniond quat_body_;  // quaternion of body frame relative to world frame
-    Vector3d angvel_body_;   // angular velocity of body, expressed in world frame
-    Vector3d angvel_body_B_; // angular velocity of body, expressed in world frame
-
-    Vector6d pos_arm_;  // joint position of arm
-    Vector6d vel_arm_;  // joint velocity of arm
-    Matrix34d pos_leg_; // joint position of leg
-    Matrix34d vel_leg_; // joint velocity of leg
-
-    VectorXd pos_gen_; // generalized position [pos_body, vel_body, pos_leg, pos_arm]
-    VectorXd vel_gen_; // generalized velocity [vel_body_B, angvel_body_B, vel_leg, vel_arm]
-    Vector3d pos_com_; // position of CoM, expressed in world frame
-    Vector3d vel_com_; // position of CoM, expressed in world frame
-
-    Matrix34d pos_feet_;         // position of four feet, expressed in world frame
-    Matrix34d vel_feet_;         // velocity of four feet, expressed in world frame
-    Matrix34d pos_feet_rel_body; // position feet relative to body, expressed in world frame
-    Matrix34d vel_feet_rel_body; // velocity of feet relative to body, expressed in world frame
 
     Eigen::Matrix<double, kStateDim, kStateDim> A_;                       // State matrix in x = Ax + Bu
     Eigen::Matrix<double, kStateDim, 3> B_;                               // Measurement matrix in z = H

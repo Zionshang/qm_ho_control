@@ -3,9 +3,9 @@
 KalmanFilterEstimator::KalmanFilterEstimator(shared_ptr<PinocchioInterface> pin_interface, double dt)
     : pin_interface_(pin_interface)
 {
-    // 初始化广义向量
-    pos_gen_.setZero(pin_interface_->nq());
-    vel_gen_.setZero(pin_interface_->nv());
+    // // 初始化广义向量
+    // pos_gen_.setZero(pin_interface_->nq());
+    // vel_gen_.setZero(pin_interface_->nv());
 
     // 初始化状态向量
     x_hat_.setZero(kStateDim);
@@ -47,25 +47,32 @@ KalmanFilterEstimator::KalmanFilterEstimator(shared_ptr<PinocchioInterface> pin_
 }
 void KalmanFilterEstimator::update(const LowState &low_state, const Vector4i &contact_flag, RobotState &robot_state)
 {
-    pos_body_ = x_hat_.segment<3>(0);
-    vel_body_ = x_hat_.segment<3>(3);
+    // body
+    auto &body_state = robot_state.body;
+    body_state.pos = x_hat_.segment<3>(0);
+    body_state.vel = x_hat_.segment<3>(3);
+    body_state.quat = low_state.getQuaternion();
+    RotMat rotmat_body_ = body_state.quat.toRotationMatrix();
+    body_state.angvel = rotmat_body_ * low_state.getGyro();
 
-    quat_body_ = low_state.getQuaternion();
-    rotmat_body_ = quat_body_.toRotationMatrix();
-    angvel_body_B_ = low_state.getGyro();
-
-    pos_leg_ = low_state.getLegJointPosition();
-    vel_leg_ = low_state.getLegJointVelocity();
-    pos_arm_ = low_state.getArmJointPosition();
-    vel_arm_ = low_state.getArmJointVelocity();
+    // joint
+    auto &joint_state = robot_state.joint;
+    joint_state.pos_leg = low_state.getLegJointPosition();
+    joint_state.vel_leg = low_state.getLegJointVelocity();
+    joint_state.pos_arm = low_state.getArmJointPosition();
+    joint_state.vel_arm = low_state.getArmJointVelocity();
 
     // update covariance matix because of swing leg
     updateCovarianceMatrix(contact_flag);
 
     // update measurement
-    pos_gen_ << pos_body_, quat_body_.coeffs(), mat34ToVec12(pos_leg_), pos_arm_;
-    vel_gen_ << rotmat_body_.transpose() * vel_body_, angvel_body_B_, mat34ToVec12(vel_leg_), vel_arm_;
-    updateMeasurement();
+    robot_state.pos_gen << body_state.pos,
+        body_state.quat.coeffs(),
+        mat34ToVec12(joint_state.pos_leg), joint_state.pos_arm;
+    robot_state.vel_gen << rotmat_body_.transpose() * body_state.vel,
+        rotmat_body_.transpose() * body_state.angvel,
+        mat34ToVec12(joint_state.vel_leg), joint_state.vel_arm;
+    updateMeasurement(robot_state);
 
     // update state transition
     Vector3d acc_body = rotmat_body_ * low_state.getAccelerometer() + kGravity_;
@@ -88,34 +95,9 @@ void KalmanFilterEstimator::update(const LowState &low_state, const Vector4i &co
     P_ = (MatrixXd::Identity(kStateDim, kStateDim) - P_priori_ * H_T_ * S_H_) * P_priori_;
 
     // update com position
-    pin_interface_->calcComState(pos_gen_, vel_gen_, pos_com_, vel_com_);
-
-    // joint
-    auto &joint_state = robot_state.joint;
-    joint_state.pos_leg = pos_leg_;
-    joint_state.vel_leg = vel_leg_;
-    joint_state.pos_arm = pos_arm_;
-    joint_state.vel_arm = vel_arm_;
-
-    // body
-    auto &body_state = robot_state.body;
-    body_state.pos = pos_body_;
-    body_state.vel = vel_body_;
-    body_state.quat = quat_body_;
-    body_state.angvel << rotmat_body_ * angvel_body_B_;
-
-    // CoM
-    robot_state.pos_gen = pos_gen_;
-    robot_state.vel_gen = vel_gen_;
-    robot_state.pos_com = pos_com_;
-    robot_state.vel_com = vel_com_;
+    pin_interface_->calcComState(robot_state.pos_gen, robot_state.vel_gen, robot_state.pos_com, robot_state.vel_com);
 
     // foot
-    auto &foot_state = robot_state.foot;
-    foot_state.pos = pos_feet_;
-    foot_state.vel = vel_feet_;
-    foot_state.pos_rel_body = pos_feet_rel_body;
-    foot_state.vel_rel_body = vel_feet_rel_body;
 
     // std::cout << "===== Robot State2 =====" << std::endl;
 
@@ -155,22 +137,23 @@ void KalmanFilterEstimator::updateCovarianceMatrix(const Vector4i &contact_flag)
     }
 }
 
-void KalmanFilterEstimator::updateMeasurement()
+void KalmanFilterEstimator::updateMeasurement(RobotState &robot_state)
 {
-    pin_interface_->updateKinematics(pos_gen_, vel_gen_);
+    pin_interface_->updateKinematics(robot_state.pos_gen, robot_state.vel_gen);
+    auto &foot_state = robot_state.foot;
     for (size_t i = 0; i < 4; i++)
     {
-        pos_feet_.col(i) = pin_interface_->getFootPosition(i);
-        vel_feet_.col(i) = pin_interface_->getFootVelocity(i);
-        pos_feet_rel_body.col(i) = pos_feet_.col(i) - pos_body_;
-        vel_feet_rel_body.col(i) = vel_feet_.col(i) - vel_body_;
+        foot_state.pos.col(i) = pin_interface_->getFootPosition(i);
+        foot_state.vel.col(i) = pin_interface_->getFootVelocity(i);
+        foot_state.pos_rel_body.col(i) = foot_state.pos.col(i) - robot_state.body.pos;
+        foot_state.vel_rel_body.col(i) = foot_state.vel.col(i) - robot_state.body.vel;
     }
 
     for (int i = 0; i < kFeetNum; i++)
     {
-        z_.segment<3>(0 + 3 * i) = -pos_feet_rel_body.col(i);
+        z_.segment<3>(0 + 3 * i) = -foot_state.pos_rel_body.col(i);
         z_.segment<3>(0 + 3 * i)[2] += foot_radius_;
-        z_.segment<3>(12 + 3 * i) = -vel_feet_rel_body.col(i);
+        z_.segment<3>(12 + 3 * i) = -foot_state.vel_rel_body.col(i);
         z_.segment<4>(24) = kFeetHeight_;
     }
 }
