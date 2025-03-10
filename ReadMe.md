@@ -13,9 +13,10 @@ Hierarchical optimization control for quadrupedal manipulator
 ## Install
 
 ## Install Dependence
-* webots 2023b
+* webots 2025a
 
-    Download webots 2023b in official website.Download [webots project](https://github.com/Zionshang/Webots). Open `AliengoZ1/worlds/AliengoZ1_desiredArmJoint.wbt`
+    Download webots 2025a in official website.
+    Download [webots project](https://github.com/Zionshang/Webots). Open `galileo_mini_x5/worlds/galileo_mini_x5.wbt`
 ![robot](doc/robot.png)
 
 * Eigen
@@ -60,3 +61,17 @@ cmake ..
 make
 sudo make install
 ```
+## Run
+
+press key in webots
+```
+1: stance gait
+2: trot gait
+3: fly trot gait
+4: stance trot gait
+w: increase forward speed
+s: increases back speed
+a,d: increase lateral speed
+j,l: increase angular speed
+```
+
