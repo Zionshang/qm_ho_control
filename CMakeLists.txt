@@ -22,7 +22,7 @@ file(GLOB_RECURSE SRC_LIST
     ./src/model/*.cpp
 )
 # Get C++ head files
-include_directories(include/common include/model include)
+include_directories(include)
 
 # Setup the target executable.
 add_executable(${PROJECT} ${SRC_LIST})

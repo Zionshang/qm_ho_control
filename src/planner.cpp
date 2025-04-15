@@ -11,7 +11,7 @@ void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,
 {
 
     bodyPlan(user_cmd, robot_state_ref.body);
-    armJointPlan(robot_state_ref.joint);
+    armJointPlan(user_cmd, robot_state_ref.joint);
     comPlan(robot_state_ref, robot_state_ref.pos_com, robot_state_ref.vel_com);
     foot_planner_->update(gait_state, robot_state.body, robot_state.foot,
                           robot_state_ref.body, robot_state_ref.foot);
@@ -78,8 +78,8 @@ void Planner::comPlan(RobotState &robot_state_ref, Vector3d &pos_com_ref, Vector
     pin_interface_->calcComState(robot_state_ref.pos_gen, robot_state_ref.vel_gen, pos_com_ref, vel_com_ref);
 }
 
-void Planner::armJointPlan(JointState &joint_state_ref)
+void Planner::armJointPlan(const UserCommand &user_cmd, JointState &joint_state_ref)
 {
-    joint_state_ref.pos_arm.setZero();
+    joint_state_ref.pos_arm = user_cmd.arm_joint_pos;
     joint_state_ref.vel_arm.setZero();
 }

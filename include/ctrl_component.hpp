@@ -39,10 +39,10 @@ struct FootState
 
 struct JointState
 {
-    Matrix34d pos_leg; // leg joint position
-    Matrix34d vel_leg; // leg joint velocity
-    Vector6d pos_arm;  // arm joint position
-    Vector6d vel_arm;  // arm joint velocity
+    Matrix34d pos_leg;        // leg joint position
+    Matrix34d vel_leg;        // leg joint velocity
+    Vector6d pos_arm;         // arm joint position
+    Vector6d vel_arm;         // arm joint velocity
 
     JointState()
     {
@@ -77,12 +77,15 @@ struct UserCommand
     Vector3d vel_body_B;
     Vector3d angvel_body_B;
     GaitName gait_name;
+    Vector6d arm_joint_pos;
+    ControllerType ctrl_type;
 
     UserCommand()
     {
         vel_body_B.setZero();
         angvel_body_B.setZero();
         gait_name = GaitName::STANCE;
+        ctrl_type = ControllerType::POSITION_STAND_UP;
     }
 };
 
@@ -91,10 +94,10 @@ struct CtrlComponent
     RobotState robot_state;
     UserCommand user_cmd;
     RobotState target_robot_state;
-    
+
     LowState low_state;
     LowCmd low_cmd;
-    
+
     CtrlComponent(shared_ptr<PinocchioInterface> pin_interface)
         : robot_state(pin_interface->nq(), pin_interface->nv()),
           target_robot_state(pin_interface->nq(), pin_interface->nv())

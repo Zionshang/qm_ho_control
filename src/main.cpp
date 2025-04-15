@@ -8,6 +8,7 @@
 #include "kalman_filter_estimator.hpp"
 #include "gait_schedule.hpp"
 #include "ctrl_component.hpp"
+#include "position_controller.hpp"
 
 int main()
 {
@@ -19,6 +20,7 @@ int main()
         shared_ptr gait_sche = std::make_shared<GaitSchedule>();
         shared_ptr planner = std::make_shared<Planner>(pin_interface, timestep);
         shared_ptr controller = std::make_shared<Controller>(pin_interface);
+        shared_ptr position_controller = std::make_shared<PositionController>(timestep);
         shared_ptr estimator = std::make_shared<KalmanFilterEstimator>(pin_interface, timestep);
 
         while (webots_interface->isRunning())
@@ -32,8 +34,31 @@ int main()
                 planner->update(ctrl_comp->user_cmd, ctrl_comp->robot_state,
                                 gait_sche->gait_state(), ctrl_comp->target_robot_state);
 
-                controller->run(ctrl_comp->robot_state, ctrl_comp->target_robot_state,
-                                gait_sche->contact(), ctrl_comp->low_cmd);
+                switch (ctrl_comp->user_cmd.ctrl_type)
+                {
+
+                case ControllerType::POSITION_STAND_UP:
+                        position_controller->updateToStandUp(ctrl_comp->robot_state.joint.pos_leg,
+                                                             ctrl_comp->low_cmd);
+                        position_controller->updateArmToDefault(ctrl_comp->robot_state.joint.pos_arm,
+                                                                ctrl_comp->low_cmd);
+                        break;
+                case ControllerType::POSITION_LIE_DOWN:
+                        position_controller->updateToLieDown(ctrl_comp->robot_state.joint.pos_leg,
+                                                             ctrl_comp->low_cmd);
+                        position_controller->updateArmToDefault(ctrl_comp->robot_state.joint.pos_arm,
+                                                                ctrl_comp->low_cmd);
+                        break;
+                case ControllerType::TORQUE_CONTROLLER:
+                        controller->run(ctrl_comp->robot_state, ctrl_comp->target_robot_state,
+                                        gait_sche->contact(), ctrl_comp->low_cmd);
+                        break;
+                case ControllerType::NONE:
+                default:
+                        break;
+                }
+                // controller->run(ctrl_comp->robot_state, ctrl_comp->target_robot_state,
+                //                 gait_sche->contact(), ctrl_comp->low_cmd);
 
                 webots_interface->sendCmd(ctrl_comp->low_cmd);
         }

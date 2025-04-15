@@ -35,6 +35,8 @@ private:
     Matrix34d last_leg_joint_position_;
     Vector6d last_arm_joint_position_;
 
+    LowState low_state_;
+    
     // webots interface
     webots::Supervisor *supervisor_;
     webots::Motor *motor_leg_[12];

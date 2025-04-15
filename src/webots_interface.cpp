@@ -20,7 +20,7 @@ WebotsInterface::~WebotsInterface()
     delete supervisor_;
 }
 
-void WebotsInterface::recvState(LowState& low_state)
+void WebotsInterface::recvState(LowState &low_state)
 {
     // sensor
     const double *imuData = imu_->getQuaternion(); // x,y,z,w
@@ -29,25 +29,27 @@ void WebotsInterface::recvState(LowState& low_state)
 
     for (int i = 0; i < 3; i++)
     {
-        low_state.imu.quaternion[i] = static_cast<double>(imuData[i]);
-        low_state.imu.gyro[i] = static_cast<double>(gyroData[i]);
-        low_state.imu.accelerometer[i] = static_cast<double>(accelerometerData[i]);
+        low_state_.imu.quaternion[i] = static_cast<double>(imuData[i]);
+        low_state_.imu.gyro[i] = static_cast<double>(gyroData[i]);
+        low_state_.imu.accelerometer[i] = static_cast<double>(accelerometerData[i]);
     }
-    low_state.imu.quaternion[3] = static_cast<double>(imuData[3]);
+    low_state_.imu.quaternion[3] = static_cast<double>(imuData[3]);
 
     for (int i = 0; i < 12; i++)
     {
-        low_state.motor_state_leg[i].q = joint_sensor_leg_[i]->getValue();
-        low_state.motor_state_leg[i].dq = (low_state.motor_state_leg[i].q - last_leg_joint_position_(i)) / double(time_step_) * 1000;
-        last_leg_joint_position_(i) = low_state.motor_state_leg[i].q;
+        low_state_.motor_state_leg[i].q = joint_sensor_leg_[i]->getValue();
+        low_state_.motor_state_leg[i].dq = (low_state_.motor_state_leg[i].q - last_leg_joint_position_(i)) / double(time_step_) * 1000;
+        last_leg_joint_position_(i) = low_state_.motor_state_leg[i].q;
     }
 
     for (int i = 0; i < 6; i++)
     {
-        low_state.motor_state_arm[i].q = joint_sensor_arm_[i]->getValue();
-        low_state.motor_state_arm[i].dq = (low_state.motor_state_arm[i].q - last_arm_joint_position_(i)) / double(time_step_) * 1000;
-        last_arm_joint_position_(i) = low_state.motor_state_arm[i].q;
+        low_state_.motor_state_arm[i].q = joint_sensor_arm_[i]->getValue();
+        low_state_.motor_state_arm[i].dq = (low_state_.motor_state_arm[i].q - last_arm_joint_position_(i)) / double(time_step_) * 1000;
+        last_arm_joint_position_(i) = low_state_.motor_state_arm[i].q;
     }
+
+    low_state = low_state_;
 }
 
 void WebotsInterface::recvUserCmd(UserCommand &user_cmd)
@@ -65,20 +67,20 @@ void WebotsInterface::recvUserCmd(UserCommand &user_cmd)
         case 'B':
             user_cmd.vel_body_B(0) += -0.5;
             break;
+        case 'q':
+        case 'Q':
+            user_cmd.vel_body_B(1) += 0.5;
+            break;
+        case 'e':
+        case 'E':
+            user_cmd.vel_body_B(1) += -0.5;
+            break;
         case 'a':
         case 'A':
-            user_cmd.vel_body_B(1) += 0.5;
+            user_cmd.angvel_body_B(2) += 0.5;
             break;
         case 'd':
         case 'D':
-            user_cmd.vel_body_B(1) += -0.5;
-            break;
-        case 'j':
-        case 'J':
-            user_cmd.angvel_body_B(2) += 0.5;
-            break;
-        case 'l':
-        case 'L':
             user_cmd.angvel_body_B(2) += -0.5;
             break;
         case 's':
@@ -101,21 +103,85 @@ void WebotsInterface::recvUserCmd(UserCommand &user_cmd)
         case '5':
             user_cmd.gait_name = GaitName::WALK;
             break;
+        case 'r':
+        case 'R':
+            user_cmd.arm_joint_pos(0) += 0.05;
+            break;
+        case 'f':
+        case 'F':
+            user_cmd.arm_joint_pos(0) -= 0.05;
+            break;
+        case 't':
+        case 'T':
+            user_cmd.arm_joint_pos(1) += 0.05;
+            break;
+        case 'g':
+        case 'G':
+            user_cmd.arm_joint_pos(1) -= 0.05;
+            break;
+        case 'y':
+        case 'Y':
+            user_cmd.arm_joint_pos(2) += 0.05;
+            break;
+        case 'h':
+        case 'H':
+            user_cmd.arm_joint_pos(2) -= 0.05;
+            break;
+        case 'u':
+        case 'U':
+            user_cmd.arm_joint_pos(3) += 0.05;
+            break;
+        case 'j':
+        case 'J':
+            user_cmd.arm_joint_pos(3) -= 0.05;
+            break;
+        case 'i':
+        case 'I':
+            user_cmd.arm_joint_pos(4) += 0.05;
+            break;
+        case 'k':
+        case 'K':
+            user_cmd.arm_joint_pos(4) -= 0.05;
+            break;
+        case 'o':
+        case 'O':
+            user_cmd.arm_joint_pos(5) += 0.05;
+            break;
+        case 'l':
+        case 'L':
+            user_cmd.arm_joint_pos(5) -= 0.05;
+            break;
+        case '9':
+            user_cmd.ctrl_type = ControllerType::POSITION_STAND_UP;
+            break;
+        case '8':
+            user_cmd.ctrl_type = ControllerType::TORQUE_CONTROLLER;
+            break;
+        case '7':
+            user_cmd.ctrl_type = ControllerType::POSITION_LIE_DOWN;
+            break;
         }
     }
     last_key_ = key_;
 }
 
-void WebotsInterface::sendCmd(LowCmd& low_cmd)
+void WebotsInterface::sendCmd(LowCmd &low_cmd)
 {
+    double tau;
     for (int i = 0; i < 12; i++)
     {
-        motor_leg_[i]->setTorque(low_cmd.motor_cmd_leg[i].tau);
+        tau = low_cmd.motor_cmd_leg[i].tau +
+              low_cmd.motor_cmd_leg[i].kp * (low_cmd.motor_cmd_leg[i].q - joint_sensor_leg_[i]->getValue()) +
+              low_cmd.motor_cmd_leg[i].kd * (low_cmd.motor_cmd_leg[i].dq - joint_sensor_leg_[i]->getValue());
+        motor_leg_[i]->setTorque(tau);
     }
 
     for (int i = 0; i < 6; i++)
     {
-        motor_arm_[i]->setTorque(low_cmd.motor_cmd_arm[i].tau);
+        tau = low_cmd.motor_cmd_arm[i].tau +
+              low_cmd.motor_cmd_arm[i].kp * (low_cmd.motor_cmd_arm[i].q - joint_sensor_arm_[i]->getValue()) +
+              low_cmd.motor_cmd_arm[i].kd * (low_cmd.motor_cmd_arm[i].dq - joint_sensor_arm_[i]->getValue());
+        motor_arm_[i]->setTorque(tau);
     }
 }
 
