@@ -15,7 +15,7 @@ private:
     void setLieDown(const Matrix34d &current_pos);
     void setArmDefault(const Vector6d &current_pos);
 
-    double time_;
+    double stand_time_, lie_time_, arm_time_;
     double period_;
     double dt_;
 

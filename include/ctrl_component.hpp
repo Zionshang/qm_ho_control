@@ -85,7 +85,7 @@ struct UserCommand
         vel_body_B.setZero();
         angvel_body_B.setZero();
         gait_name = GaitName::STANCE;
-        ctrl_type = ControllerType::POSITION_STAND_UP;
+        ctrl_type = ControllerType::NONE;
     }
 };
 

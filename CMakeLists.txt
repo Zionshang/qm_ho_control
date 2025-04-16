@@ -1,39 +1,49 @@
-cmake_minimum_required(VERSION 3.0.0)
-get_filename_component(PROJECT ${CMAKE_SOURCE_DIR} NAME)
-project(${PROJECT})
-
-# Link with the Webots controller library.
-set(WEBOTS_HOME "/usr/local/webots")
-link_directories(${WEBOTS_HOME}/lib/controller)
-set(WEBOTSLIBRARIES m ${CMAKE_SHARED_LIBRARY_PREFIX}Controller${CMAKE_SHARED_LIBRARY_SUFFIX} ${CMAKE_SHARED_LIBRARY_PREFIX}CppController${CMAKE_SHARED_LIBRARY_SUFFIX})
-include_directories(${WEBOTS_HOME}/include/controller/c ${WEBOTS_HOME}/include/controller/cpp)
+cmake_minimum_required(VERSION 3.10.0)
+project(qm_ho_control)
 
 # pinocchio
 find_package(pinocchio REQUIRED)
 find_package(qpOASES REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(ament_cmake REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(custom_msgs REQUIRED)
 
-include_directories(${PINOCCHIO_INCLUDE_DIRS})
-include_directories(${YAML_CPP_INCLUDE_DIR})
-
-# Get C++ sources
-file(GLOB_RECURSE SRC_LIST 
-    ./src/*.cpp
-    ./src/model/*.cpp
+include_directories(
+  include
+  ${PINOCCHIO_INCLUDE_DIRS}
+  ${YAML_CPP_INCLUDE_DIR}
+  # ${rclcpp_INCLUDE_DIRS}
 )
-# Get C++ head files
-include_directories(include)
 
-# Setup the target executable.
-add_executable(${PROJECT} ${SRC_LIST})
-target_link_libraries(${PROJECT} ${WEBOTSLIBRARIES})
-target_link_libraries(${PROJECT} pinocchio::pinocchio)
-target_link_libraries(${PROJECT} qpOASES)
-target_link_libraries(${PROJECT} yaml-cpp::yaml-cpp)
+file(GLOB_RECURSE SRC_LIST
+  ./src/*.cpp
+  ./src/model/*.cpp
+)
 
+add_executable(qm_ho_control ${SRC_LIST})
 
-# Resolve for the package path at compile time.
-configure_file (
+target_link_libraries(qm_ho_control
+  pinocchio::pinocchio
+  qpOASES
+  yaml-cpp::yaml-cpp
+)
+
+ament_target_dependencies(qm_ho_control
+  rclcpp
+  sensor_msgs
+  custom_msgs
+)
+
+install(TARGETS
+  qm_ho_control
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+configure_file(
   "${PROJECT_SOURCE_DIR}/include/utils/project_path.hpp.in"
   "${PROJECT_SOURCE_DIR}/include/utils/project_path.hpp" @ONLY
 )
+
+ament_package()

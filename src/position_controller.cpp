@@ -15,8 +15,10 @@ PositionController::PositionController(double dt)
         -1.44, -1.44, -1.44, -1.44;
     default_arm_joint_pos_.setZero();
 
-    time_ = 0;
-    period_ = 1;
+    stand_time_ = 0;
+    lie_time_ = 0;
+    arm_time_ = 0;
+    period_ = 10;
 
     stand_spline0_.resize(12);
     stand_spline1_.resize(12);
@@ -28,37 +30,34 @@ void PositionController::updateToStandUp(const Matrix34d &joint_pos, LowCmd &low
 {
     if (!stand_flag_)
     {
-        time_ = 0;
+        stand_time_ = 0;
         setStandUp(joint_pos);
     }
     else
     {
-        time_ += dt_;
+        stand_time_ += dt_;
         for (int i = 0; i < 12; i++)
         {
-            if (time_ < period_)
+            if (stand_time_ < period_)
             {
-                low_cmd.motor_cmd_leg[i].q = stand_spline0_[i].position(time_);
-                low_cmd.motor_cmd_leg[i].dq = stand_spline0_[i].velocity(time_);
+                low_cmd.motor_cmd_leg[i].q = stand_spline0_[i].position(stand_time_);
+                low_cmd.motor_cmd_leg[i].dq = stand_spline0_[i].velocity(stand_time_);
             }
-            else if (time_ >= period_ && time_ < period_ + period_)
+            else if (stand_time_ >= period_ && stand_time_ < period_ + period_)
             {
-                low_cmd.motor_cmd_leg[i].q = stand_spline1_[i].position(time_);
-                low_cmd.motor_cmd_leg[i].dq = stand_spline1_[i].velocity(time_);
+                low_cmd.motor_cmd_leg[i].q = stand_spline1_[i].position(stand_time_);
+                low_cmd.motor_cmd_leg[i].dq = stand_spline1_[i].velocity(stand_time_);
             }
-            else if (time_ >= period_ + period_)
+            else if (stand_time_ >= period_ + period_)
             {
                 low_cmd.motor_cmd_leg[i].q = stand_joint_pos_(i);
                 low_cmd.motor_cmd_leg[i].dq = 0;
             }
-
-            std::cout << low_cmd.motor_cmd_leg[i].q << "  ";
-            low_cmd.motor_cmd_leg[i].kp = 200.0;
-            low_cmd.motor_cmd_leg[i].kd = 20;
+            low_cmd.motor_cmd_leg[i].kp = 0.0;
+            low_cmd.motor_cmd_leg[i].kd = 0;
             low_cmd.motor_cmd_leg[i].tau = 0;
             low_cmd.motor_cmd_leg[i].dq = 0;
         }
-        std::cout << std::endl;
     }
 }
 
@@ -66,27 +65,27 @@ void PositionController::updateToLieDown(const Matrix34d &joint_pos, LowCmd &low
 {
     if (!lie_flag_)
     {
-        time_ = 0;
+        lie_time_ = 0;
         setLieDown(joint_pos);
     }
     else
     {
-        time_ += dt_;
+        lie_time_ += dt_;
         for (int i = 0; i < 12; i++)
         {
-            if (time_ < period_)
+            if (lie_time_ < period_)
             {
-                low_cmd.motor_cmd_leg[i].q = lie_spline_[i].position(time_);
-                low_cmd.motor_cmd_leg[i].dq = lie_spline_[i].velocity(time_);
+                low_cmd.motor_cmd_leg[i].q = lie_spline_[i].position(lie_time_);
+                low_cmd.motor_cmd_leg[i].dq = lie_spline_[i].velocity(lie_time_);
             }
-            else if (time_ >= period_)
+            else if (lie_time_ >= period_)
             {
                 low_cmd.motor_cmd_leg[i].q = lie_joint_pos_(i);
                 low_cmd.motor_cmd_leg[i].dq = 0;
             }
 
-            low_cmd.motor_cmd_leg[i].kp = 200.0;
-            low_cmd.motor_cmd_leg[i].kd = 20;
+            low_cmd.motor_cmd_leg[i].kp = 0.0;
+            low_cmd.motor_cmd_leg[i].kd = 0;
             low_cmd.motor_cmd_leg[i].tau = 0;
             low_cmd.motor_cmd_leg[i].dq = 0;
         }
@@ -97,25 +96,26 @@ void PositionController::updateArmToDefault(const Vector6d &joint_pos, LowCmd &l
 {
     if (!arm_flag_)
     {
-        time_ = 0;
+        arm_time_ = 0;
         setArmDefault(joint_pos);
     }
 
     for (int i = 0; i < 6; i++)
     {
-        if (time_ < period_)
+        arm_time_ += dt_;
+        if (arm_time_ < period_)
         {
-            low_cmd.motor_cmd_arm[i].q = arm_spline_[i].position(time_);
-            low_cmd.motor_cmd_arm[i].dq = arm_spline_[i].velocity(time_);
+            low_cmd.motor_cmd_arm[i].q = arm_spline_[i].position(arm_time_);
+            low_cmd.motor_cmd_arm[i].dq = arm_spline_[i].velocity(arm_time_);
         }
-        else if (time_ >= period_)
+        else if (arm_time_ >= period_)
         {
             low_cmd.motor_cmd_arm[i].q = default_arm_joint_pos_(i);
             low_cmd.motor_cmd_arm[i].dq = 0;
         }
 
-        low_cmd.motor_cmd_arm[i].kp = 200.0;
-        low_cmd.motor_cmd_arm[i].kd = 20;
+        low_cmd.motor_cmd_arm[i].kp = 0;
+        low_cmd.motor_cmd_arm[i].kd = 5;
         low_cmd.motor_cmd_arm[i].tau = 0;
         low_cmd.motor_cmd_arm[i].dq = 0;
     }

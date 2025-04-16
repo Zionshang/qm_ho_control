@@ -28,7 +28,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/base_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/base_link.STL" />
       </geometry>
       <material
         name="">
@@ -67,7 +67,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/FL_abd_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/FL_abd_link.STL" />
       </geometry>
       <material
         name="">
@@ -121,7 +121,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/FL_hip_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/FL_hip_link.STL" />
       </geometry>
       <material
         name="">
@@ -149,8 +149,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-1.0472"
-      upper="4.1888"
+      lower="-4.1888"
+      upper="1.0472"
       effort="100"
       velocity="21" />
   </joint>
@@ -175,7 +175,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/FL_knee_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/FL_knee_link.STL" />
       </geometry>
       <material
         name="">
@@ -294,7 +294,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/FR_abd_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/FR_abd_link.STL" />
       </geometry>
       <material
         name="">
@@ -322,8 +322,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-1.0472"
-      upper="4.1888"
+      lower="-4.1888"
+      upper="1.0472"
       effort="100"
       velocity="21" />
   </joint>
@@ -348,7 +348,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/FR_hip_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/FR_hip_link.STL" />
       </geometry>
       <material
         name="">
@@ -402,7 +402,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/FR_knee_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/FR_knee_link.STL" />
       </geometry>
       <material
         name="">
@@ -505,7 +505,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/HR_abd_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/HR_abd_link.STL" />
       </geometry>
       <material
         name="">
@@ -533,8 +533,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-1.0472"
-      upper="4.1888"
+      lower="-4.1888"
+      upper="1.0472"
       effort="100"
       velocity="21" />
   </joint>
@@ -559,7 +559,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/HR_hip_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/HR_hip_link.STL" />
       </geometry>
       <material
         name="">
@@ -613,7 +613,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/HR_knee_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/HR_knee_link.STL" />
       </geometry>
       <material
         name="">
@@ -630,7 +630,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="RR_foot_joint" type="fixed">
+  <joint name="HR_foot_joint" type="fixed">
     <origin
       xyz="0.032939 0 -0.26149"
       rpy="0 0 0" />
@@ -716,7 +716,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/HL_abd_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/HL_abd_link.STL" />
       </geometry>
       <material
         name="">
@@ -744,8 +744,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-1.0472"
-      upper="4.1888"
+      lower="-4.1888"
+      upper="1.0472"
       effort="100"
       velocity="21" />
   </joint>
@@ -770,7 +770,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/HL_hip_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/HL_hip_link.STL" />
       </geometry>
       <material
         name="">
@@ -824,7 +824,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/HL_knee_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/HL_knee_link.STL" />
       </geometry>
       <material
         name="">
@@ -911,7 +911,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/manipulator_base_link.STL" />
+          filename="package://galileo_mini_x5_description/meshes/manipulator_base_link.STL" />
       </geometry>
       <material
         name="">
@@ -950,7 +950,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/link1.STL" />
+          filename="package://galileo_mini_x5_description/meshes/link1.STL" />
       </geometry>
       <material
         name="">
@@ -996,7 +996,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/link2.STL" />
+          filename="package://galileo_mini_x5_description/meshes/link2.STL" />
       </geometry>
       <material
         name="">
@@ -1042,7 +1042,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/link3.STL" />
+          filename="package://galileo_mini_x5_description/meshes/link3.STL" />
       </geometry>
       <material
         name="">
@@ -1088,7 +1088,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/link4.STL" />
+          filename="package://galileo_mini_x5_description/meshes/link4.STL" />
       </geometry>
       <material
         name="">
@@ -1134,7 +1134,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/link5.STL" />
+          filename="package://galileo_mini_x5_description/meshes/link5.STL" />
       </geometry>
       <material
         name="">
@@ -1180,7 +1180,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/link6.STL" />
+          filename="package://galileo_mini_x5_description/meshes/link6.STL" />
       </geometry>
       <material
         name="">
@@ -1226,7 +1226,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/link7.STL" />
+          filename="package://galileo_mini_x5_description/meshes/link7.STL" />
       </geometry>
       <material
         name="">
@@ -1272,7 +1272,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://galileo_mini_description/meshes/link8.STL" />
+          filename="package://galileo_mini_x5_description/meshes/link8.STL" />
       </geometry>
       <material
         name="">
