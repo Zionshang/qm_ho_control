@@ -74,7 +74,8 @@ void HierarchicalWbc::calTau(const RobotState &robot_state, const RobotState &ro
     task0 = task0 + buildNoContactMotionTask();
     task0 = task0 + buildFrictionConeTask();
 
-    task1 = buildComLinearTask(pos_com, vel_com, pos_com_ref, vel_com_ref) * weight_pos_body_;
+    task1 = buildBodyLinearTask(pos_body,vel_body,pos_body_ref,vel_body_ref) * weight_pos_body_;
+    // task1 = buildComLinearTask(pos_com, vel_com, pos_com_ref, vel_com_ref) * weight_pos_body_;
     task1 = task1 + buildBodyAngularTask(quat_body, angvel_body, quat_body_ref, angvel_body_ref) * weight_pos_ang_;
     task1 = task1 + buildSwingLegTask(pos_feet, vel_feet, pos_feet_ref, vel_feet_ref) * weight_swing_;
     task1 = task1 + buildArmJointTask(pos_arm, vel_arm, pos_arm_ref, vel_arm_ref) * weight_arm_;
