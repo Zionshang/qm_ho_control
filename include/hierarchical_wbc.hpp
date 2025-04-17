@@ -35,7 +35,11 @@ private:
                            const Matrix34d &pos_feet_ref, const Matrix34d &vel_feet_ref);
     Task buildArmJointTask(const VectorXd &pos_arm, const VectorXd &vel_arm,
                            const VectorXd &pos_arm_ref, const VectorXd &vel_arm_ref);
-
+    Task buildArmEELinearTask(const Vector3d &pos_ee, const Vector3d &vel_ee,
+                              const Vector3d &pos_ee_ref, const Vector3d &vel_ee_ref);
+    Task buildArmEEAngularTask(const Quaterniond &quat_body, const Vector3d &angvel_body,
+                               const Quaterniond &quat_body_ref, const Vector3d &angvel_body_ref);
+                               
     shared_ptr<PinocchioInterface> pin_interface_;
 
     // friction cone
