@@ -5,7 +5,7 @@ KalmanFilterEstimator::KalmanFilterEstimator(shared_ptr<PinocchioInterface> pin_
 {
     // 初始化状态向量
     x_hat_.setZero(kStateDim);
-    x_hat_(2) = 0.42;
+    x_hat_(2) = 0.57;
 
     // 初始化状态矩阵
     A_.setIdentity();
@@ -92,13 +92,13 @@ void KalmanFilterEstimator::update(const LowState &low_state, const Vector4i &co
 
     // update com position
     pin_interface_->calcComState(robot_state.pos_gen, robot_state.vel_gen, robot_state.pos_com, robot_state.vel_com);
-
+    
     // foot
 
     // std::cout << "===== Robot State2 =====" << std::endl;
 
     // // // Body state
-    std::cout << "Body Position: " << robot_state.body.pos.transpose() << std::endl;
+    // std::cout << "Body Position: " << robot_state.body.pos.transpose() << std::endl;
     // std::cout << "Body Quaternion: " << robot_state.body.quat.coeffs().transpose() << std::endl;
     // std::cout << "Body Velocity: " << robot_state.body.vel.transpose() << std::endl;
     // std::cout << "Body Angular Velocity: " << robot_state.body.angvel.transpose() << std::endl;

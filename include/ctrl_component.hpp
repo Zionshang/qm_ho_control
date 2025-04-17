@@ -39,17 +39,18 @@ struct FootState
 
 struct JointState
 {
-    Matrix34d pos_leg;        // leg joint position
-    Matrix34d vel_leg;        // leg joint velocity
-    Vector6d pos_arm;         // arm joint position
-    Vector6d vel_arm;         // arm joint velocity
+    Matrix34d pos_leg; // leg joint position
+    Matrix34d vel_leg; // leg joint velocity
+    VectorXd pos_arm;  // arm joint position
+    VectorXd vel_arm;  // arm joint velocity
 
-    JointState()
+    JointState(int arm_nq)
     {
         pos_leg.setZero();
         vel_leg.setZero();
-        pos_arm.setZero();
-        vel_arm.setZero();
+        pos_arm.setZero(arm_nq);
+        vel_arm.setZero(arm_nq);
+        pos_arm << 0, -1.57, 2.88, 0.26, 0;
     }
 };
 
@@ -64,6 +65,7 @@ struct RobotState
     Vector3d vel_com; // velocity of center of mass, expressed in world frame
 
     RobotState(int nq, int nv)
+        : joint(nv - 18)
     {
         pos_gen.setZero(nq);
         vel_gen.setZero(nv);
@@ -77,15 +79,17 @@ struct UserCommand
     Vector3d vel_body_B;
     Vector3d angvel_body_B;
     GaitName gait_name;
-    Vector6d arm_joint_pos;
+    VectorXd arm_joint_pos;
     ControllerType ctrl_type;
 
-    UserCommand()
+    UserCommand(int arm_nq)
     {
         vel_body_B.setZero();
         angvel_body_B.setZero();
         gait_name = GaitName::STANCE;
-        ctrl_type = ControllerType::POSITION_STAND_UP;
+        ctrl_type = ControllerType::TORQUE_CONTROLLER;
+        arm_joint_pos.setZero(arm_nq);
+        arm_joint_pos << 0, -1.57, 2.88, 0.26, 0;
     }
 };
 
@@ -100,9 +104,10 @@ struct CtrlComponent
 
     CtrlComponent(shared_ptr<PinocchioInterface> pin_interface)
         : robot_state(pin_interface->nq(), pin_interface->nv()),
-          target_robot_state(pin_interface->nq(), pin_interface->nv())
+          target_robot_state(pin_interface->nq(), pin_interface->nv()),
+          user_cmd(pin_interface->nv() - 18)
     {
-        target_robot_state.body.pos << 0.0, 0.0, 0.42; // todo: 是否必要存在？
-        target_robot_state.pos_com << 0.0317053, 0.00152422, 0.440351;
+        target_robot_state.body.pos << 0.0, 0.0, 0.57; // todo: 是否必要存在？
+        target_robot_state.pos_com << 0, 0, 0.527;
     }
 };

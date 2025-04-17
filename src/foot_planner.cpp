@@ -17,11 +17,14 @@ FootPlanner::FootPlanner(shared_ptr<PinocchioInterface> pin_interface)
 
     // todo: 是shoulder的位置还是foot的位置？
     Matrix34d pos_shoulder; // position of shoulder
-    std::vector<std::string> shoulder_names = {"FL_hip_joint", "FR_hip_joint", "HL_hip_joint", "HR_hip_joint"};
+    std::vector<std::string> shoulder_names = {"FL_foot_joint", "FR_foot_joint", "HL_foot_joint", "HR_foot_joint"};
+    pos_shoulder << 0.3, 0.3, -0.3, -0.3,
+        0.2, -0.2, 0.2, -0.2,
+        0.0, 0.0, 0.0, 0.0;
     for (int i = 0; i < 4; i++)
     {
-        int joint_id = pin_interface->model().getJointId(shoulder_names[i]);
-        pos_shoulder.col(i) = pin_interface->data().oMi[joint_id].translation();
+        // int joint_id = pin_interface->model().getJointId(shoulder_names[i]);
+        // pos_shoulder.col(i) = pin_interface->data().oMi[joint_id].translation();
 
         feet_radius_(i) = sqrt(pow(pos_shoulder(0, i), 2) + pow(pos_shoulder(1, i), 2));
         feet_init_angle(i) = atan2(pos_shoulder(1, i), pos_shoulder(0, i));

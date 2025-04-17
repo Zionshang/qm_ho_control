@@ -13,7 +13,8 @@ PositionController::PositionController(double dt)
     stand_joint_pos_ << 0.0, 0.0, 0.0, 0.0,
         0.72, 0.72, 0.72, 0.72,
         -1.44, -1.44, -1.44, -1.44;
-    default_arm_joint_pos_.setZero();
+    default_arm_joint_pos_.setZero(5); // todo: 删除魔法数字
+    default_arm_joint_pos_ << 0, -1.57, 2.88, 0.26, 0;
 
     time_ = 0;
     period_ = 1;
@@ -21,7 +22,7 @@ PositionController::PositionController(double dt)
     stand_spline0_.resize(12);
     stand_spline1_.resize(12);
     lie_spline_.resize(12);
-    arm_spline_.resize(6);
+    arm_spline_.resize(5);
 }
 
 void PositionController::updateToStandUp(const Matrix34d &joint_pos, LowCmd &low_cmd)
@@ -51,14 +52,11 @@ void PositionController::updateToStandUp(const Matrix34d &joint_pos, LowCmd &low
                 low_cmd.motor_cmd_leg[i].q = stand_joint_pos_(i);
                 low_cmd.motor_cmd_leg[i].dq = 0;
             }
-
-            std::cout << low_cmd.motor_cmd_leg[i].q << "  ";
             low_cmd.motor_cmd_leg[i].kp = 200.0;
             low_cmd.motor_cmd_leg[i].kd = 20;
             low_cmd.motor_cmd_leg[i].tau = 0;
             low_cmd.motor_cmd_leg[i].dq = 0;
         }
-        std::cout << std::endl;
     }
 }
 
@@ -93,7 +91,7 @@ void PositionController::updateToLieDown(const Matrix34d &joint_pos, LowCmd &low
     }
 }
 
-void PositionController::updateArmToDefault(const Vector6d &joint_pos, LowCmd &low_cmd)
+void PositionController::updateArmToDefault(const VectorXd &joint_pos, LowCmd &low_cmd)
 {
     if (!arm_flag_)
     {
@@ -101,7 +99,7 @@ void PositionController::updateArmToDefault(const Vector6d &joint_pos, LowCmd &l
         setArmDefault(joint_pos);
     }
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < joint_pos.size(); i++)
     {
         if (time_ < period_)
         {
@@ -114,11 +112,13 @@ void PositionController::updateArmToDefault(const Vector6d &joint_pos, LowCmd &l
             low_cmd.motor_cmd_arm[i].dq = 0;
         }
 
-        low_cmd.motor_cmd_arm[i].kp = 200.0;
-        low_cmd.motor_cmd_arm[i].kd = 20;
+        low_cmd.motor_cmd_arm[i].kp = 100;
+        low_cmd.motor_cmd_arm[i].kd = 0.01;
         low_cmd.motor_cmd_arm[i].tau = 0;
         low_cmd.motor_cmd_arm[i].dq = 0;
+        std::cout << low_cmd.motor_cmd_arm[i].dq << "  ";
     }
+    std::cout << std::endl;
 }
 
 void PositionController::setStandUp(const Matrix34d &current_pos)
@@ -169,11 +169,11 @@ void PositionController::setLieDown(const Matrix34d &current_pos)
     }
 }
 
-void PositionController::setArmDefault(const Vector6d &current_pos)
+void PositionController::setArmDefault(const VectorXd &current_pos)
 {
     arm_flag_ = true;
     CubicSpline::SplineNode start, end;
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < current_pos.size(); i++)
     {
         start.time = 0;
         start.position = current_pos(i);

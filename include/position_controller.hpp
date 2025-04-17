@@ -8,12 +8,12 @@ public:
     PositionController(double dt);
     void updateToStandUp(const Matrix34d &joint_pos, LowCmd &low_cmd);
     void updateToLieDown(const Matrix34d &joint_pos, LowCmd &low_cmd);
-    void updateArmToDefault(const Vector6d &joint_pos, LowCmd &low_cmd);
+    void updateArmToDefault(const VectorXd &joint_pos, LowCmd &low_cmd);
 
 private:
     void setStandUp(const Matrix34d &current_pos);
     void setLieDown(const Matrix34d &current_pos);
-    void setArmDefault(const Vector6d &current_pos);
+    void setArmDefault(const VectorXd &current_pos);
 
     double time_;
     double period_;
@@ -29,5 +29,5 @@ private:
 
     Matrix34d lie_joint_pos_;
     Matrix34d stand_joint_pos_;
-    Vector6d default_arm_joint_pos_;
+    VectorXd default_arm_joint_pos_;
 };

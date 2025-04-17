@@ -33,8 +33,8 @@ private:
                             const Vector3d &pos_com_ref, const Vector3d &vel_com_ref);
     Task buildSwingLegTask(const Matrix34d &pos_feet, const Matrix34d &vel_feet,
                            const Matrix34d &pos_feet_ref, const Matrix34d &vel_feet_ref);
-    Task buildArmJointTask(const Vector6d &pos_arm, const Vector6d &vel_arm,
-                           const Vector6d &pos_arm_ref, const Vector6d &vel_arm_ref);
+    Task buildArmJointTask(const VectorXd &pos_arm, const VectorXd &vel_arm,
+                           const VectorXd &pos_arm_ref, const VectorXd &vel_arm_ref);
 
     shared_ptr<PinocchioInterface> pin_interface_;
 

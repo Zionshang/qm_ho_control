@@ -12,7 +12,7 @@ WebotsInterface::WebotsInterface()
     last_leg_joint_position_ << 0.0, 0.0, 0.0, 0.0,
         0.72, 0.72, 0.72, 0.72,
         -1.44, -1.44, -1.44, -1.44;
-    last_arm_joint_position_ << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+    last_arm_joint_position_ << 0, -1.57, 2.88, 0.26, 0;
 }
 
 WebotsInterface::~WebotsInterface()
@@ -35,14 +35,14 @@ void WebotsInterface::recvState(LowState &low_state)
     }
     low_state_.imu.quaternion[3] = static_cast<double>(imuData[3]);
 
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < NUM_LEG_MOTOR; i++)
     {
         low_state_.motor_state_leg[i].q = joint_sensor_leg_[i]->getValue();
         low_state_.motor_state_leg[i].dq = (low_state_.motor_state_leg[i].q - last_leg_joint_position_(i)) / double(time_step_) * 1000;
         last_leg_joint_position_(i) = low_state_.motor_state_leg[i].q;
     }
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < NUM_ARM_MOTOR; i++)
     {
         low_state_.motor_state_arm[i].q = joint_sensor_arm_[i]->getValue();
         low_state_.motor_state_arm[i].dq = (low_state_.motor_state_arm[i].q - last_arm_joint_position_(i)) / double(time_step_) * 1000;
@@ -168,19 +168,23 @@ void WebotsInterface::recvUserCmd(UserCommand &user_cmd)
 void WebotsInterface::sendCmd(LowCmd &low_cmd)
 {
     double tau;
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < NUM_LEG_MOTOR; i++)
     {
         tau = low_cmd.motor_cmd_leg[i].tau +
-              low_cmd.motor_cmd_leg[i].kp * (low_cmd.motor_cmd_leg[i].q - joint_sensor_leg_[i]->getValue()) +
-              low_cmd.motor_cmd_leg[i].kd * (low_cmd.motor_cmd_leg[i].dq - joint_sensor_leg_[i]->getValue());
+              low_cmd.motor_cmd_leg[i].kp * (low_cmd.motor_cmd_leg[i].q - low_state_.motor_state_leg[i].q) +
+              low_cmd.motor_cmd_leg[i].kd * (low_cmd.motor_cmd_leg[i].dq - low_state_.motor_state_leg[i].dq);
         motor_leg_[i]->setTorque(tau);
     }
-
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < NUM_ARM_MOTOR; i++)
     {
         tau = low_cmd.motor_cmd_arm[i].tau +
-              low_cmd.motor_cmd_arm[i].kp * (low_cmd.motor_cmd_arm[i].q - joint_sensor_arm_[i]->getValue()) +
-              low_cmd.motor_cmd_arm[i].kd * (low_cmd.motor_cmd_arm[i].dq - joint_sensor_arm_[i]->getValue());
+              low_cmd.motor_cmd_arm[i].kp * (low_cmd.motor_cmd_arm[i].q - low_state_.motor_state_arm[i].q) +
+              low_cmd.motor_cmd_arm[i].kd * (low_cmd.motor_cmd_arm[i].dq - low_state_.motor_state_arm[i].dq);
+        // std::cout << low_cmd.motor_cmd_arm[i].q << "  "
+        //           << low_state_.motor_state_arm[i].q << "  "
+        //           << low_cmd.motor_cmd_arm[i].dq << "  "
+        //           << low_state_.motor_state_arm[i].dq << "  "
+        //           << std::endl;
         motor_arm_[i]->setTorque(tau);
     }
 }
@@ -211,13 +215,13 @@ void WebotsInterface::initRecv()
     accelerometer_ = supervisor_->getAccelerometer(accelerometer_name_);
     accelerometer_->enable(time_step_);
 
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < NUM_LEG_MOTOR; i++)
     {
         joint_sensor_leg_[i] = supervisor_->getPositionSensor(joint_sensor_leg_name_[i]);
         joint_sensor_leg_[i]->enable(time_step_);
     }
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < NUM_ARM_MOTOR; i++)
     {
         joint_sensor_arm_[i] = supervisor_->getPositionSensor(joint_sensor_arm_name_[i]);
         joint_sensor_arm_[i]->enable(time_step_);
@@ -226,9 +230,9 @@ void WebotsInterface::initRecv()
 
 void WebotsInterface::initSend()
 {
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < NUM_LEG_MOTOR; i++)
         motor_leg_[i] = supervisor_->getMotor(motor_leg_name_[i]);
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < NUM_ARM_MOTOR; i++)
         motor_arm_[i] = supervisor_->getMotor(motor_arm_name_[i]);
 }

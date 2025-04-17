@@ -37,7 +37,7 @@ struct LowState
 {
     IMU imu;
     MotorState motor_state_leg[12];
-    MotorState motor_state_arm[6];
+    MotorState motor_state_arm[5];
 
     // todo: 是否需要换成12列
     const Matrix34d getLegJointPosition() const
@@ -64,18 +64,18 @@ struct LowState
         return dq_leg;
     }
 
-    const Vector6d getArmJointPosition() const
+    const VectorXd getArmJointPosition() const
     {
-        Vector6d q_arm;
-        for (int i = 0; i < 6; i++)
+        VectorXd q_arm(5); // todo: 不使用魔法数字
+        for (int i = 0; i < 5; i++)
             q_arm(i) = motor_state_arm[i].q;
         return q_arm;
     }
 
-    const Vector6d getArmJointVelocity() const
+    const VectorXd getArmJointVelocity() const
     {
-        Vector6d dq_arm;
-        for (int i = 0; i < 6; i++)
+        VectorXd dq_arm(5); // todo: 不使用魔法数字
+        for (int i = 0; i < 5; i++)
             dq_arm(i) = motor_state_arm[i].dq;
         return dq_arm;
     }

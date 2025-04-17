@@ -2,9 +2,9 @@
 
 PinocchioInterface::PinocchioInterface()
 {
-    std::string urdf_filename = getProjectPath() + "/urdf/galileo_mini_x5.urdf";
+    std::string urdf_filename = getProjectPath() + "/urdf/bqr3_arm _reduced.urdf";
 
-    pin::urdf::buildModel(urdf_filename, model_);
+    pin::urdf::buildModel(urdf_filename, pin::JointModelFreeFlyer(), model_);
     data_ = pinocchio::Data(model_);
     nq_ = model_.nq;
     nv_ = model_.nv;

@@ -4,6 +4,11 @@ Planner::Planner(shared_ptr<PinocchioInterface> pin_interface, double timestep)
     : pin_interface_(pin_interface), dt_(timestep)
 {
     foot_planner_ = std::make_shared<FootPlanner>(pin_interface);
+    default_leg_joint_pos_.setZero(12);
+    default_leg_joint_pos_ << 0.0, 0.72, -1.44,
+        0.0, 0.72, -1.44,
+        0.0, 0.72, -1.44,
+        0.0, 0.72, -1.44;
 }
 
 void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,
@@ -67,12 +72,12 @@ void Planner::comPlan(RobotState &robot_state_ref, Vector3d &pos_com_ref, Vector
 
     robot_state_ref.pos_gen << robot_state_ref.body.pos,
         robot_state_ref.body.quat.coeffs(),
-        VectorXd::Zero(12),
+        default_leg_joint_pos_,
         robot_state_ref.joint.pos_arm;
 
     robot_state_ref.vel_gen << R_body_T * robot_state_ref.body.vel,
         R_body_T * robot_state_ref.body.angvel,
-        VectorXd::Zero(12, 1),
+        default_leg_joint_pos_,
         robot_state_ref.joint.vel_arm;
 
     pin_interface_->calcComState(robot_state_ref.pos_gen, robot_state_ref.vel_gen, pos_com_ref, vel_com_ref);

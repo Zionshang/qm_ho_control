@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-get_filename_component(PROJECT ${CMAKE_SOURCE_DIR} NAME)
-project(${PROJECT})
+project(qm_ho_control)
 
 # Link with the Webots controller library.
 set(WEBOTS_HOME "/usr/local/webots")
@@ -25,11 +24,11 @@ file(GLOB_RECURSE SRC_LIST
 include_directories(include)
 
 # Setup the target executable.
-add_executable(${PROJECT} ${SRC_LIST})
-target_link_libraries(${PROJECT} ${WEBOTSLIBRARIES})
-target_link_libraries(${PROJECT} pinocchio::pinocchio)
-target_link_libraries(${PROJECT} qpOASES)
-target_link_libraries(${PROJECT} yaml-cpp::yaml-cpp)
+add_executable(${PROJECT_NAME} ${SRC_LIST})
+target_link_libraries(${PROJECT_NAME} ${WEBOTSLIBRARIES})
+target_link_libraries(${PROJECT_NAME} pinocchio::pinocchio)
+target_link_libraries(${PROJECT_NAME} qpOASES)
+target_link_libraries(${PROJECT_NAME} yaml-cpp::yaml-cpp)
 
 
 # Resolve for the package path at compile time.

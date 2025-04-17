@@ -36,7 +36,6 @@ int main()
 
                 switch (ctrl_comp->user_cmd.ctrl_type)
                 {
-
                 case ControllerType::POSITION_STAND_UP:
                         position_controller->updateToStandUp(ctrl_comp->robot_state.joint.pos_leg,
                                                              ctrl_comp->low_cmd);

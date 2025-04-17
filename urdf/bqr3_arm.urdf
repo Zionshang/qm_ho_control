@@ -1,0 +1,1296 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot name="bqr3_arm">
+  <link name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.000092 0.001447 -0.042478"
+        rpy="0 0 0" />
+      <mass
+        value="26.5" />
+      <inertia
+        ixx="0.259494841"
+        ixy="-4.1227E-05"
+        ixz="1.93862E-04"
+        iyy="0.859939262"
+        iyz="-2.040130E-03"
+        izz="0.945567440" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <link name="FR_abd_link">
+    <inertial>
+      <origin
+        xyz="0.050570 0.046892 1.0E-06"
+        rpy="0 0 0" />
+      <mass
+        value="1.656" />
+      <inertia
+        ixx="0.002476692"
+        ixy="4.00827E-04"
+        ixz="3.0E-09"
+        iyy="2.206021E-03"
+        iyz="-5.9E-08"
+        izz="2.653852E-03" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FR_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FR_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="FR_abd_joint" type="revolute">
+    <origin
+      xyz="0.244 -0.115 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="FR_abd_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="FR_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.00063 -0.0201 -0.15827"
+        rpy="0 0 0" />
+      <mass
+        value="1.337" />
+      <inertia
+        ixx="0.018816808"
+        ixy="-3.29929E-05"
+        ixz="0.000792"
+        iyy="0.018864419"
+        iyz="0.000185"
+        izz="0.000837451" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FR_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FR_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="FR_hip_joint" type="revolute">
+    <origin
+      xyz="0.056 0.018587 0"
+      rpy="0 0 0" />
+    <parent
+      link="FR_abd_link" />
+    <child
+      link="FR_hip_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="FR_knee_link">
+    <inertial>
+      <origin
+        xyz="-0.00517 0 -0.12521"
+        rpy="0 0 0" />
+      <mass
+        value="0.6489" />
+      <inertia
+        ixx="0.006478288"
+        ixy="2.4E-10"
+        ixz="-0.00013"
+        iyy="0.006528945"
+        iyz="-1.015E-08"
+        izz="0.00013568" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FR_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FR_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="FR_knee_joint" type="revolute">
+    <origin
+      xyz="0 -0.10009 -0.36"
+      rpy="0 0 0" />
+    <parent
+      link="FR_hip_link" />
+    <child
+      link="FR_knee_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="FR_foot_link">
+    <inertial>
+      <origin
+        xyz="0.0011791 -0.00030084 -0.0024379"
+        rpy="0 0 0" />
+      <mass
+        value="0.10321" />
+      <inertia
+        ixx="2.9572E-05"
+        ixy="3.6317E-09"
+        ixz="6.7484E-07"
+        iyy="3.5401E-05"
+        iyz="-9.1467E-09"
+        izz="2.9167E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FR_foot_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FR_foot_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="FR_foot_joint" type="fixed">
+    <origin
+      xyz="-0.00054829 0 -0.36"
+      rpy="0 0 0" />
+    <parent
+      link="FR_knee_link" />
+    <child
+      link="FR_foot_link" />
+  </joint>
+
+  <link name="HR_abd_link">
+    <inertial>
+      <origin
+        xyz="-0.050570 0.046982 -1.0E-06"
+        rpy="0 0 0" />
+      <mass
+        value="1.656" />
+      <inertia
+        ixx="0.002476692"
+        ixy="-4.00827E-04"
+        ixz="3.0E-09"
+        iyy="2.206021E-03"
+        iyz="5.9E-08"
+        izz="2.653852E-03" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HR_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HR_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HR_abd_joint" type="revolute">
+    <origin
+      xyz="-0.244 -0.115 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="HR_abd_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="HR_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.00063 -0.0201 -0.15827"
+        rpy="0 0 0" />
+      <mass
+        value="1.337" />
+      <inertia
+        ixx="0.018816808"
+        ixy="-3.29929E-05"
+        ixz="0.000792"
+        iyy="0.018864419"
+        iyz="0.000185"
+        izz="0.000837451" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HR_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HR_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HR_hip_joint" type="revolute">
+    <origin
+      xyz="-0.056 0.018587 0"
+      rpy="0 0 0" />
+    <parent
+      link="HR_abd_link" />
+    <child
+      link="HR_hip_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="HR_knee_link">
+    <inertial>
+      <origin
+        xyz="-0.00517 0 -0.12521"
+        rpy="0 0 0" />
+      <mass
+        value="0.6489" />
+      <inertia
+        ixx="0.006478288"
+        ixy="2.4E-10"
+        ixz="-0.00013"
+        iyy="0.006528945"
+        iyz="-1.015E-08"
+        izz="0.00013568" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HR_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HR_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HR_knee_joint" type="revolute">
+    <origin
+      xyz="0 -0.10009 -0.36"
+      rpy="0 0 0" />
+    <parent
+      link="HR_hip_link" />
+    <child
+      link="HR_knee_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="HR_foot_link">
+    <inertial>
+      <origin
+        xyz="0.0011791 -0.00030085 -0.0024379"
+        rpy="0 0 0" />
+      <mass
+        value="0.10321" />
+      <inertia
+        ixx="2.9572E-05"
+        ixy="3.6261E-09"
+        ixz="6.7484E-07"
+        iyy="3.5401E-05"
+        iyz="-9.1442E-09"
+        izz="2.9167E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HR_foot_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HR_foot_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HR_foot_joint" type="fixed">
+    <origin
+      xyz="-0.00054828 0 -0.36"
+      rpy="0 0 0" />
+    <parent
+      link="HR_knee_link" />
+    <child
+      link="HR_foot_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="FL_abd_link">
+    <inertial>
+      <origin
+        xyz="0.050570 -0.046982 -1.0E-06"
+        rpy="0 0 0" />
+      <mass
+        value="1.656" />
+      <inertia
+        ixx="0.002476692"
+        ixy="-4.00827E-04"
+        ixz="-3.0E-09"
+        iyy="2.206021E-03"
+        iyz="-5.9E-08"
+        izz="2.653852E-03" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FL_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FL_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="FL_abd_joint" type="revolute">
+    <origin
+      xyz="0.244 0.115 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="FL_abd_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="FL_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.00063 0.0201 -0.15827"
+        rpy="0 0 0" />
+      <mass
+        value="1.337" />
+      <inertia
+        ixx="0.018816835"
+        ixy="-3.29964E-05"
+        ixz="0.000792"
+        iyy="0.018864405"
+        iyz="0.000185353"
+        izz="0.000837413" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FL_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FL_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="FL_hip_joint" type="revolute">
+    <origin
+      xyz="0.056 -0.018587 0"
+      rpy="0 0 0" />
+    <parent
+      link="FL_abd_link" />
+    <child
+      link="FL_hip_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="FL_knee_link">
+    <inertial>
+      <origin
+        xyz="-0.00517 0 -0.12521"
+        rpy="0 0 0" />
+      <mass
+        value="0.6489" />
+      <inertia
+        ixx="0.006478288"
+        ixy="2.4E-10"
+        ixz="-0.00013"
+        iyy="0.006528945"
+        iyz="-1.015E-08"
+        izz="0.00013568" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FL_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FL_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="FL_knee_joint" type="revolute">
+    <origin
+      xyz="0 0.10009 -0.36"
+      rpy="0 0 0" />
+    <parent
+      link="FL_hip_link" />
+    <child
+      link="FL_knee_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="FL_foot_link">
+    <inertial>
+      <origin
+        xyz="0.0011791 9.9156E-05 -0.0024379"
+        rpy="0 0 0" />
+      <mass
+        value="0.10321" />
+      <inertia
+        ixx="2.9572E-05"
+        ixy="3.6295E-09"
+        ixz="6.7484E-07"
+        iyy="3.5401E-05"
+        iyz="-9.1457E-09"
+        izz="2.9167E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FL_foot_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/FL_foot_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="FL_foot_joint" type="fixed">
+    <origin
+      xyz="-0.00054828 0 -0.36"
+      rpy="0 0 0" />
+    <parent
+      link="FL_knee_link" />
+    <child
+      link="FL_foot_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="HL_abd_link">
+    <inertial>
+      <origin
+        xyz="-0.050570 -0.046982 1.0E-06"
+        rpy="0 0 0" />
+      <mass
+        value="1.656" />
+      <inertia
+        ixx="0.002476692"
+        ixy="4.00827E-04"
+        ixz="-3.0E-09"
+        iyy="2.206021E-03"
+        iyz="5.9E-08"
+        izz="2.653852E-03" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HL_abd_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HL_abd_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HL_abd_joint" type="revolute">
+    <origin
+      xyz="-0.244 0.115 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="HL_abd_link" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="HL_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.00063 0.0201 -0.15827"
+        rpy="0 0 0" />
+      <mass
+        value="1.337" />
+      <inertia
+        ixx="0.018816835"
+        ixy="-3.29964E-05"
+        ixz="0.000792"
+        iyy="0.018864405"
+        iyz="0.000185353"
+        izz="0.000837413" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HL_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HL_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HL_hip_joint" type="revolute">
+    <origin
+      xyz="-0.056 -0.018588 0"
+      rpy="0 0 0" />
+    <parent
+      link="HL_abd_link" />
+    <child
+      link="HL_hip_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="HL_knee_link">
+    <inertial>
+      <origin
+        xyz="-0.00517 0 -0.12521"
+        rpy="0 0 0" />
+      <mass
+        value="0.6489" />
+      <inertia
+        ixx="0.006478288"
+        ixy="2.4E-10"
+        ixz="-0.00013"
+        iyy="0.006528945"
+        iyz="-1.015E-08"
+        izz="0.00013568" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HL_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.91765 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HL_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HL_knee_joint" type="revolute">
+    <origin
+      xyz="0 0.10009 -0.36"
+      rpy="0 0 0" />
+    <parent
+      link="HL_hip_link" />
+    <child
+      link="HL_knee_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="HL_foot_link">
+    <inertial>
+      <origin
+        xyz="0.0011791 0.00049916 -0.0024379"
+        rpy="0 0 0" />
+      <mass
+        value="0.10321" />
+      <inertia
+        ixx="2.9572E-05"
+        ixy="3.6351E-09"
+        ixz="6.7483E-07"
+        iyy="3.5401E-05"
+        iyz="-9.1482E-09"
+        izz="2.9167E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HL_foot_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/HL_foot_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HL_foot_joint" type="fixed">
+    <origin
+      xyz="-0.00054828 0 -0.36"
+      rpy="0 0 0" />
+    <parent
+      link="HL_knee_link" />
+    <child
+      link="HL_foot_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link name="shoulder_Link">
+    <inertial>
+      <origin
+        xyz="-1.56377611447989E-05 -0.0120519057340555 0.0494136906406246"
+        rpy="0 0 0" />
+      <mass
+        value="0.219278028553239" />
+      <inertia
+        ixx="0.000272506999384824"
+        ixy="-1.21706128573991E-08"
+        ixz="-1.39559840399653E-08"
+        iyy="0.000393969336262798"
+        iyz="3.04588262294539E-05"
+        izz="0.000241973569773439" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/shoulder_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/shoulder_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="shoulder_joint" type="revolute">
+    <origin
+      xyz="0.131408857958035 0.000657057573622326 0.07"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="shoulder_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="upper_arm">
+    <inertial>
+      <origin
+        xyz="-0.000679335519759877 0.0253560994389334 0.272934544680043"
+        rpy="0 0 0" />
+      <mass
+        value="0.373394443882034" />
+      <inertia
+        ixx="0.00608164581940003"
+        ixy="-9.47037638193823E-09"
+        ixz="1.42281679768467E-05"
+        iyy="0.00622537016106073"
+        iyz="8.85807945621289E-09"
+        izz="0.000355765163298451" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/upper_arm.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/upper_arm.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="upper_arm_joint" type="revolute">
+    <origin
+      xyz="0 -0.0700874999712842 0.0559419251927479"
+      rpy="0 0 0" />
+    <parent
+      link="shoulder_Link" />
+    <child
+      link="upper_arm" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="forearm">
+    <inertial>
+      <origin
+        xyz="-0.000224534936316134 -0.00240495163923622 0.1798313865058"
+        rpy="0 0 0" />
+      <mass
+        value="0.176801191598349" />
+      <inertia
+        ixx="0.00308820815501706"
+        ixy="3.49841475789812E-07"
+        ixz="8.29405937349944E-06"
+        iyy="0.00315486012987276"
+        iyz="-0.000114107930812199"
+        izz="0.000139718042914452" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/forearm.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/forearm.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="forearm_joint" type="revolute">
+    <origin
+      xyz="-0.000995671014879157 0.0510875000082441 0.399999260792184"
+      rpy="0 0 0" />
+    <parent
+      link="upper_arm" />
+    <child
+      link="forearm" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="wrist_pitch">
+    <inertial>
+      <origin
+        xyz="-0.000104219954673523 0.00775407588770801 0.0446741650207468"
+        rpy="0 0 0" />
+      <mass
+        value="0.318549594633763" />
+      <inertia
+        ixx="0.000109024525657708"
+        ixy="-2.80636139269869E-08"
+        ixz="-1.52023305311861E-07"
+        iyy="0.000149511142733169"
+        iyz="2.86590481344128E-07"
+        izz="0.000139370069546957" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/wrist_pitch.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/wrist_pitch.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="wrist_pitch_joint" type="revolute">
+    <origin
+      xyz="-0.00189893193323432 0.0139999998975026 0.399125997545597"
+      rpy="0 0 0" />
+    <parent
+      link="forearm" />
+    <child
+      link="wrist_pitch" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="wrist_yall">
+    <inertial>
+      <origin
+        xyz="-0.000144483638020915 -0.000643691501588281 0.0414794923880439"
+        rpy="0 0 0" />
+      <mass
+        value="0.0824111530161268" />
+      <inertia
+        ixx="6.40755960668557E-05"
+        ixy="-3.23844829345252E-10"
+        ixz="6.57530045939237E-08"
+        iyy="5.2960536331802E-05"
+        iyz="2.08241406932442E-08"
+        izz="2.39682519940698E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/wrist_yall.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/wrist_yall.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="wrist_yall_joint" type="revolute">
+    <origin
+      xyz="-0.000331330904521726 0 0.133108173457018"
+      rpy="0 0 0" />
+    <parent
+      link="wrist_pitch" />
+    <child
+      link="wrist_yall" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="paw_left">
+    <inertial>
+      <origin
+        xyz="-0.00109320470126975 0.00624841523689684 0.0374439587137365"
+        rpy="0 0 0" />
+      <mass
+        value="0.0084604805524573" />
+      <inertia
+        ixx="1.17021605454194E-06"
+        ixy="1.52089594688994E-10"
+        ixz="1.95417121644365E-09"
+        iyy="1.22484369180061E-06"
+        iyz="-6.1143008773986E-08"
+        izz="3.85259536195289E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/paw_left.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/paw_left.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="paw_left_joint" type="revolute">
+    <origin
+      xyz="0.000787318050385816 0.0299999999999999 0.0854436386501356"
+      rpy="0 0 0" />
+    <parent
+      link="wrist_yall" />
+    <child
+      link="paw_left" />
+    <axis
+      xyz="-0.999996901992949 0 -0.00248917747535034" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+  <link name="paw_right">
+    <inertial>
+      <origin
+        xyz="-0.00109321146980115 -0.00756253037574737 0.0374439586776611"
+        rpy="0 0 0" />
+      <mass
+        value="0.00846048053488058" />
+      <inertia
+        ixx="1.17021605638525E-06"
+        ixy="-1.52304849231723E-10"
+        ixz="1.95365557584891E-09"
+        iyy="1.22484369146397E-06"
+        iyz="6.11430083509945E-08"
+        izz="3.85259534137337E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/paw_right.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://bqr3_arm_description/meshes/paw_right.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="paw_right_joint" type="revolute">
+    <origin
+      xyz="0.00078731805038687 -0.03 0.0854436386497228"
+      rpy="0 0 0" />
+    <parent
+      link="wrist_yall" />
+    <child
+      link="paw_right" />
+    <axis
+      xyz="-0.999996901992949 0 -0.00248917747535034" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="300"
+      velocity="10" />
+  </joint>
+</robot>

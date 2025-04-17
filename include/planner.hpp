@@ -18,4 +18,6 @@ private:
     shared_ptr<FootPlanner> foot_planner_;
     shared_ptr<PinocchioInterface> pin_interface_;
     double dt_;
+
+    VectorXd default_leg_joint_pos_;
 };

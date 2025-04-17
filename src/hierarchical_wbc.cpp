@@ -220,14 +220,15 @@ Task HierarchicalWbc::buildSwingLegTask(const Matrix34d &pos_feet, const Matrix3
     return {A, b, MatrixXd(), VectorXd()};
 }
 
-Task HierarchicalWbc::buildArmJointTask(const Vector6d &pos_arm, const Vector6d &vel_arm,
-                                        const Vector6d &pos_arm_ref, const Vector6d &vel_arm_ref)
+Task HierarchicalWbc::buildArmJointTask(const VectorXd &pos_arm, const VectorXd &vel_arm,
+                                        const VectorXd &pos_arm_ref, const VectorXd &vel_arm_ref)
 {
-    MatrixXd A = MatrixXd::Zero(6, dim_decision_vars_);
-    VectorXd b = VectorXd(6);
+    int arm_nq = pos_arm.size();
 
-    A.block(0, nv_ - 6, 6, 6) = Eigen::MatrixXd::Identity(6, 6);
-    // b = kp_arm_ * (_highCmd->qAJ - _est->getQArm()) + kd_arm_ * (_highCmd->dqAJ - _est->getDqArm());
+    MatrixXd A = MatrixXd::Zero(arm_nq, dim_decision_vars_);
+    VectorXd b = VectorXd(arm_nq);
+
+    A.block(0, nv_ - arm_nq, arm_nq, arm_nq) = Eigen::MatrixXd::Identity(arm_nq, arm_nq);
     b = kp_arm_ * (pos_arm_ref - pos_arm) + kd_arm_ * (vel_arm_ref - vel_arm);
 
     return {A, b, MatrixXd(), VectorXd()};
@@ -282,7 +283,7 @@ void HierarchicalWbc::paramInit(std::string fileName)
     std::cout << "weight_swing_     : " << weight_swing_ << std::endl;
 
     Vector3d kpEePos, kdEePos, kpEeAng, kdEeAng;
-    Vector6d kpArmJ, kdArmJ;
+    VectorXd kpArmJ(5), kdArmJ(5); // todo: 不使用魔法数字
     for (int i = 0; i < 3; i++)
     {
         kpEePos(i) = config["kpEePos"][i].as<double>();
@@ -290,7 +291,7 @@ void HierarchicalWbc::paramInit(std::string fileName)
         kpEeAng(i) = config["kpEeAng"][i].as<double>();
         kdEeAng(i) = config["kdEeAng"][i].as<double>();
     }
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 5; i++)
     {
         kpArmJ(i) = config["kpArmJ"][i].as<double>();
         kdArmJ(i) = config["kdArmJ"][i].as<double>();
