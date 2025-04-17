@@ -26,6 +26,7 @@ public:
 
     // get current time in seconds
     double current_time() { return supervisor_->getTime(); }
+    const webots::Node *CheatNode() { return robot_node_; }
 
 private:
     void initRecv();
@@ -77,5 +78,6 @@ private:
     std::string motor_arm_name_[NUM_ARM_MOTOR] = {"shoulder_joint", "upper_arm_joint", "forearm_joint",
                                                   "wrist_pitch_joint", "wrist_yall_joint"};
 
+    webots::Node *robot_node_; // used for cheat robot position
     int key_, last_key_;
 };

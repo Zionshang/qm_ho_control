@@ -13,6 +13,13 @@ WebotsInterface::WebotsInterface()
         0.72, 0.72, 0.72, 0.72,
         -1.44, -1.44, -1.44, -1.44;
     last_arm_joint_position_ << 0, -1.57, 2.88, 0.26, 0;
+
+    robot_node_ = supervisor_->getFromDef(supervisor_name_);
+    if (robot_node_ == NULL)
+    {
+        printf("error supervisor");
+        exit(1);
+    }
 }
 
 WebotsInterface::~WebotsInterface()

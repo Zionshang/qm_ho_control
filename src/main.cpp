@@ -9,6 +9,7 @@
 #include "gait_schedule.hpp"
 #include "ctrl_component.hpp"
 #include "position_controller.hpp"
+#include "cheat_estimator.hpp"
 
 int main()
 {
@@ -22,6 +23,7 @@ int main()
         shared_ptr controller = std::make_shared<Controller>(pin_interface);
         shared_ptr position_controller = std::make_shared<PositionController>(timestep);
         shared_ptr estimator = std::make_shared<KalmanFilterEstimator>(pin_interface, timestep);
+        shared_ptr cheat_estimator = std::make_shared<CheatEstimator>(pin_interface);
 
         while (webots_interface->isRunning())
         {
@@ -29,7 +31,8 @@ int main()
                 webots_interface->recvUserCmd(ctrl_comp->user_cmd);
 
                 gait_sche->update(webots_interface->current_time(), ctrl_comp->user_cmd.gait_name);
-                estimator->update(ctrl_comp->low_state, gait_sche->contact(), ctrl_comp->robot_state);
+                // estimator->update(ctrl_comp->low_state, gait_sche->contact(), ctrl_comp->robot_state);
+                cheat_estimator->update(webots_interface->CheatNode(), ctrl_comp->low_state, ctrl_comp->robot_state);
 
                 planner->update(ctrl_comp->user_cmd, ctrl_comp->robot_state,
                                 gait_sche->gait_state(), ctrl_comp->target_robot_state);
