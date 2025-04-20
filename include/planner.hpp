@@ -2,6 +2,7 @@
 
 #include "foot_planner.hpp"
 #include "pinocchio_interface.hpp"
+#include "terrain_estimator.hpp"
 
 class Planner
 {
@@ -20,4 +21,6 @@ private:
     double dt_;
 
     VectorXd default_leg_joint_pos_;
+
+    TerrainEstimator terrain_estimator_;
 };

@@ -10,7 +10,7 @@ min_body_vel: [-0.5, -0.5, -0.5]
 max_body_vel: [ 0.5,  0.5,  0.5]
 
 # PD of Body
-kpPos: [200, 200, 500]     # PD parameter of body position 
+kpPos: [200, 200, 1000]     # PD parameter of body position 
 kdPos: [50, 70, 50]      
 kpAng: [500, 500, 150]     # PD parameter of body angular 
 kdAng: [50, 50, 50]      

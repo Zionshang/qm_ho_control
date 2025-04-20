@@ -167,6 +167,13 @@ void WebotsInterface::recvUserCmd(UserCommand &user_cmd)
         case '7':
             user_cmd.ctrl_type = ControllerType::POSITION_LIE_DOWN;
             break;
+
+        case 315: // arrow upper
+            user_cmd.angvel_body_B(1) += 0.1;
+            break;
+        case 317: // arrow upper
+            user_cmd.angvel_body_B(1) -= 0.1;
+            break;
         }
     }
     last_key_ = key_;

@@ -125,4 +125,5 @@ private:
     std::vector<int> feet_id_;
 
     int nq_, nv_;
+    double mass_;
 };

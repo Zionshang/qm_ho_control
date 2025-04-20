@@ -14,13 +14,16 @@ Planner::Planner(shared_ptr<PinocchioInterface> pin_interface, double timestep)
 void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,
                      const GaitState &gait_state, RobotState &robot_state_ref)
 {
-
     bodyPlan(user_cmd, robot_state_ref.body);
     armJointPlan(user_cmd, robot_state_ref.joint);
     // comPlan(robot_state_ref, robot_state_ref.pos_com, robot_state_ref.vel_com);
     foot_planner_->update(gait_state, robot_state.body, robot_state.foot,
                           robot_state_ref.body, robot_state_ref.foot);
 
+    terrain_estimator_.update(robot_state.body.quat, robot_state.foot.pos_rel_body, gait_state.contact);
+
+    Vector3d ground_rpy = terrain_estimator_.getGroundEulerAngleWrtBody();
+    
     // std::cout << "===== Robot State Reference =====" << std::endl;
 
     // // // Body state
@@ -63,6 +66,8 @@ void Planner::bodyPlan(const UserCommand &user_cmd, BodyState &body_state_ref)
     // position integration
     body_state_ref.pos += body_state_ref.vel * dt_;
     body_state_ref.quat *= pinocchio::quaternion::exp3(user_cmd.angvel_body_B * dt_);
+
+    body_state_ref.pos(2) = 0.57;
 }
 
 // todo: 是否有存在的必要？

@@ -2,7 +2,7 @@
 
 FootPlanner::FootPlanner(shared_ptr<PinocchioInterface> pin_interface)
 {
-    height_swing = 0.04;
+    height_swing = 0.3;
     offset_foot_ = 0.026;
     first_run_ = true;
 

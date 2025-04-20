@@ -15,6 +15,8 @@ PinocchioInterface::PinocchioInterface()
     feet_id_.push_back(model_.getFrameId("HR_foot_link", pinocchio::BODY));
 
     body_id_ = model_.getFrameId("base_link", pinocchio::BODY);
+    mass_ = pinocchio::computeTotalMass(model_);
+    std::cout << "total mass of robot: " << mass_ << std::endl;
 }
 
 void PinocchioInterface::calcComState(const VectorXd &q, const VectorXd &v, Vector3d &pos_com, Vector3d &vel_com)

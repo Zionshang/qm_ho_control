@@ -17,8 +17,7 @@ include_directories(${YAML_CPP_INCLUDE_DIR})
 
 # Get C++ sources
 file(GLOB_RECURSE SRC_LIST 
-    ./src/*.cpp
-    ./src/model/*.cpp
+    src/*.cpp
 )
 # Get C++ head files
 include_directories(include)
