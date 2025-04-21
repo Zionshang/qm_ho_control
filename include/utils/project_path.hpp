@@ -35,5 +35,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Gets the path to the package source directory. */
 inline std::string getProjectPath()
 {
-    return "/home/zishang/ros2_workspace/qm_ho_control_ws/src";
+    return "/home/jyx/cpp_workspace/qm_ho_control";
 }

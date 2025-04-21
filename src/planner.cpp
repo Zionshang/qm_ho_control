@@ -15,8 +15,8 @@ void Planner::update(const UserCommand &user_cmd, const RobotState &robot_state,
                      const GaitState &gait_state, RobotState &robot_state_ref)
 {
 
-    bodyPlan(user_cmd, robot_state_ref.body);
-    armJointPlan(user_cmd, robot_state_ref.joint);
+    // bodyPlan(user_cmd, robot_state_ref.body);
+    // armJointPlan(user_cmd, robot_state_ref.joint);
     // comPlan(robot_state_ref, robot_state_ref.pos_com, robot_state_ref.vel_com);
     foot_planner_->update(gait_state, robot_state.body, robot_state.foot,
                           robot_state_ref.body, robot_state_ref.foot);

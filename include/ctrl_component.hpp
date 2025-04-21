@@ -14,7 +14,7 @@ struct BodyState
 
     BodyState()
     {
-        pos.setZero();
+        pos << 0.0, 0.0, 0.57;
         quat.setIdentity();
         vel.setZero();
         angvel.setZero();
@@ -86,7 +86,7 @@ struct UserCommand
     {
         vel_body_B.setZero();
         angvel_body_B.setZero();
-        gait_name = GaitName::STANCE;
+        gait_name = GaitName::TROT;
         ctrl_type = ControllerType::TORQUE_CONTROLLER;
         arm_joint_pos.setZero(arm_nq);
         arm_joint_pos << 0, -1.57, 2.88, 0.26, 0;

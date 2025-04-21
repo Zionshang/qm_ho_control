@@ -10,7 +10,9 @@ include_directories(${WEBOTS_HOME}/include/controller/c ${WEBOTS_HOME}/include/c
 # pinocchio
 find_package(pinocchio REQUIRED)
 find_package(qpOASES REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(aligator REQUIRED)
 
 include_directories(${PINOCCHIO_INCLUDE_DIRS})
 include_directories(${YAML_CPP_INCLUDE_DIR})
@@ -29,6 +31,7 @@ target_link_libraries(${PROJECT_NAME} ${WEBOTSLIBRARIES})
 target_link_libraries(${PROJECT_NAME} pinocchio::pinocchio)
 target_link_libraries(${PROJECT_NAME} qpOASES)
 target_link_libraries(${PROJECT_NAME} yaml-cpp::yaml-cpp)
+target_link_libraries(${PROJECT_NAME} aligator::aligator)
 
 
 # Resolve for the package path at compile time.
