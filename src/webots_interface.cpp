@@ -3,33 +3,29 @@
 WebotsInterface::WebotsInterface()
 {
     supervisor_ = new webots::Supervisor();
-    time_step_ = (int)supervisor_->getBasicTimeStep();
-    std::cout << "timeStep in simulation is :" << time_step_ << std::endl;
-    NUM_LEG_MOTOR = motor_leg_name_.size();
-    NUM_ARM_MOTOR = motor_arm_name_.size();
+    timestep_ = (int)supervisor_->getBasicTimeStep();
+    std::cout << "timeStep in simulation is :" << timestep_ << std::endl;
+    num_motor_ = motor_name_.size();
 
-    joint_sensor_leg_.assign(NUM_LEG_MOTOR, NULL);
-    joint_sensor_arm_.assign(NUM_ARM_MOTOR, NULL);
-    motor_leg_.assign(NUM_LEG_MOTOR, NULL);
-    motor_arm_.assign(NUM_ARM_MOTOR, NULL);
+    motor_sensor_.assign(num_motor_, NULL);
+    motor_.assign(num_motor_, NULL);
 
     initRecv();
     initSend();
 
     // TODO: 使用参数传递
-    last_leg_joint_position_.setZero(NUM_LEG_MOTOR);
-    last_leg_joint_position_ << 0.0, 0.72, -1.44,
+    last_motor_position_.setZero(num_motor_);
+    last_motor_position_ << 0.0, 0.72, -1.44,
         0.0, 0.72, -1.44,
         0.0, 0.72, -1.44,
-        0.0, 0.72, -1.44;
-    last_arm_joint_position_.setZero(NUM_ARM_MOTOR);
-    last_arm_joint_position_ << 0, -1.57, 2.88, 0.26, 0;
+        0.0, 0.72, -1.44,
+        0, -1.57, 2.88, 0.26, 0;
 
     robot_node_ = supervisor_->getFromDef(supervisor_name_);
     if (robot_node_ == NULL)
     {
-        printf("error supervisor");
-        exit(1);
+        std::cerr << "ERROR: Failed to get robot node with supervisor name '" << supervisor_name_ << "'" << std::endl;
+        std::exit(EXIT_FAILURE);
     }
     std::cout << "test" << std::endl;
 }
@@ -54,20 +50,21 @@ void WebotsInterface::recvState(LowState &low_state)
     }
     low_state_.imu.quaternion[3] = static_cast<double>(imuData[3]);
 
-    for (int i = 0; i < NUM_LEG_MOTOR; i++)
+    for (int i = 0; i < num_motor_; i++)
     {
-        low_state_.motor_state_leg[i].q = joint_sensor_leg_[i]->getValue();
-        low_state_.motor_state_leg[i].dq = (low_state_.motor_state_leg[i].q - last_leg_joint_position_(i)) / double(time_step_) * 1000;
-        last_leg_joint_position_(i) = low_state_.motor_state_leg[i].q;
+        if (i < 12)
+        {
+            low_state_.motor_state_leg[i].q = motor_sensor_[i]->getValue();
+            low_state_.motor_state_leg[i].dq = (low_state_.motor_state_leg[i].q - last_motor_position_(i)) / double(timestep_) * 1000;
+            last_motor_position_(i) = low_state_.motor_state_leg[i].q;
+        }
+        else
+        {
+            low_state_.motor_state_arm[i - 12].q = motor_sensor_[i]->getValue();
+            low_state_.motor_state_arm[i - 12].dq = (low_state_.motor_state_arm[i - 12].q - last_motor_position_(i)) / double(timestep_) * 1000;
+            last_motor_position_(i) = low_state_.motor_state_arm[i - 12].q;
+        }
     }
-
-    for (int i = 0; i < NUM_ARM_MOTOR; i++)
-    {
-        low_state_.motor_state_arm[i].q = joint_sensor_arm_[i]->getValue();
-        low_state_.motor_state_arm[i].dq = (low_state_.motor_state_arm[i].q - last_arm_joint_position_(i)) / double(time_step_) * 1000;
-        last_arm_joint_position_(i) = low_state_.motor_state_arm[i].q;
-    }
-
     low_state = low_state_;
 }
 
@@ -194,30 +191,29 @@ void WebotsInterface::recvUserCmd(UserCommand &user_cmd)
 void WebotsInterface::sendCmd(LowCmd &low_cmd)
 {
     double tau;
-    for (int i = 0; i < NUM_LEG_MOTOR; i++)
+    for (int i = 0; i < num_motor_; i++)
     {
-        tau = low_cmd.motor_cmd_leg[i].tau +
-              low_cmd.motor_cmd_leg[i].kp * (low_cmd.motor_cmd_leg[i].q - low_state_.motor_state_leg[i].q) +
-              low_cmd.motor_cmd_leg[i].kd * (low_cmd.motor_cmd_leg[i].dq - low_state_.motor_state_leg[i].dq);
-        motor_leg_[i]->setTorque(tau);
-    }
-    for (int i = 0; i < NUM_ARM_MOTOR; i++)
-    {
-        tau = low_cmd.motor_cmd_arm[i].tau +
-              low_cmd.motor_cmd_arm[i].kp * (low_cmd.motor_cmd_arm[i].q - low_state_.motor_state_arm[i].q) +
-              low_cmd.motor_cmd_arm[i].kd * (low_cmd.motor_cmd_arm[i].dq - low_state_.motor_state_arm[i].dq);
-        // std::cout << low_cmd.motor_cmd_arm[i].q << "  "
-        //           << low_state_.motor_state_arm[i].q << "  "
-        //           << low_cmd.motor_cmd_arm[i].dq << "  "
-        //           << low_state_.motor_state_arm[i].dq << "  "
-        //           << std::endl;
-        motor_arm_[i]->setTorque(tau);
+        if (i < 12)
+        {
+
+            tau = low_cmd.motor_cmd_leg[i].tau +
+                  low_cmd.motor_cmd_leg[i].kp * (low_cmd.motor_cmd_leg[i].q - low_state_.motor_state_leg[i].q) +
+                  low_cmd.motor_cmd_leg[i].kd * (low_cmd.motor_cmd_leg[i].dq - low_state_.motor_state_leg[i].dq);
+            motor_[i]->setTorque(tau);
+        }
+        else
+        {
+            tau = low_cmd.motor_cmd_arm[i - 12].tau +
+                  low_cmd.motor_cmd_arm[i - 12].kp * (low_cmd.motor_cmd_arm[i - 12].q - low_state_.motor_state_arm[i - 12].q) +
+                  low_cmd.motor_cmd_arm[i - 12].kd * (low_cmd.motor_cmd_arm[i - 12].dq - low_state_.motor_state_arm[i - 12].dq);
+            motor_[i]->setTorque(tau);
+        }
     }
 }
 
 bool WebotsInterface::isRunning()
 {
-    if (supervisor_->step(time_step_) != -1)
+    if (supervisor_->step(timestep_) != -1)
         return true;
     else
         return false;
@@ -227,38 +223,41 @@ void WebotsInterface::initRecv()
 {
     // // joystick init
     // _joystick = supervisor_->getJoystick();
-    // _joystick->enable(time_step_);
+    // _joystick->enable(timestep_);
 
     // keyboard init
     keyboard_ = supervisor_->getKeyboard();
-    keyboard_->enable(time_step_);
+    keyboard_->enable(timestep_);
 
     // sensor init
     imu_ = supervisor_->getInertialUnit(imu_name_);
-    imu_->enable(time_step_);
+    imu_->enable(timestep_);
     gyro_ = supervisor_->getGyro(gyro_name_);
-    gyro_->enable(time_step_);
+    gyro_->enable(timestep_);
     accelerometer_ = supervisor_->getAccelerometer(accelerometer_name_);
-    accelerometer_->enable(time_step_);
+    accelerometer_->enable(timestep_);
 
-    for (int i = 0; i < NUM_LEG_MOTOR; i++)
+    for (int i = 0; i < num_motor_; i++)
     {
-        joint_sensor_leg_[i] = supervisor_->getPositionSensor(joint_sensor_leg_name_[i]);
-        joint_sensor_leg_[i]->enable(time_step_);
-    }
-
-    for (int i = 0; i < NUM_ARM_MOTOR; i++)
-    {
-        joint_sensor_arm_[i] = supervisor_->getPositionSensor(joint_sensor_arm_name_[i]);
-        joint_sensor_arm_[i]->enable(time_step_);
+        motor_sensor_[i] = supervisor_->getPositionSensor(motor_sensor_name_[i]);
+        if (motor_sensor_[i] == NULL)
+        {
+            std::cerr << "ERROR: Failed to get motor sensor with name '" << motor_sensor_name_[i] << "'" << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+        motor_sensor_[i]->enable(timestep_);
     }
 }
 
 void WebotsInterface::initSend()
 {
-    for (int i = 0; i < NUM_LEG_MOTOR; i++)
-        motor_leg_[i] = supervisor_->getMotor(motor_leg_name_[i]);
-
-    for (int i = 0; i < NUM_ARM_MOTOR; i++)
-        motor_arm_[i] = supervisor_->getMotor(motor_arm_name_[i]);
+    for (int i = 0; i < num_motor_; i++)
+    {
+        motor_[i] = supervisor_->getMotor(motor_name_[i]);
+        if (motor_[i] == NULL)
+        {
+            std::cerr << "ERROR: Failed to get motor with name '" << motor_name_[i] << "'" << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+    }
 }

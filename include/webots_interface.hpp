@@ -32,19 +32,15 @@ private:
     void initRecv();
     void initSend();
 
-    int NUM_LEG_MOTOR;
-    int NUM_ARM_MOTOR;
-
-    int time_step_;
-    Eigen::VectorXd last_leg_joint_position_;
-    Eigen::VectorXd last_arm_joint_position_;
+    int num_motor_;
+    int timestep_;
 
     LowState low_state_;
 
     // webots interface
     webots::Supervisor *supervisor_;
-    std::vector<webots::Motor *> motor_leg_;
-    std::vector<webots::PositionSensor *> joint_sensor_leg_;
+    std::vector<webots::Motor *> motor_;
+    std::vector<webots::PositionSensor *> motor_sensor_;
     webots::InertialUnit *imu_;
     webots::Gyro *gyro_;
     // webots::Joystick *_joystick;
@@ -55,22 +51,19 @@ private:
     std::string imu_name_ = "imu_link_imu";
     std::string gyro_name_ = "imu_link_gyro";
     std::string accelerometer_name_ = "imu_link_accelerometer";
-    std::vector<std::string> joint_sensor_leg_name_ = {"FL_abd_joint_sensor", "FL_hip_joint_sensor", "FL_knee_joint_sensor",
-                                                       "FR_abd_joint_sensor", "FR_hip_joint_sensor", "FR_knee_joint_sensor",
-                                                       "HL_abd_joint_sensor", "HL_hip_joint_sensor", "HL_knee_joint_sensor",
-                                                       "HR_abd_joint_sensor", "HR_hip_joint_sensor", "HR_knee_joint_sensor"};
-    std::vector<std::string> motor_leg_name_ = {"FL_abd_joint", "FL_hip_joint", "FL_knee_joint",
-                                                "FR_abd_joint", "FR_hip_joint", "FR_knee_joint",
-                                                "HL_abd_joint", "HL_hip_joint", "HL_knee_joint",
-                                                "HR_abd_joint", "HR_hip_joint", "HR_knee_joint"};
-
-    std::vector<webots::Motor *> motor_arm_;
-    std::vector<webots::PositionSensor *> joint_sensor_arm_;
-    std::vector<std::string> joint_sensor_arm_name_ = {"shoulder_joint_sensor", "upper_arm_joint_sensor", "forearm_joint_sensor",
-                                                       "wrist_pitch_joint_sensor", "wrist_yall_joint_sensor"};
-    std::vector<std::string> motor_arm_name_ = {"shoulder_joint", "upper_arm_joint", "forearm_joint",
-                                                "wrist_pitch_joint", "wrist_yall_joint"};
+    std::vector<std::string> motor_sensor_name_ = {"FL_abd_joint_sensor", "FL_hip_joint_sensor", "FL_knee_joint_sensor",
+                                                   "FR_abd_joint_sensor", "FR_hip_joint_sensor", "FR_knee_joint_sensor",
+                                                   "HL_abd_joint_sensor", "HL_hip_joint_sensor", "HL_knee_joint_sensor",
+                                                   "HR_abd_joint_sensor", "HR_hip_joint_sensor", "HR_knee_joint_sensor",
+                                                   "shoulder_joint_sensor", "upper_arm_joint_sensor", "forearm_joint_sensor", "wrist_pitch_joint_sensor", "wrist_yall_joint_sensor"};
+    std::vector<std::string> motor_name_ = {"FL_abd_joint", "FL_hip_joint", "FL_knee_joint",
+                                            "FR_abd_joint", "FR_hip_joint", "FR_knee_joint",
+                                            "HL_abd_joint", "HL_hip_joint", "HL_knee_joint",
+                                            "HR_abd_joint", "HR_hip_joint", "HR_knee_joint",
+                                            "shoulder_joint", "upper_arm_joint", "forearm_joint", "wrist_pitch_joint", "wrist_yall_joint"};
 
     webots::Node *robot_node_; // used for cheat robot position
+
     int key_, last_key_;
+    VectorXd last_motor_position_;
 };
