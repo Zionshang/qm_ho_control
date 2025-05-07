@@ -20,6 +20,7 @@ WebotsInterface::WebotsInterface()
     last_leg_joint_position_.setZero(NUM_LEG_MOTOR);
     last_leg_joint_position_ << 0.0, 0.72, -1.44,
         0.0, 0.72, -1.44,
+        0.0, 0.72, -1.44,
         0.0, 0.72, -1.44;
     last_arm_joint_position_.setZero(NUM_ARM_MOTOR);
     last_arm_joint_position_ << 0, -1.57, 2.88, 0.26, 0;
