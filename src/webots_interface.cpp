@@ -9,7 +9,6 @@ WebotsInterface::WebotsInterface()
 
     motor_sensor_.assign(num_motor_, NULL);
     motor_.assign(num_motor_, NULL);
-
     initRecv();
     initSend();
 
@@ -19,7 +18,7 @@ WebotsInterface::WebotsInterface()
         0.0, 0.72, -1.44,
         0.0, 0.72, -1.44,
         0.0, 0.72, -1.44,
-        0, -1.57, 2.88, 0.26, 0;
+        0, 0, 0, 0, 0, 0;
 
     robot_node_ = supervisor_->getFromDef(supervisor_name_);
     if (robot_node_ == NULL)
@@ -195,7 +194,6 @@ void WebotsInterface::sendCmd(LowCmd &low_cmd)
     {
         if (i < 12)
         {
-
             tau = low_cmd.motor_cmd_leg[i].tau +
                   low_cmd.motor_cmd_leg[i].kp * (low_cmd.motor_cmd_leg[i].q - low_state_.motor_state_leg[i].q) +
                   low_cmd.motor_cmd_leg[i].kd * (low_cmd.motor_cmd_leg[i].dq - low_state_.motor_state_leg[i].dq);

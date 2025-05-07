@@ -2,17 +2,18 @@
 
 PinocchioInterface::PinocchioInterface()
 {
-    std::string urdf_filename = getProjectPath() + "/urdf/bqr3_arm _reduced.urdf";
+    std::string urdf_filename = getProjectPath() + "/urdf/galileo_v1d6_x5.urdf";
 
     pin::urdf::buildModel(urdf_filename, pin::JointModelFreeFlyer(), model_);
     data_ = pinocchio::Data(model_);
     nq_ = model_.nq;
     nv_ = model_.nv;
 
-    feet_id_.push_back(model_.getFrameId("FL_foot_link", pinocchio::BODY));
-    feet_id_.push_back(model_.getFrameId("FR_foot_link", pinocchio::BODY));
-    feet_id_.push_back(model_.getFrameId("HL_foot_link", pinocchio::BODY));
-    feet_id_.push_back(model_.getFrameId("HR_foot_link", pinocchio::BODY));
+    // todo: 用参数指定
+    feet_id_.push_back(model_.getFrameId("FL_foot", pinocchio::BODY));
+    feet_id_.push_back(model_.getFrameId("FR_foot", pinocchio::BODY));
+    feet_id_.push_back(model_.getFrameId("RL_foot", pinocchio::BODY));
+    feet_id_.push_back(model_.getFrameId("RR_foot", pinocchio::BODY));
 
     body_id_ = model_.getFrameId("base_link", pinocchio::BODY);
     mass_ = pinocchio::computeTotalMass(model_);

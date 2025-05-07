@@ -22,8 +22,8 @@ kpEePos: [300, 300, 300]   # PD parameter of EE position
 kdEePos: [30, 30, 30]
 kpEeAng: [350, 350, 350]   # PD parameter of EE angular
 kdEeAng: [35, 35, 35]
-kpArmJ: [500, 500, 500, 500, 500]   # PD parameter of arm joint
-kdArmJ: [50, 50, 50, 50, 50]
+kpArmJ: [500, 500, 500, 500, 500, 500]   # PD parameter of arm joint
+kdArmJ: [50, 50, 50, 50, 50, 50]
 
 
 # weight of QP

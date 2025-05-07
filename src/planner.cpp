@@ -67,7 +67,7 @@ void Planner::bodyPlan(const UserCommand &user_cmd, BodyState &body_state_ref)
     body_state_ref.pos += body_state_ref.vel * dt_;
     body_state_ref.quat *= pinocchio::quaternion::exp3(user_cmd.angvel_body_B * dt_);
 
-    body_state_ref.pos(2) = 0.57;
+    body_state_ref.pos(2) = 0.40; // todo: 改成参数传递
 }
 
 // todo: 是否有存在的必要？

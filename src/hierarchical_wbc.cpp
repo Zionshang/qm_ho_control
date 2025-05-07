@@ -284,7 +284,7 @@ void HierarchicalWbc::paramInit(std::string fileName)
     std::cout << "weight_swing_     : " << weight_swing_ << std::endl;
 
     Vector3d kpEePos, kdEePos, kpEeAng, kdEeAng;
-    VectorXd kpArmJ(5), kdArmJ(5); // todo: 不使用魔法数字
+    VectorXd kpArmJ(6), kdArmJ(6); // todo: 不使用魔法数字
     for (int i = 0; i < 3; i++)
     {
         kpEePos(i) = config["kpEePos"][i].as<double>();
@@ -292,7 +292,7 @@ void HierarchicalWbc::paramInit(std::string fileName)
         kpEeAng(i) = config["kpEeAng"][i].as<double>();
         kdEeAng(i) = config["kdEeAng"][i].as<double>();
     }
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 6; i++)
     {
         kpArmJ(i) = config["kpArmJ"][i].as<double>();
         kdArmJ(i) = config["kdArmJ"][i].as<double>();

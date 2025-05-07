@@ -13,8 +13,7 @@ PositionController::PositionController(double dt)
     stand_joint_pos_ << 0.0, 0.0, 0.0, 0.0,
         0.72, 0.72, 0.72, 0.72,
         -1.44, -1.44, -1.44, -1.44;
-    default_arm_joint_pos_.setZero(5); // todo: 删除魔法数字
-    default_arm_joint_pos_ << 0, -1.57, 2.88, 0.26, 0;
+    default_arm_joint_pos_.setZero(6); // todo: 删除魔法数字
 
     time_ = 0;
     period_ = 1;
@@ -22,7 +21,7 @@ PositionController::PositionController(double dt)
     stand_spline0_.resize(12);
     stand_spline1_.resize(12);
     lie_spline_.resize(12);
-    arm_spline_.resize(5);
+    arm_spline_.resize(6);
 }
 
 void PositionController::updateToStandUp(const Matrix34d &joint_pos, LowCmd &low_cmd)

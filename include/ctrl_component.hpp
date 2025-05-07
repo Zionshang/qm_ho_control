@@ -50,7 +50,6 @@ struct JointState
         vel_leg.setZero();
         pos_arm.setZero(arm_nq);
         vel_arm.setZero(arm_nq);
-        pos_arm << 0, -1.57, 2.88, 0.26, 0;
     }
 };
 
@@ -87,9 +86,8 @@ struct UserCommand
         vel_body_B.setZero();
         angvel_body_B.setZero();
         gait_name = GaitName::STANCE;
-        ctrl_type = ControllerType::TORQUE_CONTROLLER;
+        ctrl_type = ControllerType::POSITION_LIE_DOWN;
         arm_joint_pos.setZero(arm_nq);
-        arm_joint_pos << 0, -1.57, 2.88, 0.26, 0;
     }
 };
 
