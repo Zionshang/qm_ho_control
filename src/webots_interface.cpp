@@ -5,13 +5,23 @@ WebotsInterface::WebotsInterface()
     supervisor_ = new webots::Supervisor();
     time_step_ = (int)supervisor_->getBasicTimeStep();
     std::cout << "timeStep in simulation is :" << time_step_ << std::endl;
+    NUM_LEG_MOTOR = motor_leg_name_.size();
+    NUM_ARM_MOTOR = motor_arm_name_.size();
+
+    joint_sensor_leg_.assign(NUM_LEG_MOTOR, NULL);
+    joint_sensor_arm_.assign(NUM_ARM_MOTOR, NULL);
+    motor_leg_.assign(NUM_LEG_MOTOR, NULL);
+    motor_arm_.assign(NUM_ARM_MOTOR, NULL);
+
     initRecv();
     initSend();
 
     // TODO: 使用参数传递
-    last_leg_joint_position_ << 0.0, 0.0, 0.0, 0.0,
-        0.72, 0.72, 0.72, 0.72,
-        -1.44, -1.44, -1.44, -1.44;
+    last_leg_joint_position_.setZero(NUM_LEG_MOTOR);
+    last_leg_joint_position_ << 0.0, 0.72, -1.44,
+        0.0, 0.72, -1.44,
+        0.0, 0.72, -1.44;
+    last_arm_joint_position_.setZero(NUM_ARM_MOTOR);
     last_arm_joint_position_ << 0, -1.57, 2.88, 0.26, 0;
 
     robot_node_ = supervisor_->getFromDef(supervisor_name_);
@@ -20,6 +30,7 @@ WebotsInterface::WebotsInterface()
         printf("error supervisor");
         exit(1);
     }
+    std::cout << "test" << std::endl;
 }
 
 WebotsInterface::~WebotsInterface()
