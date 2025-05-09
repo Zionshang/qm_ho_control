@@ -31,8 +31,8 @@ int main()
                 webots_interface->recvUserCmd(ctrl_comp->user_cmd);
 
                 gait_sche->update(webots_interface->current_time(), ctrl_comp->user_cmd.gait_name);
-                estimator->update(ctrl_comp->low_state, gait_sche->contact(), ctrl_comp->robot_state);
-                // cheat_estimator->update(webots_interface->CheatNode(), ctrl_comp->low_state, ctrl_comp->robot_state);
+                // estimator->update(ctrl_comp->low_state, gait_sche->contact(), ctrl_comp->robot_state);
+                cheat_estimator->update(webots_interface->CheatNode(), ctrl_comp->low_state, ctrl_comp->robot_state);
 
                 planner->update(ctrl_comp->user_cmd, ctrl_comp->robot_state,
                                 gait_sche->gait_state(), ctrl_comp->target_robot_state);

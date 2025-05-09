@@ -86,7 +86,7 @@ struct UserCommand
         vel_body_B.setZero();
         angvel_body_B.setZero();
         gait_name = GaitName::STANCE;
-        ctrl_type = ControllerType::POSITION_LIE_DOWN;
+        ctrl_type = ControllerType::TORQUE_CONTROLLER;
         arm_joint_pos.setZero(arm_nq);
     }
 };
