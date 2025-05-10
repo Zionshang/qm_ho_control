@@ -21,7 +21,7 @@ void Controller::run(const RobotState &robot_state, const RobotState &robot_stat
         low_cmd.motor_cmd_leg[i].tau = tau_(i);
     }
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 6; i++)
     {
         low_cmd.motor_cmd_arm[i].kp = 0;
         low_cmd.motor_cmd_arm[i].kd = 0;

@@ -53,17 +53,17 @@ void CheatEstimator::update(const webots::Node *cheat_node, const LowState &low_
 
     // std::cout << "===== Robot State =====" << std::endl;
 
-    // // Body state
-    std::cout << "Body Position: " << robot_state.body.pos.transpose() << std::endl;
-    std::cout << "Body Quaternion: " << robot_state.body.quat.coeffs().transpose() << std::endl;
-    std::cout << "Body Velocity: " << robot_state.body.vel.transpose() << std::endl;
-    std::cout << "Body Angular Velocity: " << robot_state.body.angvel.transpose() << std::endl;
+    // // // Body state
+    // std::cout << "Body Position: " << robot_state.body.pos.transpose() << std::endl;
+    // std::cout << "Body Quaternion: " << robot_state.body.quat.coeffs().transpose() << std::endl;
+    // std::cout << "Body Velocity: " << robot_state.body.vel.transpose() << std::endl;
+    // std::cout << "Body Angular Velocity: " << robot_state.body.angvel.transpose() << std::endl;
 
-    // Generalized State
-    std::cout << "Generalized Position: " << robot_state.pos_gen.transpose() << std::endl;
-    std::cout << "Generalized Velocity: " << robot_state.vel_gen.transpose() << std::endl;
+    // // Generalized State
+    // std::cout << "Generalized Position: " << robot_state.pos_gen.transpose() << std::endl;
+    // std::cout << "Generalized Velocity: " << robot_state.vel_gen.transpose() << std::endl;
 
-    // Center of Mass references
-    std::cout << "CoM Position: " << robot_state.pos_com.transpose() << std::endl;
-    std::cout << "CoM Velocity: " << robot_state.vel_com.transpose() << std::endl;
+    // // Center of Mass references
+    // std::cout << "CoM Position: " << robot_state.pos_com.transpose() << std::endl;
+    // std::cout << "CoM Velocity: " << robot_state.vel_com.transpose() << std::endl;
 }
